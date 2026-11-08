@@ -1,0 +1,20 @@
+FLAC File: 01 - Intermezzo, for string quintet in D minor-16-44100.flac
+====================================================================================================
+Good album art detected OK
+  Metadata Tags: 15
+    Tag [:0]: COMPOSER=Anton Bruckner
+    Tag [:1]: ARTIST=Anton Bruckner
+    Tag [:2]: ALBUM=Intermezzo in D minor (Melos - 1992)
+    Tag [:3]: TRACKNUMBER=1
+    Tag [:4]: TITLE=Intermezzo, for string quintet in D minor
+    Tag [:5]: GENRE=Chamber
+    Tag [:6]: COMMENT=Melos Quartet (Wilhem Melcher [violin], Gerhard Voss [violin], Hermann Voss [viola], Peter Buck [cello]), Enrique Santiago (viola)
+    Tag [:7]: PERFORMER=Melos Quartet
+    Tag [:8]: DATE=1992
+    Tag [:9]: TAGDATE=1794081561
+    Tag [:10]: REPLAYGAIN_REFERENCE_LOUDNESS=89.0 dB
+    Tag [:11]: REPLAYGAIN_TRACK_PEAK=0.98257446
+    Tag [:12]: REPLAYGAIN_TRACK_GAIN=-0.70 dB
+    Tag [:13]: REPLAYGAIN_ALBUM_PEAK=0.98257446
+    Tag [:14]: REPLAYGAIN_ALBUM_GAIN=-0.70 dB
+====================================================================================================

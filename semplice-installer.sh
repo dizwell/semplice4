@@ -1,0 +1,359 @@
+#!/usr/bin/env bash
+####################################################################
+#
+# Installation Program for Semplice Version 2. In broad terms:
+#
+#  1. Get user consent to adjust system
+#  2. Configure default Dialog colour scheme
+#  3. Use aboscheck to install Semplice's software dependencies
+#  4. Install new Semplice 2 files
+#  5. Verify installation
+#  6. Install new fonts
+#
+####################################################################
+PROGVERSION="2.13" COPYRIGHT="2021-2026"
+PRIORVERSION=0; clear; USERNAME=$(whoami); ERRORCOUNT=0  YPOS=6
+
+if [[ $1 == "beta" ]]; then 
+  REMOTESOURCE="https://bbritten.com/software/semplicebeta"
+else
+  REMOTESOURCE="https://bbritten.com/software/semplice"
+fi
+
+NEWCONF="$HOME/.local/share/semplice2"
+CONFDIR="$NEWCONF"
+
+HOTKEY=11
+DRAWLINES=2
+MAINTEXT=15
+LOGO=6
+INFOTEXT=11
+SPINNER=12
+ALERT=1
+
+function exit_program {
+rm -f seminst >/dev/null 2>&1
+reset
+exit 1
+}
+
+trap exit_program TERM      # Trap to quit nicely if the terminal is closed by clicking 'X' icon in window titlebar (works for xterm, not for all terminals)
+trap exit_program SIGHUP    # Same thing, different signal
+trap exit_program INT       # Trap to prevent Ctrl+C from working
+
+tput() {
+	local VERSION='bash tput (1.0.0)'
+
+	local opt OPTIND OPTARG
+	while getopts 'ST:V' opt; do
+		case "$opt" in
+			S) command tput "$@"; return $?;;
+			T) true;;
+			V) echo "$VERSION"; return 0;;
+		esac
+	done
+	shift "$((OPTIND - 1))"
+
+	local ESC=$'\x1b'
+	case "$1" in
+		bel) echo -n $'\x7';;
+		sgr0 | me) echo -n "$ESC[0m";;
+		bold) echo -n "$ESC[1m";;
+		dim) echo -n "$ESC[2m";;
+		rev) echo -n "$ESC[7m";;
+		blink) echo -n "$ESC[5m";;
+		setaf | AF) echo -n "$ESC[38;5;$2m";;
+		setab | AB) echo -n "$ESC[48;5;$2m";;
+		sc) echo -n "${ESC}7";;
+		rc) echo -n "${ESC}8";;
+		cnorm) echo -n "$ESC[?25h";;
+		civis) echo -n "$ESC[?25l";;
+		smcup) echo -n "$ESC[?1049h";;
+		rmcup) echo -n "$ESC[?1049l";;
+		clear) echo -n "$ESC[H$ESC[2J";;
+		home) echo -n "$ESC[H";;
+		cuu) echo -n "$ESC[$2A";;
+		cud) echo -n "$ESC[$2B";;
+		cuf) echo -n "$ESC[$2C";;
+		cub) echo -n "$ESC[$2D";;
+		cup)
+			local row=$(($2 + 1))
+			local col=$(($3 + 1))
+			echo -n "$ESC[$row;${col}H";;
+		*) command tput "$@"; return $?;;
+	esac
+}
+
+# Attempt to resize the terminal to 29 rows and 105 columns.
+tput civis; printf '\e[8;29;105t'
+
+function print_header {
+tput setaf $DRAWLINES; echo -e "┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                   │
+│                                                                                                   │
+│                                                                                                   │
+└───────────────────────────────────────────────────────────────────────────────────────────────────┘"
+tput cup  1 4; tput setaf $LOGO; echo "♬♪ Semplice: The Digital Music Manager ♬♪"
+tput cup  2 4; tput setaf $LOGO; echo "Copyright © Howard Rogers $COPYRIGHT"
+tput cup  3 4; tput setaf $LOGO; echo "Version $PROGVERSION"
+}
+
+function downloads {
+# 4. Fetch Semplice components
+# Fetch Semnplice components: BIN files first
+components=(abcheckver.sh ablibsemart.sh ablibsembits.sh ablibsemcaom.sh ablibsemcaos.sh ablibsemclean.sh ablibsemcolour.sh ablibsemconf.sh ablibsemconv.sh ablibsemcuee.sh ablibsemcus.sh ablibsemdevpick.sh ablibsemdir.sh ablibsemmaxv.sh ablibsemmeta.sh ablibsemoffpick.sh ablibsemparse.sh ablibsemquit.sh ablibsemrenum.sh ablibsemrip.sh ablibsemsacd.sh ablibsemspec.sh ablibsemspin.sh ablibsemtags.sh ablibsemtput.sh ablibsemtrks.sh ablibsemxart.sh aboscheck.sh smenudraw.sh smenuoptions.sh sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
+total=${#components[@]}
+count=0
+
+# Install components: BIN files first
+(
+for f in "${components[@]}"; do
+  count=$((count + 1 ))
+  percent=$((count * 100 / total))
+  echo $percent
+  wget -q "$REMOTESOURCE/bin/$f" -O "$NEWCONF/bin/$f";
+  sleep 0.1
+done
+) | dialog --title " Installing Semplice Binary Components " --gauge "\\n\\nDownloading Semplice's own software components: this might take some time..." 12 70
+
+# Art files next
+components=(Luxi_License.txt luximr.ttf sempliceico.png sempliceico.svg sempliceico.xpm sempliceicosmall.png sempliceicosmallbeta.png)
+total=${#components[@]}
+count=0
+(
+for f in "${components[@]}"; do
+  count=$((count + 1 ))
+  percent=$((count * 100 / total))
+  echo $percent
+  wget -q "$REMOTESOURCE/art/$f" -O "$NEWCONF/art/$f";
+  sleep 0.1
+done
+) | dialog --title " Installing Semplice Art Components " --guage "\\n\\nNow downloading some other Semplice bits and pieces: not long to wait now..." 12 70
+
+# Finally, /usr/bin and miscellaneous stuff
+if [[ $OS == "DARWIN" ]]; then
+  sudo wget -q "$REMOTESOURCE/semplice2.sh" -O "/usr/local/bin/semplice2.sh";  sudo chmod +x /usr/local/bin/semplice2.sh
+  sudo rm -f /usr/local/bin/semplice 2>/dev/null; sudo ln -s /usr/local/bin/semplice2.sh /usr/local/bin/semplice 2>/dev/null 
+else
+  sudo wget -q "$REMOTESOURCE/semplice2.sh" -O "/usr/bin/semplice2.sh";  sudo chmod +x /usr/bin/semplice2.sh
+  sudo rm -f /usr/bin/semplice 2>/dev/null; sudo ln -s /usr/bin/semplice2.sh /usr/bin/semplice 2>/dev/null
+fi
+
+# Only create a desktop launcher if this is NOT macOS.
+# -----------------------------------------------------
+if [[ -f /etc/os-release ]]; then
+    . /etc/os-release
+    OS=$NAME
+    THISVER=$VERSION
+else
+  OS=$(uname -s)
+  THISVER=$(uname -r)
+fi
+OS=${OS^^}
+
+if [[ ! $OS == *"DARWIN"* ]]; then
+  if [[ ! -d "$HOME/.local/share/applications" ]]; then mkdir -p "$HOME/.local/share/applications/"; fi
+  wget -q "$REMOTESOURCE/semplice.desktop" -O "$HOME/.local/share/applications/semplice.desktop"
+  sed -i "s|xxxxxxxx|$USERNAME|" "$HOME/.local/share/applications/semplice.desktop"
+  chmod +x "$HOME/.local/share/applications/semplice.desktop"
+  ln -s "$HOME/.local/share/applications/semplice.desktop" "$HOME/Desktop" 2>/dev/null
+fi
+
+# Confirmation when concluded
+dialog --title " Software Components Completed " --msgbox "\\n\\nAll Semplice's components have now been installed successfully.\\n\\nPress OK to see an installation summary report." 12 70
+}
+
+# ====================================================================================
+# Installation Code Starts Here
+# ====================================================================================
+
+# 1. Warning
+# -----------------------------------------------------
+tput clear; print_header
+tput cup 6 4; tput setaf $INFOTEXT; echo -e "Welcome to the Semplice Installer."
+tput cup 8 4; tput setaf $INFOTEXT; echo -e "• It will install numerous new software packages necessary for Semplice to function correctly. It will also create a bunch of new folders withing your \$HOME folder.\n\n• If you are happy to proceed, tap 'y' when prompted; tapping anything else will cancel the installation without it having touched your system at all." | fold -s -w 76 | sed '2,$s/^/    /'
+tput cup 19 4; tput setaf $ALERT; read -s -n 1 -p "Do you wish to proceed? (y/n): " response
+
+if [[ "$response" == [Yy]* ]]; then
+  clear; print_header; tput setaf $MAINTEXT; tput cup 6 0
+  tput cup 6 4; echo -e "Checking your network connection is working..."
+  if ! ping -c1 -W1 "1.1.1.1" >/dev/null 2>&1; then
+    tput clear; print_header
+    tput cup 6 4; tput setaf $ALERT; echo -e "Sadly, you do not appear to be able to reach the Internet.\n\nThis is a requirement for the Giocoso installation." | fold -s -w 76 | sed '2,$s/^/    /'
+    tput cup 10 4; tput setaf $MAINTEXT; read -n 1 -p "Quitting in the meantime. Press a key to exit."
+    tput reset; tput sgr0
+    exit_program
+  fi
+
+  # 2. Make new version directory structure
+  # -----------------------------------------------------
+  if [[ ! -d "$NEWCONF" ]]; then
+    mkdir -p "$NEWCONF"
+    mkdir -p "$NEWCONF/art"
+    mkdir -p "$NEWCONF/bin"
+    mkdir -p "$NEWCONF/txt"
+    mkdir -p "$NEWCONF/tmp"
+  fi
+  
+  # 3. Call aboscheck.sh and get packages installed
+  # -----------------------------------------------------
+  YPOS=$((YPOS+1)); tput cup $YPOS 1;
+  wget -q "$REMOTESOURCE/bin/aboscheck.sh" -O "$NEWCONF/bin/aboscheck.sh"
+  source "$NEWCONF/bin/aboscheck.sh" install        # Triggers a check of software dependencies and *fixes* them
+  downloads
+  chown -R $USERNAME:$USERNAME "$NEWCONF" 2>/dev/null
+  
+  # 4. Configure the default "dialog" colour scheme
+  # -----------------------------------------------------
+  echo "screen_color = (WHITE,BLACK,ON)
+  shadow_color = (BLACK,BLACK,ON)
+  dialog_color = (BLACK,WHITE,OFF)
+  title_color = (GREEN,WHITE,OFF)
+  border_color = (WHITE,WHITE,ON)
+  button_active_color = (WHITE,RED,ON)
+  button_inactive_color = dialog_color
+  button_key_active_color = button_active_color
+  button_key_inactive_color = (RED,WHITE,ON)
+  button_label_active_color = (WHITE,RED,ON)
+  button_label_inactive_color = (BLACK,WHITE,ON)
+  inputbox_color = dialog_color
+  inputbox_border_color = dialog_color
+  searchbox_color = dialog_color
+  searchbox_title_color = title_color
+  searchbox_border_color = border_color
+  position_indicator_color = title_color
+  menubox_color = dialog_color
+  menubox_border_color = border_color
+  item_color = dialog_color
+  item_selected_color = button_active_color
+  tag_color = title_color
+  tag_selected_color = button_label_active_color
+  tag_key_color = button_key_inactive_color
+  tag_key_selected_color = (RED,WHITE,ON)
+  check_color = dialog_color
+  check_selected_color = button_active_color
+  uarrow_color = (GREEN,WHITE,ON)
+  darrow_color = uarrow_color
+  itemhelp_color = (WHITE,BLACK,OFF)
+  form_active_text_color = button_active_color
+  form_text_color = (WHITE,CYAN,ON)
+  form_item_readonly_color = (CYAN,WHITE,ON)
+  gauge_color = title_color
+  border2_color = dialog_color
+  inputbox_border2_color = dialog_color
+  searchbox_border2_color = dialog_color
+  menubox_border2_color = dialog_color" > "$CONFDIR/txt/absemdialog.conf"
+  export DIALOGRC="$CONFDIR/txt/absemdialog.conf"       # Sets the colour scheme for dialogs
+
+  # 5. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
+  # -----------------------------------------------------
+  if [[ ! -d "$HOME/.local/share/fonts" ]]; then 
+    mkdir "$HOME/.local/share/fonts" 2>/dev/null
+    cp "$HOME/.local/share/semplice2/art/"*.ttf "$HOME/.local/share/fonts/" 2>/dev/null
+    fc-cache -f 2>/dev/null
+    clear
+  fi
+  
+  # 6. If possible, configure WezTerm terminals to display appropriately
+  # -----------------------------------------------------
+  if ! [[ -f "$HOME/.semplice.lua" ]]; then
+cat << 'EOF' > "$HOME/.semplice.lua"
+local wezterm = require 'wezterm'
+local config = wezterm.config_builder()
+config.initial_cols = 103
+config.initial_rows = 28
+config.color_scheme = 'Galaxy'
+config.font = wezterm.font("Luxi Mono", {weight="Regular", stretch="Normal", style="Normal"})
+config.font_size = 12
+config.audible_bell = "Disabled"
+config.window_close_confirmation = "NeverPrompt"
+config.mouse_bindings = {
+  -- Right-click over highlighted text: Copies and instantly clears the highlight
+  {
+    event = { Down = { streak = 1, button = "Right" } },
+    mods = "NONE",
+    action = wezterm.action.Multiple {
+      wezterm.action.CopyTo("ClipboardAndPrimarySelection"),
+      wezterm.action.ClearSelection,
+	},
+  },
+
+-- Shift + Right-click: Triggers your paste action
+  {
+    event = { Down = { streak = 1, button = "Right" } },
+    mods = "SHIFT",
+    action = wezterm.action.PasteFrom("Clipboard"),
+  },
+}
+config.window_decorations = "TITLE | RESIZE"
+config.freetype_load_target = "Light"
+config.enable_wayland = false
+config.enable_tab_bar = false
+config.line_height = 1.1
+return config
+EOF
+  fi
+    
+  # 7. Assess state of installation and advise accordingly
+  # -----------------------------------------------------
+  COUNTBIN=$(ls "$CONFDIR"/bin/*.sh 2>/dev/null | wc -l)
+  COUNTEXC=$(( $(ls /usr/local/bin/semplice2.sh 2>/dev/null | wc -l) + $(ls /usr/bin/semplice2.sh 2>/dev/null | wc -l) ))
+  if [[ $COUNTBIN -eq 30 ]]; then COUNTBINOK=1; else COUNTBINOK=0; fi
+  if [[ $COUNTEXC -eq 1 ]]; then COUNTXECOK=1; else COUNTXECOK=0; fi
+  if [[ $COUNTBINOK -eq 1 && $COUNTXECOK -eq 1 ]]; then BASICINSTALLOK=1; else BASICINSTALLOK=0; fi
+  
+  if command -v cueprint >/dev/null 2>&1; then CUEPRINTOK=1; else CUEPRINTOK=0; fi
+  if command -v sacd >/dev/null 2>&1; then SACDOK=1; else SACDOK=0; fi
+  if command -v trackverify >/dev/null 2>&1; then TRKVEROK=1; else TRKVEROK=0; fi
+  
+  DIALOGTEXT="\nThe Semplice installation has now completed. It's current status is as follows:"
+  
+  if [[ $BASICINSTALLOK -eq 1 ]]; then 
+    DIALOGTEXT=$DIALOGTEXT"\n\n  ✓ Your basic Semplice installation is fine"
+    if [[ $CUEPRINTOK -eq 1 ]]; then 
+      DIALOGTEXT=$DIALOGTEXT"\n  ✓ Semplice can split SuperFLACs OK"
+    else
+      DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot split SuperFLACs at all"
+    fi
+  
+    if [[ $SACDOK -eq 1 ]]; then 
+      DIALOGTEXT=$DIALOGTEXT"\n  ✓ Semplice can convert SACD ISOs OK"
+    else
+      DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot handle SACD ISOs at all"
+    fi    
+  
+    if [[ $TRKVEROK -eq 1 ]]; then 
+      DIALOGTEXT=$DIALOGTEXT"\n  ✓ Semplice can verify CD rips for accuracy"
+    else
+      DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot verify CD rips for accuracy"
+    fi
+  
+    if [[ $CUEPRINTOK -eq 0 || $SACDOK -eq 0 || $TRKVEROK -eq 0 ]]; then
+      DIALOGTEXT=$DIALOGTEXT"\n\nSee the Semplice documentation for how to potentially resolve these issues manually. You can otherwise close this terminal now."
+    else 
+      DIALOGTEXT=$DIALOGTEXT"\n\nSemplice has full functionality: click OK to return the command line."
+    fi
+  else
+    DIALOGTEXT=$DIALOGTEXT"\n\n  ✘ Your basic Semplice installation appears to be wrong."
+   DIALOGTEXT=$DIALOGTEXT"\n\nSince even the basic installation seems faulty, you're advised to check your network connection and try re-installing Semplice afresh."
+  fi
+  
+  dialog --stdout --backtitle "Semplice Software Install" --title " Software installation status " --msgbox "\n$DIALOGTEXT" 17 80 
+    
+  # 8. Finish Up
+  # -----------------------------------------------------
+  reset
+  rm -f seminst
+  exit 0
+else      # They said not to proceed
+  clear
+  echo ""
+  echo "Semplice installation aborted. You can close this terminal now."
+  exit_program
+fi
+
+# Failsafe cleanup
+# -----------------------------------------------------
+reset
+rm -f seminst
+exit 0
