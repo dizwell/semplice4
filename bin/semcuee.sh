@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemcuee: routine for editing an embedded cuesheet
+# semcuee: routine for editing an embedded cuesheet
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemtput.sh" 
+source "$CONFDIR/bin/semtput.sh" 
 unset CUESHEET
 rm -f "$CONFDIR/tmp/tmp_cuesheet.txt"
 

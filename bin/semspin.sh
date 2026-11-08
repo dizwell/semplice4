@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemspin: routine for displaying a timer/work-in-progress
+# semspin: routine for displaying a timer/work-in-progress
 # spinner, displaying variable messages
 #
 # Spinners taken from:
 # https://github.com/sindresorhus/cli-spinners
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemtput.sh" 
+source "$CONFDIR/bin/semtput.sh" 
 function spinner {
 tput civis
 tput cup 25 1; printf $LINEDRAW2%.0s {1..101}

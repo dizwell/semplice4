@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsembits: routine for renaming FLAC files so that they
+# sembits: routine for renaming FLAC files so that they
 # contain indications of their bit-depth and sampling rate
 #
 ####################################################################

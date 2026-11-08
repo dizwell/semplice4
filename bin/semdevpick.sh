@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemdevpick: Lists ROM-type devices (i.e., optical drives and
+# semdevpick: Lists ROM-type devices (i.e., optical drives and
 # similar) and allows the user to pick one to perform rips with.
 #
 ####################################################################

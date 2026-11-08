@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemsacd: wrapper for ripping an SACD from a player on the
+# semsacd: wrapper for ripping an SACD from a player on the
 # network to an ISO file. Relies on the sacd_extract program
 # written by EuFlo, whose website can be visited at:
 # https://github.com/EuFlo/sacd-ripper
@@ -9,7 +9,7 @@
 # binaries was current as at March 16th 2024.
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemtput.sh" 
+source "$CONFDIR/bin/semtput.sh" 
 badip=1  CPUARCH=$(uname -m)
 chmod +x "$CONFDIR/exec/sacd_extract"
 chmod +x "$CONFDIR/exec/sacd_extract_arm"

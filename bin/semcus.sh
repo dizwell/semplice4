@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemcus: routine for setting custom tags
+# semcus: routine for setting custom tags
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemparse.sh"
+source "$CONFDIR/bin/semparse.sh"
 
 if [[ $CUSTOMTAGS -eq 1 ]]; then
   # Check the first FLAC for writeability

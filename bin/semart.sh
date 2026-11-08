@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemart: routine for prompting for an art image that is
+# semart: routine for prompting for an art image that is
 # then embedded in the FLACs contained in a folder. Don't prompt
 # if an embedded image is already present and the script is invoked
 # as part of the all-in-one tagging process.
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemtput.sh"
-source "$CONFDIR/bin/ablibsemspin.sh"
+source "$CONFDIR/bin/semtput.sh"
+source "$CONFDIR/bin/semspin.sh"
 CURDIR=$(pwd); GOODART=0 ARTEMBEDDED=0
 
 # Check the first FLAC for writeability

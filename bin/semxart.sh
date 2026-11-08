@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemxart: routine for extracting album art from the first
+# semxart: routine for extracting album art from the first
 # FLAC in a folder and displaying it and/or saving it
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemparse.sh"
+source "$CONFDIR/bin/semparse.sh"
 OLDIFS=$IFS
 
 function extract_art {

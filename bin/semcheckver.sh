@@ -2,11 +2,11 @@
 #
 ####################################################################
 #
-# abcheckver: A function to check if software updates are available
+# semcheckver: A function to check if software updates are available
 # and to apply them if so and the user requests it.
 #
 ####################################################################
-source "$CONFDIR/bin/ablibnentput.sh"
+source "$CONFDIR/bin/semtput.sh"
 REMOTESOURCE="https://bbritten.com/software/semplice"
 NEWCONF="$HOME/.local/share/semplice2"
 
@@ -25,7 +25,7 @@ fi
 
 function perform_upgrade {
 # Fetch Semnplice components: BIN files first
-components=(abcheckver.sh ablibsemart.sh ablibsembits.sh ablibsemcaom.sh ablibsemcaos.sh ablibsemclean.sh ablibsemcolour.sh ablibsemconf.sh ablibsemconv.sh ablibsemcuee.sh ablibsemdevpick.sh ablibsemdir.sh ablibsemmaxv.sh ablibsemmeta.sh ablibsemoffpick.sh ablibsemparse.sh ablibsemquit.sh ablibsemrenum.sh ablibsemrip.sh ablibsemsacd.sh ablibsemspec.sh ablibsemspin.sh ablibsemtags.sh ablibsemtput.sh ablibsemtrks.sh ablibsemxart.sh aboscheck.sh smenudraw.sh smenuoptions.sh sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
+components=(semcheckver.sh semart.sh sembits.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semoffpick.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
 total=${#components[@]}
 count=0
 (
@@ -65,7 +65,7 @@ fi
 dialog --title "Software Components Completed" --msgbox "\\n\\nAll Semplice's components have now been updated successfully." 12 70
 }
 
-clear; source "$CONFDIR/bin/smenudraw.sh" short
+clear; source "$CONFDIR/bin/semmenudraw.sh" short
 if [[ $DOUPGRADE -eq 1 ]]; then
   dialog --title " Software Update Available " --backtitle "$BACKTITLE" --yesno "\\nA software update is available. Would you like to install it?" 10 80
   response=$?			# 0=yes, 1=no, 255=Escape key pressed

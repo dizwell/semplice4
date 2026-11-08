@@ -5,7 +5,7 @@
 #
 #  1. Get user consent to adjust system
 #  2. Configure default Dialog colour scheme
-#  3. Use aboscheck to install Semplice's software dependencies
+#  3. Use semoscheck to install Semplice's software dependencies
 #  4. Install new Semplice 2 files
 #  5. Verify installation
 #  6. Install new fonts
@@ -101,7 +101,7 @@ tput cup  3 4; tput setaf $LOGO; echo "Version $PROGVERSION"
 function downloads {
 # 4. Fetch Semplice components
 # Fetch Semnplice components: BIN files first
-components=(abcheckver.sh ablibsemart.sh ablibsembits.sh ablibsemcaom.sh ablibsemcaos.sh ablibsemclean.sh ablibsemcolour.sh ablibsemconf.sh ablibsemconv.sh ablibsemcuee.sh ablibsemcus.sh ablibsemdevpick.sh ablibsemdir.sh ablibsemmaxv.sh ablibsemmeta.sh ablibsemoffpick.sh ablibsemparse.sh ablibsemquit.sh ablibsemrenum.sh ablibsemrip.sh ablibsemsacd.sh ablibsemspec.sh ablibsemspin.sh ablibsemtags.sh ablibsemtput.sh ablibsemtrks.sh ablibsemxart.sh aboscheck.sh smenudraw.sh smenuoptions.sh sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
+components=(semcheckver.sh semart.sh sembits.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semoffpick.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
 total=${#components[@]}
 count=0
 
@@ -195,11 +195,11 @@ if [[ "$response" == [Yy]* ]]; then
     mkdir -p "$NEWCONF/tmp"
   fi
   
-  # 3. Call aboscheck.sh and get packages installed
+  # 3. Call semoscheck.sh and get packages installed
   # -----------------------------------------------------
   YPOS=$((YPOS+1)); tput cup $YPOS 1;
-  wget -q "$REMOTESOURCE/bin/aboscheck.sh" -O "$NEWCONF/bin/aboscheck.sh"
-  source "$NEWCONF/bin/aboscheck.sh" install        # Triggers a check of software dependencies and *fixes* them
+  wget -q "$REMOTESOURCE/bin/semoscheck.sh" -O "$NEWCONF/bin/semoscheck.sh"
+  source "$NEWCONF/bin/semoscheck.sh" install        # Triggers a check of software dependencies and *fixes* them
   downloads
   chown -R $USERNAME:$USERNAME "$NEWCONF" 2>/dev/null
   

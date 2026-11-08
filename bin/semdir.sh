@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemdir: routine for picking a working folder
+# semdir: routine for picking a working folder
 #
 ####################################################################
 rm -rf "$CONFDIR/art/albumart.jpg" 2>/dev/null

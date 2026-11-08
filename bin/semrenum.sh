@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemrenum: routine for renumbering tracks from a specified
+# semrenum: routine for renumbering tracks from a specified
 # starting point. Files are renamed to match, using the track
 # title as well as the new track number, if it exists.
 #

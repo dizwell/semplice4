@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemcaom: routine for merging per-track FLACs into single
+# semcaom: routine for merging per-track FLACs into single
 # whole-composition FLACs
 #
 ####################################################################
 CUMPLAYLENGTH=0; COUNTER=1
-source "$CONFDIR/bin/ablibsemtput.sh"
-source "$CONFDIR/bin/ablibsemparse.sh"
-source "$CONFDIR/bin/ablibsemspin.sh"
+source "$CONFDIR/bin/semtput.sh"
+source "$CONFDIR/bin/semparse.sh"
+source "$CONFDIR/bin/semspin.sh"
 
 function basename {
   # Uses Bash built-in, so no call to external basename utility needed
@@ -395,5 +395,5 @@ unset track_durations
 axiom_check
 if [[ $AXIOM_ERRORS -eq 0 ]]; then
   cao_merge
-  source "$CONFDIR/bin/ablibsemclean.sh"
+  source "$CONFDIR/bin/semclean.sh"
 fi

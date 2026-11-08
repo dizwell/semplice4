@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemoffpick: Simple input form allowing user to specify
+# semoffpick: Simple input form allowing user to specify
 # a manual optical drive read offset, in the range -9999 to +9999
 ####################################################################
 NEGVALUE=0
