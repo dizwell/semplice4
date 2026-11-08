@@ -7,7 +7,7 @@
 # https://absolutelybaching.com/semplice-version-2-the-user-manual/
 #
 # Copyright © Howard Rogers 2019-2026
-# Version 2.14 - 20th June 2026(??)
+# Version 4.00 - release date not yet set (??)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 echo -ne "\033]0;Semplice: The Digital Music Manager\007"
 CONFDIR="$HOME/.local/share/semplice4"  OLDIFS=$IFS
 PROGFILE="${BASH_SOURCE[0]}"                      # This script's own path (a symlink such as /usr/local/bin/semplice is fine)
-if ! sed -n '10p' "$PROGFILE" | grep -q '?'; then PROGVERSION="2.14"; else PROGVERSION="60613-beta"; fi
+if ! sed -n '10p' "$PROGFILE" | grep -q '?'; then PROGVERSION="4.00"; else PROGVERSION="4.00-beta"; fi
 mkdir -p "$CONFDIR" "$CONFDIR/txt" "$CONFDIR/bin" "$CONFDIR/tmp" "$CONFDIR/art" "$CONFDIR/rip" 2>/dev/null	   # Create a folder structure, if it doesn't already exist (and suppress errors if it does!)
 
 trap ctrl_c INT  # Trap Ctrl+C if issued and run the ctrl_c function
