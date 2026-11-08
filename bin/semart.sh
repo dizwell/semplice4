@@ -86,7 +86,7 @@ if [[ $GOODIMG -gt 0 ]]; then
   done
   IFS=$OLDIFS
   
-  if ! [[ -z $DELETE_ART && $DELETE_ART -eq 1 ]]; then 
+  if [[ $DELETE_ART -eq 1 ]]; then              # semparse.sh always sets DELETE_ART to 0 or 1 
     check_art
     if [[ $ARTEMBEDDED -eq 1 ]]; then 
       rm -f "$ARTFILE" >/dev/null
