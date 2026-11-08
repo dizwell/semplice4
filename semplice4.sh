@@ -52,7 +52,7 @@
 #       Gecko. Added support for Void Linux                            30.06.26(??)
 # ==============================================================================================================
 echo -ne "\033]0;Semplice: The Digital Music Manager\007"
-CONFDIR="$HOME/.local/share/semplice2"  OLDIFS=$IFS
+CONFDIR="$HOME/.local/share/semplice4"  OLDIFS=$IFS
 INSTALLDIR="$(which semplice2.sh)"
 if ! sed -n '10p' "$INSTALLDIR" | grep -q '?'; then PROGVERSION="2.14"; else PROGVERSION="60613-beta"; fi
 mkdir -p "$CONFDIR" "$CONFDIR/txt" "$CONFDIR/bin" "$CONFDIR/tmp" "$CONFDIR/art" "$CONFDIR/rip" 2>/dev/null	   # Create a folder structure, if it doesn't already exist (and suppress errors if it does!)

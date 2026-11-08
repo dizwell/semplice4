@@ -45,7 +45,7 @@ else
 fi
 
 [[ -z $2 ]] && set -- "$1" "meta"
-source "$HOME/.local/share/semplice2/txt/programvariables.txt"
+source "$CONFDIR/txt/programvariables.txt"
 
 dialog --backtitle "Semplice FLAC Tagging" --title " Pick a source for metadata prompts " --yes-label " Reuse previous submission " --no-label " Read existing metadata " --yesno "\n\nDo you want to edit the existing metadata, if there is any? Or would you prefer to re-use the same metadata you supplied the last time Semplice was used?" 10 90
 exitStatus=$?
