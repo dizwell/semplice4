@@ -116,7 +116,7 @@ if [[ $BOOSTPERFORMED -eq 1 ]]; then                                   # Ditto! 
 fi
 
 if [[ $DELETESOURCE -eq 1 && $BOOSTPERFORMED -eq 1 ]]; then
-  find . -type f -name "*.flac" ! -name '+*-dB-*' -exec rm -rf {} \;  # deletes the source files because they don't include a -dB- prefix.
+  find . -maxdepth 1 -type f -name "*.flac" ! -name '+*-dB-*' -exec rm -f {} \;  # deletes the source files because they don't include a -dB- prefix.
   for f in *.flac; do
     mv "$f" "${f/*-dB-/}"                                             # removes the dB prefix from the new files, leaving them named as the old source ones were
   done
