@@ -5,8 +5,8 @@
 # prerequisites are present.
 #
 ####################################################################
-if [[ -f "$CONFDIR/bin/ablibsemtput.sh" ]]; then
-  source "$CONFDIR/bin/ablibsemtput.sh"
+if [[ -f "$CONFDIR/bin/semtput.sh" ]]; then
+  source "$CONFDIR/bin/semtput.sh"
 fi
 if [[ -z $1 ]]; then set -- "checkonly"; fi
 if [[ $1 == "install" ]]; then

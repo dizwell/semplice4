@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 ####################################################################
-# smenudraw: Clear screen drawing routine
+# semmenudraw: Clear screen drawing routine
 ####################################################################
 rm -f "$CONFDIR/art/albumart.jpg" 2>/dev/null
 rm -f "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null
-source "$CONFDIR/bin/ablibsemparse.sh"
-source "$CONFDIR/bin/ablibsemtput.sh"
+source "$CONFDIR/bin/semparse.sh"
+source "$CONFDIR/bin/semtput.sh"
 if [[ $PROGVERSION == *"beta"* ]]; then LOGO_PATH="$CONFDIR/art/sempliceicosmallbeta.png"; else LOGO_PATH="$CONFDIR/art/sempliceicosmall.png"; fi
 if [[ -z $LOGOSIZE ]]; then LOGOSIZE="110x110"; fi; LOGOWIDTH="${LOGOSIZE%x*}"
 if [[ -z $LOGOPOS ]]; then LOGOPOS=0; fi

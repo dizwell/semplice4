@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemparse: routine for parsing the persistent configuration
+# semparse: routine for parsing the persistent configuration
 # file and deriving sensible values from whatever is supplied there.
 #
 ####################################################################

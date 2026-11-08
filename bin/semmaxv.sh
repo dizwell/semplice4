@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemmaxv: routine for analysing FLACs for possible
+# semmaxv: routine for analysing FLACs for possible
 # non-distorting volume boosts and applying them if asked.
 #
 ####################################################################
 CANBEBOOSTED=0 DELETESOURCE=0 BOOSTPERFORMED=0
-source "$CONFDIR/bin/ablibsemtput.sh" 
-source "$CONFDIR/bin/ablibsemspin.sh"
-source "$CONFDIR/bin/ablibsemparse.sh"
+source "$CONFDIR/bin/semtput.sh" 
+source "$CONFDIR/bin/semspin.sh"
+source "$CONFDIR/bin/semparse.sh"
 
 is_numeric() {
   [[ $1 =~ ^-?[0-9]+([.][0-9]+)?$ ]]

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemconv: routine for converting audio files between various
+# semconv: routine for converting audio files between various
 # codecs.
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemspin.sh"
-source "$CONFDIR/bin/ablibsemparse.sh"
+source "$CONFDIR/bin/semspin.sh"
+source "$CONFDIR/bin/semparse.sh"
 
 unset INCODECLIST; unset OUTCODECLIST
 INPUTFORMAT=""
@@ -327,7 +327,7 @@ if [[ $OUTPUTFORMAT == "FLAC" ]]; then
     tag=COMMENT; metaflac $UTFCHARS "--set-tag=$tag=$COMMENT" "$f" 2>/dev/null
     tag=DESCRIPTION; metaflac $UTFCHARS "--remove-tag=$tag" "$f" 2>/dev/null
   done
-  source "$CONFDIR/bin/ablibsemclean.sh"
+  source "$CONFDIR/bin/semclean.sh"
   ALREADYCLEAN=1
 fi
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemspec: routine for displaying an audio spectrum
+# semspec: routine for displaying an audio spectrum
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemtput.sh" 
-source "$CONFDIR/bin/ablibsemspin.sh"
+source "$CONFDIR/bin/semtput.sh" 
+source "$CONFDIR/bin/semspin.sh"
 rm -rf "$CONFDIR/tmp/spectrum.png" "$CONFDIR/tmp/spectrum.flac" 2>/dev/null
 
 function basename {

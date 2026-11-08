@@ -260,4 +260,4 @@ rm -f "$CONFDIR/tmp/tagparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/customtagparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/superparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/audioparams" 2>/dev/null
-source "$CONFDIR/bin/ablibsemparse.sh"
+source "$CONFDIR/bin/semparse.sh"

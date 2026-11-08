@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemtags: routine for setting principle tags for whole album
+# semtags: routine for setting principle tags for whole album
 # Note we use the set-tags-from-file here. That's because we're
 # prompting for the tags in the right order, and hence the order
 # of the tags in the text file is known.
 #
 ####################################################################
 BREAKME=0
-source "$CONFDIR/bin/ablibsemtput.sh" 
-source "$CONFDIR/bin/ablibsemparse.sh" 
-source "$CONFDIR/bin/ablibsemspin.sh"
+source "$CONFDIR/bin/semtput.sh" 
+source "$CONFDIR/bin/semparse.sh" 
+source "$CONFDIR/bin/semspin.sh"
 
 function basename {
   # Uses Bash built-in, so no call to external basename utility needed

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemmeta: routine for displaying existing metadata for all
+# semmeta: routine for displaying existing metadata for all
 # tracks in working folder
 #
 ####################################################################

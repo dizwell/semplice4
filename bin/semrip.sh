@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemrip: routine for ripping a CD to WAV files on disk and
+# semrip: routine for ripping a CD to WAV files on disk and
 # converting them to FLAC. Note that the script is really just
 # a wrapper for cdparanoia, which means your rips favour accuracy
 # over speed, but there are no fancy features such as fetching
@@ -18,8 +18,8 @@
 # not running on macOS or using hyper-accurate ripping)
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemtput.sh" 
-source "$CONFDIR/bin/ablibsemparse.sh" 
+source "$CONFDIR/bin/semtput.sh" 
+source "$CONFDIR/bin/semparse.sh" 
 CD_NOTPRESENT=1 NODEVICE=0
 if [[ -z $OPTICAL_DEVICE ]]; then OPTICAL_DEVICE=/dev/cdrom; fi
 if [[ -z $DELETE_WAV ]]; then DELETE_WAV=1; fi

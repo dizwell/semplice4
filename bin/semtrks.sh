@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemtrks: routine for setting per-track TITLE tags
+# semtrks: routine for setting per-track TITLE tags
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemparse.sh" 
+source "$CONFDIR/bin/semparse.sh" 
 # We count the FLACs in the present folder, and dynamically construct
 # an input form that prompts for that many TITLE tags.
 # Check the first FLAC for writeability
@@ -120,7 +120,7 @@ done
 
 if [[ $AUTOMODE -eq 1 ]]; then
   if [[ $BREAKME -eq 0 ]]; then
-    source "$CONFDIR/bin/ablibsemclean.sh"
+    source "$CONFDIR/bin/semclean.sh"
   fi
 fi
 }

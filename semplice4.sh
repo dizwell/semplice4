@@ -72,7 +72,7 @@ function dirname {
 }
 
 function parse_config {
-source "$CONFDIR/bin/ablibsemparse.sh"
+source "$CONFDIR/bin/semparse.sh"
 }
 
 function exit_program {
@@ -88,8 +88,8 @@ function ctrl_c() {
 
 function smenuoptions {
 tput civis
-source "$CONFDIR/bin/smenudraw.sh"
-source "$CONFDIR/bin/smenuoptions.sh"
+source "$CONFDIR/bin/semmenudraw.sh"
+source "$CONFDIR/bin/semmenuoptions.sh"
 }
 
 function menu_display {
@@ -101,15 +101,15 @@ clear; smenuoptions tag; clear
 # ===========================================================================================================
 clear
 
-if ! [[ -f "$CONFDIR/bin/ablibsemtput.sh" ]]; then 
-  wget -q "https://bbritten.com/software/semplice/bin/ablibsemtput.sh" -O "$CONFDIR/bin/ablibsemtput.sh";
+if ! [[ -f "$CONFDIR/bin/semtput.sh" ]]; then 
+  wget -q "https://bbritten.com/software/semplice/bin/semtput.sh" -O "$CONFDIR/bin/semtput.sh";
 else
-  source "$CONFDIR/bin/ablibsemtput.sh" 
+  source "$CONFDIR/bin/semtput.sh" 
 fi
 
 export DIALOGRC="$CONFDIR/txt/absemdialog.conf"		# Sets the colour scheme for dialogs
 tput civis; printf '\e[8;28;103t'			# Setting terminal virtual size to 103x28, regardless of what it's actually set to
-source "$CONFDIR/bin/aboscheck.sh"
+source "$CONFDIR/bin/semoscheck.sh"
 source "$CONFDIR/txt/programvariables.txt"
 
 parse_config

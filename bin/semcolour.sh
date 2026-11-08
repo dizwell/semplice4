@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemcolour: routine for allowing program display elements to 
+# semcolour: routine for allowing program display elements to 
 # be coloured in a user-configurable manner
 #
 ####################################################################

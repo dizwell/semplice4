@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# ablibsemcaos: routine for splitting a single-file SuperFLAC into
+# semcaos: routine for splitting a single-file SuperFLAC into
 # a bunch of separate per-track FLACs. If the cuesheet is external,
 # embed it. If it's embedded already, just use that to split the
 # file.
 #
 ####################################################################
-source "$CONFDIR/bin/ablibsemspin.sh"
-source "$CONFDIR/bin/ablibsemparse.sh"
+source "$CONFDIR/bin/semspin.sh"
+source "$CONFDIR/bin/semparse.sh"
 
 function basename {
   # Uses Bash built-in, so no call to external basename utility needed
