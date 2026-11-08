@@ -1,28 +1,16 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# semquit: routine for exiting, with or without tag cleaning
-# Note that the aim is to ensure only a specific set of tags, stored
-# in a specific order, are preserved after cleaning. This means the
-# cleaning code is a bit laborious, crafting things in a particular
-# way, rather than using metaflac's built-in export-to-file and
-# import-from-file capabilities. That would not allow us to have'
-# quite the degree of control over tagging (without a lot of sed
-# work to knock the export file into shape, anyway).
+# semquit: routine for exiting, with or without tag cleaning.
+# The cleaning itself is done by semclean.sh (the same code the K
+# menu option uses). Quitting with post-processing adds a warning
+# about any files with checksum mismatches, and renames files to
+# include bit-depth and sample rate if NAMEBITS is set.
 #
 ####################################################################
-source "$CONFDIR/bin/semspin.sh" 
-source "$CONFDIR/bin/semtput.sh" 
-source "$CONFDIR/bin/semparse.sh" 
-TRACKCOUNT=$(ls *.flac | wc -l)  NOPROCESS=0
-
 source "$CONFDIR/bin/semspin.sh"
-
-ALBUMART=$CONFDIR/tmp/cleanart.jpg                                      # Initialise temporary work files
-CUEFILE=$CONFDIR/tmp/cleancue.txt
-TAGFILE=$CONFDIR/tmp/cleantag.txt
-rm -f "$ALBUMART" 2>/dev/null
-rm -f "$CUEFILE" 2>/dev/null
+source "$CONFDIR/bin/semtput.sh"
+source "$CONFDIR/bin/semparse.sh"
 
 function nice_exit {
 # Clean up any temporary working files that may have been produced
@@ -33,149 +21,40 @@ tput cvvis
 exit 0
 }
 
-function clean_tags
-{
-COUNTFLAC=$(ls *.flac | wc -l)
-if [[ $COUNTFLAC -eq 0 ]]; then return; fi
-# Extract album art from the first Flac found
-f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)
-metaflac $UTFCHARS --export-picture-to="$ALBUMART" "$f" 2>/dev/null     # Suppressing errors in case they haven't added album art or a cuesheet and hence there's nothing to export
-
-for f in *.flac; do
-  BITDEPTH=$(metaflac --list "$f" | $GREPPROG -a bits-per-sample | awk '{print $2}')
-
-  # Fetch existing metadata into variables.
-  # ---------------------------------------------------------------------------------
-  COMPOSER=$(get_tag Artist "$f")
-  ARTIST=$(get_tag Artist "$f")
-  ALBUM=$(get_tag Album "$f")
-  TRACKNUMBER=$(get_tag TRACKNUMBER "$f")
-  TITLE=$(get_tag Title "$f")
-  GENRE=$(get_tag Genre "$f")
-  COMMENT=$(get_tag Comment "$f")
-  PERFORMER=$(get_tag Performer "$f")
-  DESCRIPTION=$(get_tag Description "$f")
-  YEAR=$(get_tag Date "$f")
-  CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f"); CUESHEET="${CUESHEET#*=}"     # Strip only the leading CUESHEET=: a cuesheet keeps its line breaks
-
-  if [[ ! -z $CUESHEET ]]; then
-    echo "$CUESHEET" > "$CUEFILE"
-  fi
-
-  if [[ -z $COMMENT ]]; then                                            # Some tagging software swaps COMMENT and DESCRIPTION. We want to be consistent users of COMMENT, so swap them back if needed.
-    if [[ ! -z $DESCRIPTION ]]; then
-      tag=COMMENT;metaflac $UTFCHARS "--set-tag=$tag=$DESCRIPTION" "$f"
-    fi
-  fi
-
-  if [[ $CUSTOMTAGS -eq 1 ]]; then
-    CTVALUE1=$(get_tag "$CUSTOMTAG1" "$f")
-    CTVALUE2=$(get_tag "$CUSTOMTAG2" "$f")
-    CTVALUE3=$(get_tag "$CUSTOMTAG3" "$f")
-    CTVALUE4=$(get_tag "$CUSTOMTAG4" "$f")
-    CTVALUE5=$(get_tag "$CUSTOMTAG5" "$f")
-    CTVALUE6=$(get_tag "$CUSTOMTAG6" "$f")
-    CTVALUE7=$(get_tag "$CUSTOMTAG7" "$f")
-    CTVALUE8=$(get_tag "$CUSTOMTAG8" "$f")
-    CTVALUE9=$(get_tag "$CUSTOMTAG9" "$f")
-  fi
-
-  # Part of cleaning is to do a hash comparison: newly-computed with built-in
-  # ---------------------------------------------------------------------------------
-  if [[ $BITDEPTH -eq 16 ]]; then
-    MD5HASH=$(ffmpeg -i "$f" -c:a pcm_s16le -map 0:a -f md5 - 2>/dev/null | $SEDPROG 's/.*=//g')
-  elif [[ $BITDEPTH -eq 24 ]]; then
-    MD5HASH=$(ffmpeg -i "$f" -c:a pcm_s24le -map 0:a -f md5 - 2>/dev/null | $SEDPROG 's/.*=//g')
-  fi
-  # Read the Flac-computed MD5 Hash, too
-  # ---------------------------------------------------------------------------------
-  FLACHASH=$(metaflac --show-md5sum "$f")
-
-  # If the Flac hash isn't the same as the one ffmpeg has calculated, prepare to warn and either try a fix or quit
-  # ---------------------------------------------------------------------------------
-  if [[ $MD5HASH != $FLACHASH ]]; then
-    CORRUPTFLAC=1;
-  else
-    CORRUPTFLAC=0;
-  fi
-
-  # Now save the variables' values into a track-specific text file
-  # ---------------------------------------------------------------------------------
-  echo -n "COMPOSER=" > "$TAGFILE"; echo "$COMPOSER" >> "$TAGFILE"
-  echo -n "ARTIST=" >> "$TAGFILE"; echo "$ARTIST" >> "$TAGFILE"
-  echo -n "ALBUM=" >> "$TAGFILE"; echo "$ALBUM" >> "$TAGFILE"
-  echo -n "TRACKNUMBER=" >> "$TAGFILE"; echo "$TRACKNUMBER" >> "$TAGFILE"
-  echo -n "TITLE=" >> "$TAGFILE"; echo "$TITLE" >> "$TAGFILE"
-  echo -n "GENRE=" >> "$TAGFILE"; echo "$GENRE" >> "$TAGFILE"
-  echo -n "COMMENT=" >> "$TAGFILE"; echo "$COMMENT" >> "$TAGFILE"
-  echo -n "PERFORMER=" >> "$TAGFILE"; echo "$PERFORMER" >> "$TAGFILE"
-  echo -n "DATE=" >> "$TAGFILE"; echo "$YEAR" >> "$TAGFILE"
-  echo -n "TAGDATE=" >> "$TAGFILE"; echo "$(date +%s)" >> "$TAGFILE"
-
-  if [[ $CUSTOMTAGS -eq 1 ]]; then
-    if [[ $CTVALUE1 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG1=" >> "$TAGFILE"; echo "$CTVALUE1" >> "$TAGFILE"; fi
-    if [[ $CTVALUE2 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG2=" >> "$TAGFILE"; echo "$CTVALUE2" >> "$TAGFILE"; fi
-    if [[ $CTVALUE3 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG3=" >> "$TAGFILE"; echo "$CTVALUE3" >> "$TAGFILE"; fi
-    if [[ $CTVALUE4 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG4=" >> "$TAGFILE"; echo "$CTVALUE4" >> "$TAGFILE"; fi
-    if [[ $CTVALUE5 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG5=" >> "$TAGFILE"; echo "$CTVALUE5" >> "$TAGFILE"; fi
-    if [[ $CTVALUE6 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG6=" >> "$TAGFILE"; echo "$CTVALUE6" >> "$TAGFILE"; fi
-    if [[ $CTVALUE7 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG7=" >> "$TAGFILE"; echo "$CTVALUE7" >> "$TAGFILE"; fi
-    if [[ $CTVALUE8 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG8=" >> "$TAGFILE"; echo "$CTVALUE8" >> "$TAGFILE"; fi
-    if [[ $CTVALUE9 != "XqXXqXX" ]]; then echo -n "$CUSTOMTAG9=" >> "$TAGFILE"; echo "$CTVALUE9" >> "$TAGFILE"; fi
-  fi
-
-  # Now wipe all existing tags then re-load from the just-created text file
-  # ---------------------------------------------------------------------------------
-  metaflac $UTFCHARS --remove-all "$f"
-
-  if [[ -f $TAGFILE ]]; then
-    metaflac $UTFCHARS --import-tags-from="$TAGFILE" "$f"
-  fi
-
-  if [[ -f $CUEFILE ]]; then
-    metaflac $UTFCHARS --set-tag-from-file=Cuesheet="$CUEFILE" "$f"
-  fi
-
-  if [[ -f $ALBUMART ]]; then
-    metaflac $UTFCHARS --import-picture-from="$ALBUMART" "$f"
-  fi
-
-done
-
-if [[ $CORRUPTFLAC -eq 1 ]]; then
-  dialog --stdout --backtitle "Semplice Digital Music Manager" --title " Possibly Corrupt Files Detected! " --msgbox "\nOne or more files has been detected to have an MD5 Checksum mismatch. \n\nCheck your backups to resolve!" 10 80
-  NOPROCESS=1
+function warn_corrupt {
+# semclean.sh lists every FLAC whose audio MD5 does not match its stored checksum
+local LIST="$CONFDIR/tmp/corruptflacs.txt" FILES COUNT
+if [[ -s $LIST ]]; then
+  COUNT=$(wc -l < "$LIST" | xargs)
+  FILES=$(head -n 8 "$LIST")
+  if [[ $COUNT -gt 8 ]]; then FILES="$FILES\n...and $((COUNT-8)) more"; fi
+  dialog --stdout --backtitle "Semplice Digital Music Manager" --title " Possibly Corrupt Files Detected! " --msgbox "\nThese files have an MD5 checksum mismatch:\n\n$FILES\n\nCheck your backups to resolve!" 18 80
 fi
 }
 
-function clean_up {
-# Add bitdepth and sampling rate to files, if NAMEBITS is set
-for f in *.flac; do                                                                                      # Second loop required, because filename changes caused by the first would invalidate file renaming here
+function rename_bits {
+# Add bitdepth and sampling rate to file names, if NAMEBITS is set
+for f in *.flac; do
   BITDEPTH=$(metaflac $UTFCHARS --list "$f" | $GREPPROG bits-per-sample | awk '{print $2}')
   SAMPLERATE=$(metaflac $UTFCHARS --list "$f" | $GREPPROG sample_rate | awk '{print $2}')
   OLDFILENAME="${f%.*}"
-  if ! [[ $f == *"-$SAMPLERATE"* ]]; then                                                    # Only rename if the file doesn't already have the bit/sample digits in it
-    if [[ $NAMEBITS -eq 1 ]]; then                                                                         # And only rename if the configuration file says to do so
+  if ! [[ $f == *"-$SAMPLERATE"* ]]; then                                     # Only rename if the file doesn't already have the bit/sample digits in it
+    if [[ $NAMEBITS -eq 1 ]]; then                                            # And only rename if the configuration file says to do so
       NEWFILENAME="$OLDFILENAME-$BITDEPTH-$SAMPLERATE".flac
       mv "$f" "$NEWFILENAME"
     fi
   fi
 done
-
-rm -f "$CONFDIR/tmp/cleanart.jpg" 2>/dev/null
-rm -f "$CONFDIR/tmp/cleancue.txt" 2>/dev/null
-rm -f "$CONFDIR/tmp/cleantag.txt" 2>/dev/null
-if [ $countflac -gt 0 ]; then
-  dialog --stdout --backtitle "Semplice Digital Music Manager" --title " Quitting Semplice! " --msgbox "\nAll metadata tags have been cleaned.\n\nThank you for using Semplice!" 10 80
-fi
 }
 
 if [[ $1 == "clean" ]]; then
   countflac=$(find . -maxdepth 1 -type f -name "*.flac" | wc -l)
   if [[ $countflac -gt 0 ]]; then
-    MESSAGE="Cleaning tags on exit. Please wait…  "
-    clean_tags & spinner $!
-    clean_up
+    source "$CONFDIR/bin/semclean.sh"                                         # The same cleaning as the K menu option
+    warn_corrupt
+    rename_bits
+    rm -f "$CONFDIR/tmp/cleanart.jpg" "$CONFDIR/tmp/cleancue.txt" "$CONFDIR/tmp/cleantag.txt" 2>/dev/null
+    dialog --stdout --backtitle "Semplice Digital Music Manager" --title " Quitting Semplice! " --msgbox "\nAll metadata tags have been cleaned.\n\nThank you for using Semplice!" 10 80
   fi
 fi
 

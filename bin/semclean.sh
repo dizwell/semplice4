@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# semclean: routine for cleaning a set of tags without
-# quitting the program. Same code as 'quit', but without the
-# program terminating! Also, no corruption checking.
+# semclean: routine for cleaning a set of tags. Used directly by
+# the K menu option and by semquit.sh when quitting with
+# post-processing, so there is only one copy of the cleaning code.
+# Any file whose audio MD5 does not match the checksum stored in
+# the FLAC is listed in $CONFDIR/tmp/corruptflacs.txt; it is up to
+# the caller whether to warn about it (semquit.sh does).
 #
 ####################################################################
 TRACKCOUNT=$(ls *.flac | wc -l)  NOPROCESS=0
@@ -13,8 +16,10 @@ source "$CONFDIR/bin/semspin.sh"
 ALBUMART=$CONFDIR/tmp/cleanart.jpg                                      # Initialise temporary work files
 CUEFILE=$CONFDIR/tmp/cleancue.txt
 TAGFILE=$CONFDIR/tmp/cleantag.txt
+CORRUPTLIST=$CONFDIR/tmp/corruptflacs.txt
 rm -f "$ALBUMART" 2>/dev/null
 rm -f "$CUEFILE" 2>/dev/null
+rm -f "$CORRUPTLIST" 2>/dev/null
 
 function clean_tags
 {
@@ -71,6 +76,7 @@ for f in *.flac; do
 
   # Part of cleaning is to do a hash comparison: newly-computed with built-in
   # ---------------------------------------------------------------------------------
+  MD5HASH=""                                                            # Reset per file, so one file's hash can never be compared with another's
   if [[ $BITDEPTH -eq 16 ]]; then
     MD5HASH=$(ffmpeg -i "$f" -c:a pcm_s16le -map 0:a -f md5 - 2>/dev/null | $SEDPROG 's/.*=//g')
   elif [[ $BITDEPTH -eq 24 ]]; then
@@ -83,10 +89,10 @@ for f in *.flac; do
 
   # If the Flac hash isn't the same as the one ffmpeg has calculated, prepare to warn and either try a fix or quit
   # ---------------------------------------------------------------------------------
-  if [[ $MD5HASH != $FLACHASH ]]; then
-    CORRUPTFLAC=1;
-  else
-    CORRUPTFLAC=0;
+  # Only compare when a hash was actually computed (16- and 24-bit files). Every mismatch is
+  # recorded, not just the last one.
+  if [[ -n $MD5HASH && $MD5HASH != "$FLACHASH" ]]; then
+    echo "$f" >> "$CORRUPTLIST"
   fi
 
   # Now save the variables' values into a track-specific text file
