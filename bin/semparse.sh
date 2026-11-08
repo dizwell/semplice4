@@ -5,6 +5,29 @@
 # file and deriving sensible values from whatever is supplied there.
 #
 ####################################################################
+
+# --------------------------------------------------------------------------------------------
+# Shared tag helpers (semparse.sh is sourced by every script that reads tags)
+# --------------------------------------------------------------------------------------------
+# flatten_lines: reads text on stdin and returns it as a single line. Each line break becomes
+# one space; spaces either side of a join are trimmed so words never abut and never double up;
+# blank lines and carriage returns are dropped.
+function flatten_lines {
+awk '{ sub(/\r$/, ""); sub(/^[ \t]+/, ""); sub(/[ \t]+$/, "")
+       if ($0 == "") next
+       out = (n++ ? out " " : "") $0 }
+     END { printf "%s", out }'
+}
+
+# get_tag NAME FILE: prints the value of tag NAME in FILE as a single line. Only the leading
+# "NAME=" is removed, so values containing '=' survive intact. Repeated tags and multi-line
+# values are joined with single spaces (see flatten_lines). Not for CUESHEET, which must keep
+# its line breaks.
+function get_tag {
+metaflac $UTFCHARS --show-tag="$1" "$2" 2>/dev/null | awk -v pre="$1=" '
+  { if (tolower(substr($0, 1, length(pre))) == tolower(pre)) $0 = substr($0, length(pre) + 1); print }' | flatten_lines
+}
+
 if [[ -f $CONFDIR/txt/semplice.conf ]]; then
   source "$CONFDIR/txt/semplice.conf"                       # Read the configuration file and pick up all its values
 
