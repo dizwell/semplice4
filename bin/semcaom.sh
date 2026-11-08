@@ -360,7 +360,7 @@ rm "cuesheet.cue"
 # Offer to delete the individual FLAC files, leaving only the SuperFLAC
 # ------------------------------------------------------------------------------------------
 rm -rf "/$CONFDIR/tmp/cao-files.txt"
-find . -type f -name '*.flac' ! -name '*superflac*' | sort > "/$CONFDIR/tmp/cao-files.txt"
+find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' | sort > "/$CONFDIR/tmp/cao-files.txt"
 $SEDPROG -i 's/.\///g' "/$CONFDIR/tmp/cao-files.txt"     # Bit of trimming to remove leading periods and slashes.
 
 if [ $(ls *superflac* | wc -l) -ge 1 ]; then			# If, for any reason, a superflac is not generated, then don't delete the source files!
@@ -369,10 +369,10 @@ if [ $(ls *superflac* | wc -l) -ge 1 ]; then			# If, for any reason, a superflac
     exitStatus=$?
     if [[ $exitStatus -eq 255 || $exitStatus -eq 3 ]]; then break; fi     # Don't do anything if they hit ESC to cancel, or answer 'No'
     if [[ $exitStatus -eq 0 ]]; then                                          # True if they've taken the 'Yes' option
-      find . -type f -name '*.flac' ! -name '*superflac*' -exec rm -- '{}' +
+      find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' -exec rm -- '{}' +
     fi
   elif [[ $AUTODELETE -eq 1 ]]; then
-    find . -type f -name '*.flac' ! -name '*superflac*' -exec rm -- '{}' +
+    find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' -exec rm -- '{}' +
   fi
 fi
 
