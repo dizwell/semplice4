@@ -205,7 +205,7 @@ if [[ $BREAKME -eq 0 ]]; then
     else
       # The new performers.txt file contents are then loaded into a COMMENTS variable for
       # actual writing of the tags, done later
-      COMMENTS=$(cat "$CONFDIR/tmp/performers.text")
+      COMMENTS=$(flatten_lines < "$CONFDIR/tmp/performers.text")     # One line only: line breaks become single spaces
       
       # On macOS, if there are accented characters, they need to be forced to be 'composed Unicode'
       # rather than 'decomposed'.

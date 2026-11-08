@@ -46,17 +46,17 @@ for f in *.flac; do
 
   # Fetch existing metadata into variables.
   # ---------------------------------------------------------------------------------
-  COMPOSER=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g')
-  ARTIST=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g')
-  ALBUM=$(metaflac $UTFCHARS --show-tag=Album "$f" | $SEDPROG 's/.*=//g')
-  TRACKNUMBER=$(metaflac $UTFCHARS --show-tag=TRACKNUMBER "$f" | $SEDPROG 's/.*=//g')
-  TITLE=$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')
-  GENRE=$(metaflac $UTFCHARS --show-tag=Genre "$f" | $SEDPROG 's/.*=//g')
-  COMMENT=$(metaflac $UTFCHARS --show-tag=Comment "$f" | $SEDPROG 's/.*=//g')
-  PERFORMER=$(metaflac $UTFCHARS --show-tag=Performer "$f" | $SEDPROG 's/.*=//g')
-  DESCRIPTION=$(metaflac $UTFCHARS --show-tag=Description "$f" | $SEDPROG 's/.*=//g')
-  YEAR=$(metaflac $UTFCHARS --show-tag=Date "$f" | $SEDPROG 's/.*=//g')
-  CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f"  | $SEDPROG 's/.*=//g')
+  COMPOSER=$(get_tag Artist "$f")
+  ARTIST=$(get_tag Artist "$f")
+  ALBUM=$(get_tag Album "$f")
+  TRACKNUMBER=$(get_tag TRACKNUMBER "$f")
+  TITLE=$(get_tag Title "$f")
+  GENRE=$(get_tag Genre "$f")
+  COMMENT=$(get_tag Comment "$f")
+  PERFORMER=$(get_tag Performer "$f")
+  DESCRIPTION=$(get_tag Description "$f")
+  YEAR=$(get_tag Date "$f")
+  CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f"); CUESHEET="${CUESHEET#*=}"     # Strip only the leading CUESHEET=: a cuesheet keeps its line breaks
 
   if [[ ! -z $CUESHEET ]]; then
     echo "$CUESHEET" > "$CUEFILE"
@@ -69,15 +69,15 @@ for f in *.flac; do
   fi
 
   if [[ $CUSTOMTAGS -eq 1 ]]; then
-    CTVALUE1=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG1" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE2=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG2" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE3=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG3" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE4=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG4" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE5=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG5" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE6=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG6" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE7=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG7" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE8=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG8" "$f" | $SEDPROG 's/.*=//g')
-    CTVALUE9=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG9" "$f" | $SEDPROG 's/.*=//g')
+    CTVALUE1=$(get_tag "$CUSTOMTAG1" "$f")
+    CTVALUE2=$(get_tag "$CUSTOMTAG2" "$f")
+    CTVALUE3=$(get_tag "$CUSTOMTAG3" "$f")
+    CTVALUE4=$(get_tag "$CUSTOMTAG4" "$f")
+    CTVALUE5=$(get_tag "$CUSTOMTAG5" "$f")
+    CTVALUE6=$(get_tag "$CUSTOMTAG6" "$f")
+    CTVALUE7=$(get_tag "$CUSTOMTAG7" "$f")
+    CTVALUE8=$(get_tag "$CUSTOMTAG8" "$f")
+    CTVALUE9=$(get_tag "$CUSTOMTAG9" "$f")
   fi
 
   # Part of cleaning is to do a hash comparison: newly-computed with built-in
