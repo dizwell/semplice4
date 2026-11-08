@@ -792,4 +792,4 @@ GREPPROG=$GREPPROG
 DATEPROG=$DATEPROG
 MD5PROG=$MD5PROG
 FDPROG=$FDPROG
-CONVPROG=$CONVERTER" > "$HOME/.local/share/semplice2/txt/programvariables.txt"
+CONVPROG=$CONVERTER" > "$CONFDIR/txt/programvariables.txt"

@@ -5,7 +5,6 @@
 # be coloured in a user-configurable manner
 #
 ####################################################################
-CONFDIR="$HOME/.local/share/semplice2"
 CONFFILE="$CONFDIR/txt/semplice.conf"
 
 # Read parameters from an existing config file, if present

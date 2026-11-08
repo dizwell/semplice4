@@ -10,7 +10,7 @@
 #
 ####################################################################
 source "$CONFDIR/bin/ablibsemtput.sh" 
-badip=1  CONFDIR="$HOME/.local/share/semplice2"  CPUARCH=$(uname -m)
+badip=1  CPUARCH=$(uname -m)
 chmod +x "$CONFDIR/exec/sacd_extract"
 chmod +x "$CONFDIR/exec/sacd_extract_arm"
 chmod +x "$CONFDIR/exec/sacd_extract-macintel"
