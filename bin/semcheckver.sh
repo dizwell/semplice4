@@ -39,7 +39,7 @@ done
 ) | dialog --title "Updating Semplice Binary Components" --gauge "\\n\\nDownloading fresh copies of Semplice's own software components: this might take some time..." 12 70
 
 # Art files next
-components=(Luxi_License.txt luximr.ttf sempliceco.png sempliceico.svg sempliceico.xpm)
+components=(Luxi_License.txt luximr.ttf sempliceco.png sempliceico.svg)
 total=${#components[@]}
 count=0
 (

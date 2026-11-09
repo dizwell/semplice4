@@ -9,10 +9,6 @@
 # are values read-in from the existing configuration file
 #
 ####################################################################
-SCREENSIZE=$(xdpyinfo | $GREPPROG dimensions | $SEDPROG -r 's/^[^0-9]*([0-9]+x[0-9]+).*$/\1/')
-SCREENW=$(echo $SCREENSIZE | awk -Fx '{print $1}'); SCREENH=$(echo $SCREENSIZE | awk -Fx '{print $2}')
-if [[ -z $SCREENW ]]; then SCREENW=1920; fi
-if [[ -z $SCREENH ]]; then SCREENH=1080; fi
 if ! [[ -d "$CONFDIR/tmp" ]]; then mkdir -p "$CONFDIR/tmp" 2>/dev/null; fi
 CONFFILE="$CONFDIR/txt/semplice.conf"
 

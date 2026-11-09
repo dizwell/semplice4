@@ -20,7 +20,7 @@ if [[ $OSFAMILY == "MACOS" ]]; then
   IFACE=$(route get default 2>/dev/null | awk '/interface:/{print $2}')
   IP=$(ifconfig "$IFACE" | awk '/inet / {print $2}' | cut -d. -f1-3)
 else
-  IP=$(ip a | grep -v grep | grep inet | grep -v 127 | grep -v inet6 | awk '{print $2}' | cut -d. -f1-3)
+  IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{for (i=1; i<NF; i++) if ($i == "src") {print $(i+1); exit}}' | cut -d. -f1-3)   # Address of the default-route connection only
 fi
 
 if [[ -f $CONFDIR/txt/sacdip.txt ]]; then
@@ -114,15 +114,8 @@ if [[ $GOODIP -eq 1 ]]; then
   if [ $ping_status -eq 0 ]; then
     tput cup 25 4; echo -e "Invoking the SACD ripper in another terminal session..."
     if ! [[ -d "$RIPDIR"/SACD_ISORIPS ]]; then mkdir "$RIPDIR"/SACD_ISORIPS 2>/dev/null; fi 
-    if [[ $OSFAMILY == "MACOS" ]]; then
-osascript <<EOF
-  tell application "Terminal"
-    do script "$RIPPER -i $SACDIP:2002 -I -z -2 -A -a -b -o $RIPDIR/SACD_ISORIPS; bash"
-  end tell
-EOF
-    else
-      /usr/bin/xterm -xrm 'xterm*iconHint: /home/hjr/.local/share/semplice2/art/sempliceico.xpm' -xrm 'XTerm.vt100.allowTitleOps: false' -T 'Semplice SACD Ripping' -bg black -fg green -geometry 103x28 -fa 'Luxi Mono:style=Regular' -fs 11 -ti 340 -tn xterm-256color -e "$RIPPER" -i $SACDIP:2002 -I -z -2 -A -a -b -o "$RIPDIR"/SACD_ISORIPS
-    fi
+    # The ripper runs in its own WezTerm window (all platforms), which stays open until Enter is pressed
+    wezterm start --always-new-process -- bash -c '"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "' "$RIPPER" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
   else
     dialog --stdout --backtitle "Semplice SACD Ripping" --title " Networking Error! " --msgbox "\nAn SACD player cannot be contacted at this IP address." 8 80
   fi

@@ -202,7 +202,7 @@ case $OSFAMILY in
     sudo xbps-install -Sfy dialog > /dev/null 2>&1
 
     # Define what's required    
-    packages=(automake base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd gcc gd-devel git ImageMagick lame-devel libcdio libjpeg-turbo-devel libpng-devel libtool make ncurses nerd-fonts-ttf pkg-config python3-devel python3-setuptools libflac-devel libogg-devel wezterm xclip xdpyinfo xterm)
+    packages=(automake base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd gcc gd-devel git ImageMagick lame-devel libcdio libjpeg-turbo-devel libpng-devel libtool make ncurses nerd-fonts-ttf pkg-config python3-devel python3-setuptools libflac-devel libogg-devel wezterm)
     total=${#packages[@]}
     count=0
 
@@ -270,7 +270,7 @@ case $OSFAMILY in
     sudo pacman -S --noconfirm dialog git base-devel go > /dev/null 2>&1
 
     # Define what's required
-    packages=(base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd git imagemagick libcdio libxml2-legacy ncurses python python-setup-tools ttf-nerd-fonts-symbols-mono wezterm xclip xorg-xdpyinfo xterm)
+    packages=(base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd git imagemagick libcdio libxml2-legacy ncurses python python-setup-tools ttf-nerd-fonts-symbols-mono wezterm)
     total=${#packages[@]}
     count=0
 
@@ -364,7 +364,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses* libsixel-bin pkg-config python3 python3-dev wezterm x11-utils xclip xterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses* libsixel-bin pkg-config python3 python3-dev wezterm)
     total=${#packages[@]}
     count=0
     
@@ -416,7 +416,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* libsixel-bin pkg-config python3 python3-dev x11-utils xclip xterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* libsixel-bin pkg-config python3 python3-dev)
     total=${#packages[@]}
     count=0
 
@@ -462,7 +462,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses6 libsixel-bin pkg-config python3 python3-dev wezterm x11-utils xclip xterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses6 libsixel-bin pkg-config python3 python3-dev wezterm)
     total=${#packages[@]}
     count=0
     
@@ -514,7 +514,7 @@ case $OSFAMILY in
     sudo dnf -y copr enable lchh/libsixel > /dev/null 2>&1
     
      # Define what's required 
-    packages=(bc binutils cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac gcc git ImageMagick kernel-devel lame-devel libsixel libsixel-utils ncurses pkg-config python python-devel python-setuptools wezterm xclip xdpyinfo xterm)
+    packages=(bc binutils cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac gcc git ImageMagick kernel-devel lame-devel libsixel libsixel-utils ncurses pkg-config python python-devel python-setuptools wezterm)
     total=${#packages[@]}
     count=0
     
@@ -580,7 +580,7 @@ case $OSFAMILY in
     fi
 
     # Define what's required 
-    packages=(autoconf automake bc binutils cdparanoia cmake coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick kernel-devel lame lame-devel lame-devel libsixel libsixel-utils ncurses pkg-config python python-devel wezterm xclip xdotool xdpyinfo xterm)
+    packages=(autoconf automake bc binutils cdparanoia cmake coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick kernel-devel lame lame-devel lame-devel libsixel libsixel-utils ncurses pkg-config python python-devel wezterm xdotool)
     total=${#packages[@]}
     count=0
 
@@ -676,7 +676,7 @@ case $OSFAMILY in
     done
 
     # Define what's required
-    packages=(bc cdparanoia cmake coreutils cuetools curl dialog fd ffmpeg flac gawk git grep gsed icu4c icu ImageMagick libcdio-paranoia md5sha1sum ncurses libsixel wezterm xclip xdpyinfo xterm)
+    packages=(bc cdparanoia cmake coreutils cuetools curl dialog fd ffmpeg flac gawk git grep gsed icu4c icu ImageMagick libcdio-paranoia md5sha1sum ncurses libsixel wezterm)
     total=${#packages[@]}
     count=0
 
