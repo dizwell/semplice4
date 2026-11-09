@@ -31,7 +31,7 @@ function cdrom_identify_macos {
 
   if [[ -n $DISK_ID ]]; then
     OPTICAL_DEVICE="/dev/r$DISK_ID"
-    DEVICENAME="HJR"$(drutil status | awk 'NR==2 { $1=""; $NF=""; print $0 }' | xargs)
+    DEVICENAME=$(drutil status | awk 'NR==2 { $1=""; $NF=""; print $0 }' | xargs)
     
     if [[ $DEVICENAME != "SuperDrive" ]]; then
       # There should be a list of devices and read-offsets. Obtain it if not.
@@ -54,7 +54,7 @@ function cdrom_identify_macos {
   
   # 3. Read the configured offset and use it, or set it to a default of 0 and warn
   if [[ -z $DERIVED_OFFSET ]] && [[ -z $OPTICAL_OFFSET ]]; then 
-    $DEVICE_OFFSET=0
+    DEVICE_OFFSET=0
     dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Using a default read offset " --msgbox "\nAuto-detection of a read offset has failed and you haven't configured one either. A fallback read offset of 0 will be used, but this probably won't be correct.\n\nRips will therefore be performed with the command:\n\ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 12 70
   elif [[ -z $DERIVED_OFFSET ]] && ! [[ -z $OPTICAL_OFFSET ]]; then 
     DEVICE_OFFSET=$OPTICAL_OFFSET
@@ -119,10 +119,10 @@ else
     echo "  Specify your own read offset if you know it: "
     read USEROFFSET
     if [[ -z $USEROFFSET ]]; then
-      $DEVICE_OFFSET=0
+      DEVICE_OFFSET=0
       dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Setting the drive offset to 0, but this probably won't be correct." 8 80
     else
-      $DEVICE_OFFSET=$USEROFFSET
+      DEVICE_OFFSET=$USEROFFSET
       echo "  Setting the drive offset to $USEROFFSET"
       echo ""
       echo "  Rips will therefore be performed with the command:"
@@ -390,5 +390,5 @@ if [[ $NODEVICE -eq 0 ]]; then
   fi
 fi
 cd "$ORIG_DIR"
-drutil eject
+if [[ $OSFAMILY == "MACOS" ]]; then drutil eject; fi                  # drutil only exists on macOS
 tput cvvis
