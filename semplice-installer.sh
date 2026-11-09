@@ -99,22 +99,35 @@ tput cup  3 4; tput setaf $LOGO; echo "Version $PROGVERSION"
 }
 
 function downloads {
-# 4. Fetch Semplice components
 # Fetch Semplice components: BIN files first
 components=(semart.sh sembits.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh)
 total=${#components[@]}
 count=0
 
-# Install components: BIN files first
 (
 for f in "${components[@]}"; do
+  downloaded=0
+  for attempt in {1..5}; do
+    if wget -q --tries=1 "$REMOTESOURCE/bin/$f" -O "$NEWCONF/bin/$f" && [[ $(head -c2 "$NEWCONF/bin/$f") == '#!' ]]; then
+      downloaded=1
+      break
+    fi
+    rm -f "$NEWCONF/bin/$f"
+    sleep 1
+  done
+  if [[ $downloaded -eq 0 ]]; then exit 1; fi
   count=$((count + 1 ))
   percent=$((count * 100 / total))
   echo $percent
-  wget -q "$REMOTESOURCE/bin/$f" -O "$NEWCONF/bin/$f";
   sleep 0.1
 done
 ) | dialog --title " Installing Semplice Binary Components " --gauge "\\n\\nDownloading Semplice's own software components: this might take some time..." 12 70
+
+download_status=${PIPESTATUS[0]}
+if [[ $download_status -ne 0 ]]; then
+  dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
+  exit 1
+fi
 
 # Self-compiled static executables next: these live in exec, not bin
 components=(sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
@@ -122,14 +135,30 @@ total=${#components[@]}
 count=0
 (
 for f in "${components[@]}"; do
+  downloaded=0
+  for attempt in {1..5}; do
+    if wget -q --tries=1 "$REMOTESOURCE/exec/$f" -O "$NEWCONF/exec/$f"; then
+      downloaded=1
+      break
+    fi
+    rm -f "$NEWCONF/exec/$f"
+    sleep 1
+  done
+  if [[ $downloaded -eq 0 ]]; then exit 1; fi
   count=$((count + 1 ))
   percent=$((count * 100 / total))
   echo $percent
-  wget -q "$REMOTESOURCE/exec/$f" -O "$NEWCONF/exec/$f";
   sleep 0.1
 done
 ) | dialog --title " Installing Semplice Executables " --gauge "\\n\\nDownloading the external programs Semplice depends on: not long to wait now..." 12 70
-chmod +x "$NEWCONF/exec/"* 2>/dev/null
+
+download_status=${PIPESTATUS[0]}
+if [[ $download_status -ne 0 ]]; then
+  dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
+  exit 1
+fi
+
+chmod +x "$NEWCONF/exec/"*
 
 # Art files next
 components=(Luxi_License.txt luximr.ttf sempliceico.png sempliceico.svg sempliceicosmall.png sempliceicosmallbeta.png)
@@ -137,20 +166,63 @@ total=${#components[@]}
 count=0
 (
 for f in "${components[@]}"; do
+  downloaded=0
+  for attempt in {1..5}; do
+    if wget -q --tries=1 "$REMOTESOURCE/art/$f" -O "$NEWCONF/art/$f"; then
+      downloaded=1
+      break
+    fi
+    rm -f "$NEWCONF/art/$f"
+    sleep 1
+  done
+  if [[ $downloaded -eq 0 ]]; then exit 1; fi
   count=$((count + 1 ))
   percent=$((count * 100 / total))
   echo $percent
-  wget -q "$REMOTESOURCE/art/$f" -O "$NEWCONF/art/$f";
   sleep 0.1
 done
 ) | dialog --title " Installing Semplice Art Components " --gauge "\\n\\nNow downloading some other Semplice bits and pieces: not long to wait now..." 12 70
 
+download_status=${PIPESTATUS[0]}
+if [[ $download_status -ne 0 ]]; then
+  dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
+  exit 1
+fi
+
 # Finally, /usr/bin and miscellaneous stuff
 if [[ $OS == "DARWIN" ]]; then
-  sudo wget -q "$REMOTESOURCE/semplice2.sh" -O "/usr/local/bin/semplice2.sh";  sudo chmod +x /usr/local/bin/semplice2.sh
+  sudo rm -f "/usr/local/bin/semplice2.sh"
+  downloaded=0
+  for attempt in {1..5}; do
+    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice2.sh" -O "/usr/local/bin/semplice2.sh" && [[ $(head -c2 "/usr/local/bin/semplice2.sh") == '#!' ]]; then
+      downloaded=1
+      break
+    fi
+    sleep 1
+  done
+  if [[ $downloaded -eq 0 ]]; then
+    dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
+    sudo rm -f "/usr/local/bin/semplice2.sh"
+    exit 1
+  fi
+  sudo chmod +x /usr/local/bin/semplice2.sh
   sudo rm -f /usr/local/bin/semplice 2>/dev/null; sudo ln -s /usr/local/bin/semplice2.sh /usr/local/bin/semplice 2>/dev/null 
 else
-  sudo wget -q "$REMOTESOURCE/semplice2.sh" -O "/usr/bin/semplice2.sh";  sudo chmod +x /usr/bin/semplice2.sh
+  sudo rm -f "/usr/bin/semplice2.sh"
+  downloaded=0
+  for attempt in {1..5}; do
+    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice2.sh" -O "/usr/bin/semplice2.sh" && [[ $(head -c2 "/usr/bin/semplice2.sh") == '#!' ]]; then
+      downloaded=1
+      break
+    fi
+    sleep 1
+  done
+  if [[ $downloaded -eq 0 ]]; then
+    dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
+    sudo rm -f "/usr/bin/semplice2.sh"
+    exit 1
+  fi
+  sudo chmod +x /usr/bin/semplice2.sh
   sudo rm -f /usr/bin/semplice 2>/dev/null; sudo ln -s /usr/bin/semplice2.sh /usr/bin/semplice 2>/dev/null
 fi
 
@@ -178,6 +250,27 @@ fi
 dialog --title " Software Components Completed " --msgbox "\\n\\nAll Semplice's components have now been installed successfully.\\n\\nPress OK to see an installation summary report." 12 70
 }
 
+function backup_install {
+tput clear; print_header
+tput cup 6 4; tput setaf $MAINTEXT; echo -n "Backing up prior version's program."
+BACKUPDIR="$HOME/.local/share/semplice-backup-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUPDIR"
+cp -r "$NEWCONF" "$BACKUPDIR" 2>/dev/null; BACKUPSUCCESS=$?
+cp /usr/bin/semplice*.sh "$BACKUPDIR" 2>/dev/null
+cp /usr/local/bin/semplice*.sh "$BACKUPDIR" 2>/dev/null
+
+# Now prune old backups
+if [[ $BACKUPSUCCESS -eq 0 ]]; then
+    local count=0
+    for dir in "$HOME"/.local/share/semplice-backup-*; do
+        [[ -d "$dir" ]] && echo "$dir"
+    done | sort -r | while IFS= read -r dir; do
+        ((count+=1))
+        ((count > 5)) && rm -rf "$dir"
+    done
+fi
+}
+
 # ====================================================================================
 # Installation Code Starts Here
 # ====================================================================================
@@ -186,7 +279,7 @@ dialog --title " Software Components Completed " --msgbox "\\n\\nAll Semplice's 
 # -----------------------------------------------------
 tput clear; print_header
 tput cup 6 4; tput setaf $INFOTEXT; echo -e "Welcome to the Semplice Installer."
-tput cup 8 4; tput setaf $INFOTEXT; echo -e "• It will install numerous new software packages necessary for Semplice to function correctly. It will also create a bunch of new folders within your \$HOME folder.\n\n• If you are happy to proceed, tap 'y' when prompted; tapping anything else will cancel the installation without it having touched your system at all." | fold -s -w 76 | sed '2,$s/^/    /'
+tput cup 8 4; tput setaf $INFOTEXT; echo -e "• It will install numerous new software packages necessary for Semplice to function correctly. It will also create a bunch of new folders within your \$HOME folder.\n\n• Any existing Semplice installation will be backed up, just in case it's needed.\n\n• If you are happy to proceed, tap 'y' when prompted; tapping anything else will cancel the installation without it having touched your system at all." | fold -s -w 76 | sed '2,$s/^/    /'
 tput cup 19 4; tput setaf $ALERT; read -s -n 1 -p "Do you wish to proceed? (y/n): " response
 
 if [[ "$response" == [Yy]* ]]; then
@@ -200,18 +293,20 @@ if [[ "$response" == [Yy]* ]]; then
     exit_program
   fi
 
-  # 2. Make new version directory structure
+  # 2. Backup if appropriate
   # -----------------------------------------------------
-  if [[ ! -d "$NEWCONF" ]]; then
-    mkdir -p "$NEWCONF"
-    mkdir -p "$NEWCONF/art"
-    mkdir -p "$NEWCONF/bin"
-    mkdir -p "$NEWCONF/exec"
-    mkdir -p "$NEWCONF/txt"
-    mkdir -p "$NEWCONF/tmp"
-  fi
+  backup_install
+
+  # 3. Make new version directory structure if needed
+  # -----------------------------------------------------
+  if [[ ! -d "$NEWCONF" ]]; then mkdir -p "$NEWCONF"; fi
+  if [[ ! -d "$NEWCONF/art" ]]; then mkdir -p "$NEWCONF/art"; fi
+  if [[ ! -d "$NEWCONF/bin" ]]; then mkdir -p "$NEWCONF/bin"; fi
+  if [[ ! -d "$NEWCONF/exec" ]]; then mkdir -p "$NEWCONF/exec"; fi
+  if [[ ! -d "$NEWCONF/txt" ]]; then mkdir -p "$NEWCONF/txt"; fi
+  if [[ ! -d "$NEWCONF/tmp" ]]; then mkdir -p "$NEWCONF/tmp"; fi
   
-  # 3. Call semoscheck.sh and get packages installed
+  # 4. Call semoscheck.sh and get packages installed
   # -----------------------------------------------------
   YPOS=$((YPOS+1)); tput cup $YPOS 1;
   wget -q "$REMOTESOURCE/bin/semoscheck.sh" -O "$NEWCONF/bin/semoscheck.sh"
@@ -219,7 +314,7 @@ if [[ "$response" == [Yy]* ]]; then
   downloads
   chown -R $USERNAME:$USERNAME "$NEWCONF" 2>/dev/null
   
-  # 4. Configure the default "dialog" colour scheme
+  # 5. Configure the default "dialog" colour scheme
   # -----------------------------------------------------
   echo "screen_color = (WHITE,BLACK,ON)
   shadow_color = (BLACK,BLACK,ON)
@@ -261,7 +356,7 @@ if [[ "$response" == [Yy]* ]]; then
   menubox_border2_color = dialog_color" > "$CONFDIR/txt/absemdialog.conf"
   export DIALOGRC="$CONFDIR/txt/absemdialog.conf"       # Sets the colour scheme for dialogs
 
-  # 5. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
+  # 6. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
   # -----------------------------------------------------
   if [[ ! -d "$HOME/.local/share/fonts" ]]; then 
     mkdir "$HOME/.local/share/fonts" 2>/dev/null
@@ -270,7 +365,7 @@ if [[ "$response" == [Yy]* ]]; then
     clear
   fi
   
-  # 6. If possible, configure WezTerm terminals to display appropriately
+  # 7. If possible, configure WezTerm terminals to display appropriately
   # -----------------------------------------------------
   if ! [[ -f "$HOME/.semplice.lua" ]]; then
 cat << 'EOF' > "$HOME/.semplice.lua"
@@ -310,7 +405,7 @@ return config
 EOF
   fi
     
-  # 7. Assess state of installation and advise accordingly
+  # 8. Assess state of installation and advise accordingly
   # -----------------------------------------------------
   COUNTBIN=$(ls "$CONFDIR"/bin/*.sh 2>/dev/null | wc -l)
   COUNTEXC=$(( $(ls /usr/local/bin/semplice2.sh 2>/dev/null | wc -l) + $(ls /usr/bin/semplice2.sh 2>/dev/null | wc -l) ))
@@ -356,7 +451,7 @@ EOF
   
   dialog --stdout --backtitle "Semplice Software Install" --title " Software installation status " --msgbox "\n$DIALOGTEXT" 17 80 
     
-  # 8. Finish Up
+  # 9. Finish Up
   # -----------------------------------------------------
   reset
   rm -f seminst
