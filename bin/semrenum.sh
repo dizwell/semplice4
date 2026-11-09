@@ -40,7 +40,7 @@ for f in *.flac; do
   tag=TRACKNUMBER;metaflac $UTFCHARS "--remove-tag=$tag" "$f"
   tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$TRACKNO" "$f"
 
-  TRACKTITLE=$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')
+  TRACKTITLE=$(get_tag TITLE "$f")
   if [[ -z $TRACKTITLE ]]; then
     TRACKTITLE="track"
   fi
