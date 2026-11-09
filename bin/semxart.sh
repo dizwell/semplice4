@@ -30,7 +30,7 @@ if ! [[ -z $f ]]; then
         fi
       else
         if [[ $(uname -a) == *"Darwin"* ]]; then
-          qlmanage -p "$CURDIR/albumart_half.jpg" >/dev/null 2>&1
+          qlmanage -p "$CURDIR/albumart.jpg" >/dev/null 2>&1
         else      
           display "$CURDIR/albumart.jpg" >/dev/null 2>&1
         fi
