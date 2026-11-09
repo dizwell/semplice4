@@ -137,6 +137,12 @@ else
 fi
 }
 
+function rip_folder_failed {
+# Called when a rip folder cannot be created or entered: say so, and make sure nothing more is ripped
+RIPCANCELLED=1
+dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Cannot use the rip folder " --msgbox "\nSemplice could not create or open this folder:\n\n$1\n\nCheck that it can be written to (on macOS, that your terminal program has permission to use it in System Settings > Privacy & Security). Ripping has stopped." 14 80
+}
+
 function perform_rip {
 unset STARTARRAY
 unset FOLDERNUMS
@@ -193,8 +199,8 @@ fi                                                                          # cr
 # -----------------------------------------------------------------------------------------
 THISRIP_FOLDER="$WORKINGDIR/SempliceMusicRip-$($DATEPROG '+%Y-%m-%d')"
 
-if ! [[ -d $THISRIP_FOLDER ]]; then
-  mkdir -p "$THISRIP_FOLDER"
+if ! mkdir -p "$THISRIP_FOLDER" 2>/dev/null || ! [[ -w $THISRIP_FOLDER ]]; then
+  rip_folder_failed "$THISRIP_FOLDER"; return
 fi
 
 ORIG_DIR=$(pwd)
@@ -230,14 +236,13 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   TRACKRANGE="${STARTARRAY[$index]}-$TRACKLIMIT"                          # The TRACKRANGE is now a string (eg 1-4) that defines a contiguous range of tracks to rip
   THISRECFOLDER="RIP_$TWODIGITCOUNT"
 
-  if ! [ -d "$THISRIP_FOLDER/$THISRECFOLDER" ]; then
-    mkdir "$THISRIP_FOLDER/$THISRECFOLDER"
+  if ! mkdir -p "$THISRIP_FOLDER/$THISRECFOLDER" 2>/dev/null || ! cd "$THISRIP_FOLDER/$THISRECFOLDER" 2>/dev/null; then
+    rip_folder_failed "$THISRIP_FOLDER/$THISRECFOLDER"; cd "$ORIG_DIR"; return
   fi
 
   # Now we rip...
   # --------------
   tput civis
-  cd "$THISRIP_FOLDER/$THISRECFOLDER"
   
   if [[ $OSFAMILY != "MACOS" ]]; then  
     tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &
@@ -367,6 +372,7 @@ fi
 
 if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
   perform_rip
+  if [[ $RIPCANCELLED -eq 1 ]]; then tput cvvis; return; fi               # The rip folder could not be used: back to the Ripping menu
   convert_to_flac
 
   # If hyper-accurate rips are switched on, then there's no point comparing this rip with
