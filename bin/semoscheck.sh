@@ -220,7 +220,7 @@ case $OSFAMILY in
       sudo xbps-install -Sf -y "$pkg" > /dev/null 2>&1 || true
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
 	
 	# Compile Libsixel
 	dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we have to compile the Libsixel, AudioTools and SACD support packages. This can take a **very** long time! Please be even more patient than before..." 12 70
@@ -382,7 +382,7 @@ case $OSFAMILY in
       sudo apt -y install "$pkg" > /dev/null 2>&1 || true
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
     audiotools_install
@@ -434,7 +434,7 @@ case $OSFAMILY in
       sudo apt -y install "$pkg" > /dev/null 2>&1 || true
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
     audiotools_install
@@ -480,7 +480,7 @@ case $OSFAMILY in
       sudo apt -y install "$pkg" > /dev/null 2>&1 || true
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
     audiotools_install
@@ -532,7 +532,7 @@ case $OSFAMILY in
       sudo dnf -y install "$pkg" --allowerasing > /dev/null 2>&1 || true
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
     
@@ -598,7 +598,7 @@ case $OSFAMILY in
       sudo dnf -y install "$pkg" --allowerasing > /dev/null 2>&1 || true
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     cuetools_install
     sacd_install
@@ -659,7 +659,7 @@ case $OSFAMILY in
       sudo zypper --no-gpg-checks --non-interactive install "$pkg" > /dev/null 2>&1 || true
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
     audiotools_install
@@ -759,7 +759,7 @@ case $OSFAMILY in
       
       sleep 0.1
     done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --guage "\\n\\nInstallation may take some time. Please be patient..." 12 70
+    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     
     if [[ $pkgmanager == "homebrew" ]]; then
