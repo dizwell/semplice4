@@ -610,66 +610,6 @@ case $OSFAMILY in
   GREPPROG=grep  SEDPROG=sed  DATEPROG=date  MD5PROG=md5sum FDPROG=fd
   ;;  
   
-  SUSE)
-  if [[ $CHECKONLY -eq 0 ]]; then
-    if ! sudo -n true 2>/dev/null; then
-      sudo -p $'\r    Please supply the sudo password for %u: ' -v || { echo "    Failed to acquire sudo privileges, so quitting..."; rm -f seminst; exit 1; }
-    fi
-
-    # Keep sudo status for as long as needed
-    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
-    sudo timedatectl set-ntp true >/dev/null 2>&1
-    echo ""
-    echo "    Getting the Semplice installer ready. Please bear with us for a few moments..."
-
-    sudo zypper refresh >/dev/null
-
-    if [[ $(sudo zypper lu | grep "No updates found." | wc -l) -eq 0 ]]; then
-      pending=1
-      check_updates
-    fi
-    
-    # Install the os-appropriate Packman repository, if necessary
-    if ! [[ -f /etc/zypp/repos.d/packman.repo ]]; then
-		echo "    Adding the Packman repository. This can take a **long** time! Please be patient..."
-      if [[ $OS == *"LEAP"* ]]; then
-        sudo zypper ar -cfp 90 'https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Leap_'$THISVER/ packman > /dev/null 2>&1
-        sudo zypper --no-gpg-checks -n update > /dev/null 2>&1
-      else
-        sudo zypper ar -cfp 90 'https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/' packman > /dev/null 2>&1
-        sudo zypper --no-gpg-checks -n update > /dev/null 2>&1
-      fi
-    fi    
-
-    sudo zypper --no-gpg-checks --non-interactive install dialog > /dev/null 2>&1
-    sudo zypper --no-gpg-checks --non-interactive install -t pattern devel_basis > /dev/null 2>&1
-    
-    # Define what's required
-    packages=(bc cdparanoia cmake coreutils cuetools curl dialog fd ffmpeg flac git ImageMagick libncurses6 libsixel1 libsixel-utils python python-devel wezterm xclip xdpyinfo xterm)
-    total=${#packages[@]}
-    count=0
-
-    # Install what's required
-    (
-    for pkg in "${packages[@]}"; do
-      count=$((count + 1 ))
-      percent=$((count * 100 / total))
-      echo $percent
-
-      sudo zypper --no-gpg-checks --non-interactive install "$pkg" > /dev/null 2>&1 || true
-      sleep 0.1
-    done
-    ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
-    tput cup 24 4
-    sacd_install
-    audiotools_install
-
-    # Confirmation when concluded
-    dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
-  fi
-  GREPPROG=grep  SEDPROG=sed  DATEPROG=date  MD5PROG=md5sum FDPROG=fd  
-  ;;
-  
   MACOS)
   if [[ $CHECKONLY -eq 0 ]]; then
     if ! sudo -n true 2>/dev/null; then
