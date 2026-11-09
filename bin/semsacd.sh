@@ -50,6 +50,7 @@ while :; do
 RIPDIR=$(dialog --backtitle "Semplice SACD Ripping" --title " Please choose where to save your rips " --dselect "$PROPOSEDDIR" 12 80 3>&1 1>&2 2>&3 3>&- )
 exitStatus=$?
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then
+  RIPDIR=""                                           # Cancel or Esc: no folder, so the rip will not go ahead
   break
 else
   if [[ -d "$RIPDIR" ]]; then
@@ -93,6 +94,7 @@ fi
 
 determine_ripper
 rip_folder
+if [[ -z $RIPDIR ]]; then return; fi                  # Folder prompt cancelled: go back to the Ripping menu, creating nothing
 
 # Sets up a permanent loop that persists until a valid IP address is provided
 while [[ $badip -eq 1 ]]; do
