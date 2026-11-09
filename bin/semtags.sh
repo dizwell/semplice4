@@ -274,7 +274,7 @@ if [[ $COUNTART -gt 0 ]]; then
     elif [[ $BIGDIMENSION -ge 500 ]]; then
       if [[ $CONVPROG == "convert" ]]; then convert "$ARTWORK" -quality 100 -resize 500x500\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTWORK" -quality 100 -resize 500x500\! /tmp/albumart.jpg; fi                                          # Resize images if larger than 900x900, without maintaining aspect ratio
     else
-      if [[ $CONVPROG == "convert" ]]; then convert "$ARTWORK" -quality 100 -resize $BIGDIMENSIONx$BIGDIMENSION\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTWORK" -quality 100 -resize $BIGDIMENSIONx$BIGDIMENSION\! /tmp/albumart.jpg; fi  # No resizing of small images, but squaring it off, without maintaining aspect ratio
+      if [[ $CONVPROG == "convert" ]]; then convert "$ARTWORK" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTWORK" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg; fi  # No resizing of small images, but squaring it off, without maintaining aspect ratio
     fi
 
     for f in *.flac; do

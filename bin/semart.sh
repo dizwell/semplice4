@@ -77,7 +77,7 @@ if [[ $GOODIMG -gt 0 ]]; then
   elif [[ $BIGDIMENSION -ge 500 ]]; then
     if [[ $CONVPROG == "convert" ]]; then convert "$ARTFILE" -quality 100 -resize 500x500\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTFILE" -quality 100 -resize 500x500\! /tmp/albumart.jpg; fi       # Resize images if larger than 500x500, without maintaining aspect ratio
   else
-    if [[ $CONVPROG == "convert" ]]; then convert "$ARTFILE" -quality 100 -resize $BIGDIMENSIONx$BIGDIMENSION\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTFILE" -quality 100 -resize $BIGDIMENSIONx$BIGDIMENSION\! /tmp/albumart.jpg; fi       # No resizing of small images, but squaring it off, without maintaining aspect ratio
+    if [[ $CONVPROG == "convert" ]]; then convert "$ARTFILE" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTFILE" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg; fi       # No resizing of small images, but squaring it off, without maintaining aspect ratio
   fi
   MESSAGE="Applying album art. Please wait... "
   for f in *.flac; do
