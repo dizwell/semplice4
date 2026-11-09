@@ -47,6 +47,7 @@ if [[ -f "$CONFFILE" ]]; then
   conflogopos=$(cat "$CONFFILE" | $GREPPROG -i LOGOPOS= | awk -F= '{print $2}'); if [ -z $conflogopos ]; then conflogopos=0; fi
   confweztheme=$(cat "$CONFFILE" | $GREPPROG -i WEZTHEME= | awk -F= '{print $2}' | tr -d '"'); if [[ -z $confweztheme ]]; then confweztheme="Galaxy"; fi
   confwezfntsz=$(cat "$CONFFILE" | $GREPPROG -i WEZFNTSZ= | awk -F= '{print $2}'); if [[ -z $confwezfntsz ]]; then confwezfntsz=12; fi
+  confdiatheme=$(cat "$CONFFILE" | $GREPPROG -i DIATHEME= | awk -F= '{print $2}' | tr -d '"'); if [[ -z $confdiatheme ]]; then confdiatheme="standard"; fi
 fi
 
 # First, prompt for CD Ripping parameters
@@ -153,6 +154,7 @@ dialog --backtitle "Semplice Configuration File Editor" --title " Program Config
 "Program Logo position (- or +)" 3 1  "$conflogopos"     3 55 35 0 \
 "Semplice colour theme name" 4 1 "$confweztheme" 4 55 35 0 \
 "Semplice font size (in points)" 5 1 "$confwezfntsz" 5 55 35 0 \
+"Dialog colour theme name" 6 1 "$confdiatheme" 6 55 35 0 \
 2>"$CONFDIR/tmp/miscparams"
 
 readarray -t miscparams < "$CONFDIR/tmp/miscparams" 2>/dev/null
@@ -167,6 +169,14 @@ CONFWEZTHEME="${miscparams[3]}"
 CONFWEZFNTSZ="${miscparams[4]}"
   if [[ $CONFWEZFNTSZ -gt 32 ]]; then CONFWEZFNTSZ=12; fi
   if [[ $CONFWEZFNTSZ -lt 8 ]]; then CONFWEZFNTSZ=12; fi
+CONFDIATHEME="${miscparams[5]}"
+
+# Make sure CONFDIATHEME is one of standard, red, green, yellow or magenta. If not, it's standard
+if [[ ${CONFDIATHEME,,} =~ ^(standard|red|green|yellow|magenta)$ ]]; then
+  CONFDIATHEME=${CONFDIATHEME,,}
+else
+  CONFDIATHEME=standard
+fi
 
 # Check for legal values and replace with defaults if not legal
 # ====================================================================
@@ -249,6 +259,7 @@ ARTSIZE=$CONFARTSIZE
 LOGOSIZE=$CONFLOGOSIZE
 WEZTHEME=\"$CONFWEZTHEME\"
 WEZFNTSZ=$CONFWEZFNTSZ
+DIATHEME=\"$CONFDIATHEME\"
 LOGOPOS=$CONFLOGOPOS" > "$CONFDIR/txt/semplice.conf"
 
 rm -f "$CONFDIR/tmp/ripparams" 2>/dev/null
@@ -256,4 +267,5 @@ rm -f "$CONFDIR/tmp/tagparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/customtagparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/superparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/audioparams" 2>/dev/null
+rm -f "$CONFDIR/tmp/miscparams" 2>/dev/null
 source "$CONFDIR/bin/semparse.sh"
