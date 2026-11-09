@@ -22,6 +22,7 @@ fi
 if [[ -z $THREADS ]]; then THREADS=2; fi		# A reasonably safe default
 
 function type_count {
+if [[ -n $NEWDIR && $NEWDIR != */ ]]; then NEWDIR="$NEWDIR/"; fi         # Make sure the folder path ends in a slash, so the next line looks inside it
 for f in "$NEWDIR"*; do
   [ -f "$f" ] || continue
   case $f in
