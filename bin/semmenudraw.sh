@@ -4,7 +4,6 @@
 ####################################################################
 rm -f "$CONFDIR/art/albumart.jpg" 2>/dev/null
 rm -f "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null
-source "$CONFDIR/bin/semparse.sh"
 source "$CONFDIR/bin/semtput.sh"
 if [[ $PROGVERSION == *"beta"* ]]; then LOGO_PATH="$CONFDIR/art/sempliceicosmallbeta.png"; else LOGO_PATH="$CONFDIR/art/sempliceicosmall.png"; fi
 if [[ -z $LOGOSIZE ]]; then LOGOSIZE="110x110"; fi; LOGOWIDTH="${LOGOSIZE%x*}"
