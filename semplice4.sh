@@ -103,7 +103,6 @@ clear
 
 source "$CONFDIR/bin/semtput.sh"                      # Bash-internal tput: part of every installation
 
-export DIALOGRC="$CONFDIR/txt/absemdialog.conf"		# Sets the colour scheme for dialogs
 tput civis; printf '\e[8;28;103t'			# Setting terminal virtual size to 103x28, regardless of what it's actually set to
 source "$CONFDIR/bin/semoscheck.sh"
 source "$CONFDIR/txt/programvariables.txt"
