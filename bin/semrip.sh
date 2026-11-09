@@ -68,7 +68,7 @@ function cdrom_identify_macos {
   # 4. Use Hyperaccurate Rip if configured
   if [[ $HYPER_ACCURATERIP -eq 1 ]]; then
     DEVICE_OFFSET=$(($DEVICE_OFFSET - 30))
-    dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "You have enable hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "You have enabled hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
   fi  
 }
 
@@ -132,7 +132,7 @@ else
   else
     if [[ $HYPER_ACCURATERIP -eq 1 ]]; then
       DEVICE_OFFSET=$(($DEVICE_OFFSET - 30))
-      dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "You have enable hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
+      dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "You have enabled hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
     fi
   fi
 fi
