@@ -101,7 +101,7 @@ tput cup  3 4; tput setaf $LOGO; echo "Version $PROGVERSION"
 function downloads {
 # 4. Fetch Semplice components
 # Fetch Semplice components: BIN files first
-components=(semart.sh sembits.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
+components=(semart.sh sembits.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh)
 total=${#components[@]}
 count=0
 
@@ -115,6 +115,21 @@ for f in "${components[@]}"; do
   sleep 0.1
 done
 ) | dialog --title " Installing Semplice Binary Components " --gauge "\\n\\nDownloading Semplice's own software components: this might take some time..." 12 70
+
+# Self-compiled static executables next: these live in exec, not bin
+components=(sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
+total=${#components[@]}
+count=0
+(
+for f in "${components[@]}"; do
+  count=$((count + 1 ))
+  percent=$((count * 100 / total))
+  echo $percent
+  wget -q "$REMOTESOURCE/exec/$f" -O "$NEWCONF/exec/$f";
+  sleep 0.1
+done
+) | dialog --title " Installing Semplice Executables " --gauge "\\n\\nDownloading the external programs Semplice depends on: not long to wait now..." 12 70
+chmod +x "$NEWCONF/exec/"* 2>/dev/null
 
 # Art files next
 components=(Luxi_License.txt luximr.ttf sempliceico.png sempliceico.svg sempliceicosmall.png sempliceicosmallbeta.png)
@@ -191,6 +206,7 @@ if [[ "$response" == [Yy]* ]]; then
     mkdir -p "$NEWCONF"
     mkdir -p "$NEWCONF/art"
     mkdir -p "$NEWCONF/bin"
+    mkdir -p "$NEWCONF/exec"
     mkdir -p "$NEWCONF/txt"
     mkdir -p "$NEWCONF/tmp"
   fi
