@@ -60,7 +60,7 @@ rm -rf "$CONFDIR/tmp/spectrum.png" "$CONFDIR/tmp/spectrum.flac" 2>/dev/null
 tput cvvis
 }
 
-shopt -s nullglob; flac_count=(*.flac); FLACCOUNT=${#flac_count[@]}
+shopt -s nullglob; flac_count=(*.flac); shopt -u nullglob; FLACCOUNT=${#flac_count[@]}   # nullglob only for this count: left on, it breaks file counts elsewhere
 check_diskspace
 check_writeok
 
