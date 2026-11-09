@@ -6,7 +6,6 @@
 #
 ####################################################################
 source "$CONFDIR/bin/semspin.sh"
-source "$CONFDIR/bin/semparse.sh"
 
 unset INCODECLIST; unset OUTCODECLIST
 INPUTFORMAT=""

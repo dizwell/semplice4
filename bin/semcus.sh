@@ -4,7 +4,6 @@
 # semcus: routine for setting custom tags
 #
 ####################################################################
-source "$CONFDIR/bin/semparse.sh"
 
 if [[ $CUSTOMTAGS -eq 1 ]]; then
   # Check the first FLAC for writeability

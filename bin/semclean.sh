@@ -10,7 +10,6 @@
 #
 ####################################################################
 TRACKCOUNT=$(ls *.flac | wc -l)  NOPROCESS=0
-source "$CONFDIR/bin/semparse.sh"
 source "$CONFDIR/bin/semspin.sh"
 
 ALBUMART=$CONFDIR/tmp/cleanart.jpg                                      # Initialise temporary work files

@@ -24,8 +24,24 @@ device_name=$(dialog --backtitle "Semplice Audio CD Ripping" --radiolist "Pick t
 exitStatus=$?
 
 # Only change the drive if one was actually chosen: Cancel, Esc, or OK with nothing selected leave it as it was.
-# The choice is a per-session override held in SESSION_DEVICE: it is never written to semplice.conf, and
-# re-reading the configuration (which resets OPTICAL_DEVICE to the configured default) does not touch it.
-if [[ $exitStatus -eq 0 && -n $device_name ]]; then
-  export SESSION_DEVICE="$device_name"
+if ! [[ $exitStatus -eq 0 && -n $device_name ]]; then return; fi
+
+# Find the chosen drive's read offset: look it up, or ask for it if the drive isn't in the offsets list
+newoffset=$(lookup_drive_offset "$device_name")
+if [[ -n $newoffset ]]; then
+  dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Optical drive " --msgbox "\nRips will use $device_name, with its listed read offset of $newoffset." 8 76
+else
+  while true; do
+    newoffset=$(dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Read offset for $device_name " --inputbox "\nThis drive is not in the offsets list. Enter its read offset (a whole number, which may be negative, e.g. 6 or -52):" 11 76)
+    if [[ $? -ne 0 ]]; then return; fi                                        # Cancel/Esc: leave drive and offset as they were
+    newoffset="${newoffset//[[:space:]]/}"; newoffset="${newoffset#+}"
+    if [[ $newoffset =~ ^-?[0-9]{1,4}$ ]]; then                               # Accept e.g. 6, +6, -52, 006; otherwise ask again
+      if [[ $newoffset == -* ]]; then newoffset=$(( -10#${newoffset#-} )); else newoffset=$(( 10#$newoffset )); fi
+      break
+    fi
+  done
 fi
+
+# A per-session override, held apart from the configured values: never written to semplice.conf
+export SESSION_DEVICE="$device_name"
+export SESSION_OFFSET="$newoffset"

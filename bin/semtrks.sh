@@ -4,7 +4,6 @@
 # semtrks: routine for setting per-track TITLE tags
 #
 ####################################################################
-source "$CONFDIR/bin/semparse.sh" 
 # We count the FLACs in the present folder, and dynamically construct
 # an input form that prompts for that many TITLE tags.
 # Check the first FLAC for writeability
