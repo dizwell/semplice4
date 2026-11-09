@@ -128,7 +128,7 @@ for f in "${components[@]}"; do
   wget -q "$REMOTESOURCE/art/$f" -O "$NEWCONF/art/$f";
   sleep 0.1
 done
-) | dialog --title " Installing Semplice Art Components " --guage "\\n\\nNow downloading some other Semplice bits and pieces: not long to wait now..." 12 70
+) | dialog --title " Installing Semplice Art Components " --gauge "\\n\\nNow downloading some other Semplice bits and pieces: not long to wait now..." 12 70
 
 # Finally, /usr/bin and miscellaneous stuff
 if [[ $OS == "DARWIN" ]]; then
