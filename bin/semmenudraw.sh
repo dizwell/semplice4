@@ -172,14 +172,6 @@ if [[ $RIGHT_WANTED != "$DISPLAYED_RIGHT" ]]; then
   fi
   if [[ $ARTEMBEDDED -eq 0 ]]; then
     tput setaf $LOGO
-    tput cup 8 54; echo -en "$Line1"
-    tput cup 9 54; echo -en "$Line2"
-    tput cup 10 54; echo -en "$Line3"
-    tput cup 11 54; echo -en "$Line4"
-    tput cup 12 54; echo -en "$Line5"
-    tput cup 13 54; echo -en "$Line6"
-    tput cup 14 54; echo -en "$Line7"
-    tput cup 15 54; echo -en "$Line8"
     sixel_logo
   else
     sixel_graphics
