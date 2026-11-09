@@ -8,6 +8,12 @@
 
 DEVLIST=""; COUNTER=16
 
+# On macOS the rip finds the drive itself (via drutil), so there is nothing to pick
+if [[ $OSFAMILY == "MACOS" ]]; then
+  dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Optical drive " --msgbox "\nOn macOS, Semplice detects your optical drive automatically each time you rip, so there is no drive to specify here." 9 70
+  return
+fi
+
 for i in $(lsblk -dn -o NAME,TYPE | $GREPPROG 'rom' | awk '{print $1}'); do
   DEVID="/dev/$i"
   DEVDESC=$(cdparanoia -vsQ -d $DEVID 2>&1 | awk -F: '/sensed/ {print $2}'); DEVDESC=$(echo "$DEVDESC" | xargs); DEVDESC=${DEVDESC// /_}
@@ -16,10 +22,8 @@ done
 
 device_name=$(dialog --backtitle "Semplice Audio CD Ripping" --radiolist "Pick the optical device you want to use:" 15 90 0 $DEVLIST 3>&1 1>&2 2>&3 3>&- )
 exitStatus=$?
-if [[ $exitStatus -eq 1 ]]; then
-  GOODDEV=0
-else
-  USEDEVICE="$device_name"; GOODDEV=1
-fi
 
-export OPTICAL_DEVICE="$device_name"
+# Only change the drive if one was actually chosen: Cancel, Esc, or OK with nothing selected leave it as it was
+if [[ $exitStatus -eq 0 && -n $device_name ]]; then
+  export OPTICAL_DEVICE="$device_name"
+fi
