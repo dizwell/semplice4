@@ -2,8 +2,6 @@
 ####################################################################
 # semmenudraw: Clear screen drawing routine
 ####################################################################
-rm -f "$CONFDIR/art/albumart.jpg" 2>/dev/null
-rm -f "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null
 source "$CONFDIR/bin/semtput.sh"
 if [[ $PROGVERSION == *"beta"* ]]; then LOGO_PATH="$CONFDIR/art/sempliceicosmallbeta.png"; else LOGO_PATH="$CONFDIR/art/sempliceicosmall.png"; fi
 if [[ -z $LOGOSIZE ]]; then LOGOSIZE="110x110"; fi; LOGOWIDTH="${LOGOSIZE%x*}"
@@ -15,26 +13,33 @@ tput cup 8 56
 img2sixel "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null										        # Display in-terminal as-is
 }
 
-# Checks to see if there is already album art embedded or not
+# Checks whether the first FLAC has album art and prepares the display copy. The extracted art, its
+# resized display copy and the audio details are cached: they are only worked out again when the
+# folder, the first FLAC (or its modification time), the number of FLACs or the display size changes.
 function check_art {
-if [[ -f "$CONFDIR/art/albumart.jpg" ]]; then
-  ARTEMBEDDED=1
+local f stamp key
+f=$(find . -maxdepth 1 -type f -name "*.flac" | sort | head -n 1)
+if [[ -z $f ]]; then ARTEMBEDDED=0; ARTCACHEKEY=""; return; fi
+stamp=$(date -r "$f" +%s 2>/dev/null)
+key="$PWD|$f|$stamp|$(find . -maxdepth 1 -type f -name "*.flac" | wc -l)|$ARTSIZE"
+if [[ $key == "$ARTCACHEKEY" ]]; then return; fi                             # Nothing has changed: reuse everything from last time
+
+rm -f "$CONFDIR/art/albumart.jpg" "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null
+if [[ $(metaflac --list --block-type=PICTURE "$f" 2>/dev/null | wc -l) -eq 0 ]]; then
+  ARTEMBEDDED=0
 else
-  f=$(find . -maxdepth 1 -type f -name "*.flac" | sort | head -n 1)
-  if [[ -n "$f" && -f "$f" ]]; then
-    if [[ $(metaflac --list --block-type=PICTURE "$f" 2>/dev/null | wc -l) -eq 0 ]]; then
-      ARTEMBEDDED=0
-    else
-      metaflac --export-picture-to="$CONFDIR/art/albumart.jpg" "$f" 2>/dev/null
-      ARTEMBEDDED=1
-      if [[ $CONVPROG == convert ]]; then
-        convert -resize "${ARTSIZE}x${ARTSIZE}!" "$CONFDIR/art/albumart.jpg" "$CONFDIR/art/displayalbumart.jpg"
-      else
-        magick "$CONFDIR/art/albumart.jpg" -resize "${ARTSIZE}x${ARTSIZE}!" "$CONFDIR/art/displayalbumart.jpg"
-      fi
-    fi
+  metaflac --export-picture-to="$CONFDIR/art/albumart.jpg" "$f" 2>/dev/null
+  ARTEMBEDDED=1
+  if [[ $CONVPROG == convert ]]; then
+    convert -resize "${ARTSIZE}x${ARTSIZE}!" "$CONFDIR/art/albumart.jpg" "$CONFDIR/art/displayalbumart.jpg"
+  else
+    magick "$CONFDIR/art/albumart.jpg" -resize "${ARTSIZE}x${ARTSIZE}!" "$CONFDIR/art/displayalbumart.jpg"
   fi
 fi
+FILEDEPTH=$(metaflac --show-bps "$f" 2>/dev/null)
+FILESAMPLE=$(metaflac --show-sample-rate "$f" 2>/dev/null)
+FLACCOUNT=$(find . -maxdepth 1 -type f -name "*.flac" | wc -l)
+ARTCACHEKEY=$key
 }
 
 function wordlogo { 
@@ -54,19 +59,13 @@ tput cup 16 $LOGO_POSITION; img2sixel -w $LOGOWIDTH "$LOGO_PATH" 2>/dev/null; pr
 }
 
 function audio_data {
-f=$(find . -maxdepth 1 -type f -name "*.flac" | sort | head -n 1)
-if [[ -n "$f" && -f "$f" ]]; then
-  FILEDEPTH=$(metaflac --list "$f"  2>/dev/null | grep "bits-per-sample"); FILEDEPTH=$(echo $FILEDEPTH | awk '{print $2}')
-  FILESAMPLE=$(metaflac --list "$f"  2>/dev/null | grep "sample_rate"); FILESAMPLE=$(echo $FILESAMPLE | awk '{print $2}')
-  tput setaf $DRAWLINES; tput cup 1 75; echo -en "Bitdepth    : "; tput setaf $INFOTEXT; echo -en "$FILEDEPTH bits"
-  tput setaf $DRAWLINES; tput cup 2 75; echo -en "Sample Rate : "; tput setaf $INFOTEXT; echo -en "$FILESAMPLE Hz"
- fi
- 
-FLACCOUNT=$(find . -maxdepth 1 -type f -name "*.flac" | wc -l)
+# Values are worked out (and cached) by check_art
+tput setaf $DRAWLINES; tput cup 1 75; echo -en "Bitdepth    : "; tput setaf $INFOTEXT; echo -en "$FILEDEPTH bits"
+tput setaf $DRAWLINES; tput cup 2 75; echo -en "Sample Rate : "; tput setaf $INFOTEXT; echo -en "$FILESAMPLE Hz"
 if [[ $FLACCOUNT -eq 1 ]]; then
-    tput setaf $DRAWLINES; tput cup 3 75; tput setaf $INFOTEXT; echo -e "Single FLAC"
+  tput setaf $DRAWLINES; tput cup 3 75; tput setaf $INFOTEXT; echo -e "Single FLAC"
 else
-    tput setaf $DRAWLINES; tput cup 3 75; tput setaf $INFOTEXT; echo -e "Multi FLAC"
+  tput setaf $DRAWLINES; tput cup 3 75; tput setaf $INFOTEXT; echo -e "Multi FLAC"
 fi
 }
 
