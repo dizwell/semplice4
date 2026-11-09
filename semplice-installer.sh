@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# Installation Program for Semplice Version 2. In broad terms:
+# Installation Program for Semplice Version 4. In broad terms:
 #
 #  1. Get user consent to adjust system
 #  2. Configure default Dialog colour scheme
 #  3. Use semoscheck to install Semplice's software dependencies
-#  4. Install new Semplice 2 files
+#  4. Install new Semplice 4 files
 #  5. Verify installation
 #  6. Install new fonts
 #
 ####################################################################
-PROGVERSION="2.13" COPYRIGHT="2021-2026"
+PROGVERSION="4.00" COPYRIGHT="2021-2026"
 PRIORVERSION=0; clear; USERNAME=$(whoami); ERRORCOUNT=0  YPOS=6
 
 if [[ $1 == "beta" ]]; then 
@@ -20,7 +20,7 @@ else
   REMOTESOURCE="https://bbritten.com/software/semplice"
 fi
 
-NEWCONF="$HOME/.local/share/semplice2"
+NEWCONF="$HOME/.local/share/semplice4"
 CONFDIR="$NEWCONF"
 
 HOTKEY=11
@@ -191,10 +191,10 @@ fi
 
 # Finally, /usr/bin and miscellaneous stuff
 if [[ $OS == "DARWIN" ]]; then
-  sudo rm -f "/usr/local/bin/semplice2.sh"
+  sudo rm -f "/usr/local/bin/semplice4.sh"
   downloaded=0
   for attempt in {1..5}; do
-    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice2.sh" -O "/usr/local/bin/semplice2.sh" && [[ $(head -c2 "/usr/local/bin/semplice2.sh") == '#!' ]]; then
+    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice4.sh" -O "/usr/local/bin/semplice4.sh" && [[ $(head -c2 "/usr/local/bin/semplice4.sh") == '#!' ]]; then
       downloaded=1
       break
     fi
@@ -202,16 +202,16 @@ if [[ $OS == "DARWIN" ]]; then
   done
   if [[ $downloaded -eq 0 ]]; then
     dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
-    sudo rm -f "/usr/local/bin/semplice2.sh"
+    sudo rm -f "/usr/local/bin/semplice4.sh"
     exit 1
   fi
-  sudo chmod +x /usr/local/bin/semplice2.sh
-  sudo rm -f /usr/local/bin/semplice 2>/dev/null; sudo ln -s /usr/local/bin/semplice2.sh /usr/local/bin/semplice 2>/dev/null 
+  sudo chmod +x /usr/local/bin/semplice4.sh
+  sudo rm -f /usr/local/bin/semplice 2>/dev/null; sudo ln -s /usr/local/bin/semplice4.sh /usr/local/bin/semplice 2>/dev/null 
 else
-  sudo rm -f "/usr/bin/semplice2.sh"
+  sudo rm -f "/usr/bin/semplice4.sh"
   downloaded=0
   for attempt in {1..5}; do
-    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice2.sh" -O "/usr/bin/semplice2.sh" && [[ $(head -c2 "/usr/bin/semplice2.sh") == '#!' ]]; then
+    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice4.sh" -O "/usr/bin/semplice4.sh" && [[ $(head -c2 "/usr/bin/semplice4.sh") == '#!' ]]; then
       downloaded=1
       break
     fi
@@ -219,11 +219,11 @@ else
   done
   if [[ $downloaded -eq 0 ]]; then
     dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
-    sudo rm -f "/usr/bin/semplice2.sh"
+    sudo rm -f "/usr/bin/semplice4.sh"
     exit 1
   fi
-  sudo chmod +x /usr/bin/semplice2.sh
-  sudo rm -f /usr/bin/semplice 2>/dev/null; sudo ln -s /usr/bin/semplice2.sh /usr/bin/semplice 2>/dev/null
+  sudo chmod +x /usr/bin/semplice4.sh
+  sudo rm -f /usr/bin/semplice 2>/dev/null; sudo ln -s /usr/bin/semplice4.sh /usr/bin/semplice 2>/dev/null
 fi
 
 # Only create a desktop launcher if this is NOT macOS.
@@ -307,6 +307,7 @@ if [[ "$response" == [Yy]* ]]; then
   if [[ ! -d "$NEWCONF/exec" ]]; then mkdir -p "$NEWCONF/exec"; fi
   if [[ ! -d "$NEWCONF/txt" ]]; then mkdir -p "$NEWCONF/txt"; fi
   if [[ ! -d "$NEWCONF/tmp" ]]; then mkdir -p "$NEWCONF/tmp"; fi
+  if [[ ! -d "$NEWCONF/rip" ]]; then mkdir -p "$NEWCONF/rip"; fi
   
   # 4. Call semoscheck.sh and get packages installed
   # -----------------------------------------------------
@@ -362,7 +363,7 @@ if [[ "$response" == [Yy]* ]]; then
   # -----------------------------------------------------
   if [[ ! -d "$HOME/.local/share/fonts" ]]; then 
     mkdir "$HOME/.local/share/fonts" 2>/dev/null
-    cp "$HOME/.local/share/semplice2/art/"*.ttf "$HOME/.local/share/fonts/" 2>/dev/null
+    cp "$HOME/.local/share/semplice4/art/"*.ttf "$HOME/.local/share/fonts/" 2>/dev/null
     fc-cache -f 2>/dev/null
     clear
   fi
@@ -410,7 +411,7 @@ EOF
   # 8. Assess state of installation and advise accordingly
   # -----------------------------------------------------
   COUNTBIN=$(ls "$CONFDIR"/bin/*.sh 2>/dev/null | wc -l)
-  COUNTEXC=$(( $(ls /usr/local/bin/semplice2.sh 2>/dev/null | wc -l) + $(ls /usr/bin/semplice2.sh 2>/dev/null | wc -l) ))
+  COUNTEXC=$(( $(ls /usr/local/bin/semplice4.sh 2>/dev/null | wc -l) + $(ls /usr/bin/semplice4.sh 2>/dev/null | wc -l) ))
   if [[ $COUNTBIN -eq 28 ]]; then COUNTBINOK=1; else COUNTBINOK=0; fi
   if [[ $COUNTEXC -eq 1 ]]; then COUNTXECOK=1; else COUNTXECOK=0; fi
   if [[ $COUNTBINOK -eq 1 && $COUNTXECOK -eq 1 ]]; then BASICINSTALLOK=1; else BASICINSTALLOK=0; fi
