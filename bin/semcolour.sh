@@ -90,3 +90,6 @@ $SEDPROG -i \
   -e "s/^SPINNER=.*/SPINNER=$SPINNER_VAL/" \
   -e "s/^ALERT=.*/ALERT=$ALERT_VAL/" \
   "$CONFFILE"
+
+# Re-read the configuration so the new colours take effect straight away
+source "$CONFDIR/bin/semparse.sh"
