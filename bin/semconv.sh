@@ -225,7 +225,7 @@ esac
 
 if [[ $INPUTFORMAT == "ISO" ]]; then
   if [[ $OSFAMILY != "MACOS" ]]; then
-    SACD_EXISTS=1; type "sacd" >/dev/null 2>&1 || SACD_EXISTS=0			# SACD_EXISTS will be 0 if the 'sacd' pacakage is not installed, and 1 if it is (by virtue of the original forced assignment).
+    SACD_EXISTS=1; type "sacd" >/dev/null 2>&1 || SACD_EXISTS=0			# SACD_EXISTS will be 0 if the 'sacd' package is not installed, and 1 if it is (by virtue of the original forced assignment).
   else
     SACD_EXISTS=1
   fi

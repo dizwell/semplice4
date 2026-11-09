@@ -62,7 +62,7 @@ for f in *.flac; do
 
 # Axiom 2: ARTIST must equal COMPOSER
   if [[ ! $COMPOSER == $ARTIST ]]; then
-    dialog --stdout --backtitle "Semplice SuperFLAC Creation" --title " Axiom 2 Violation! " --msgbox "\nThe ARTSIT and COMPOSER tags need to be identical. A SuperFLAC cannot be created from tracks which don't match the Axioms of Classical Tagging.\n\nSee: https://bbritten.com/articles/axioms\n\nFile affected: $f" 15 80
+    dialog --stdout --backtitle "Semplice SuperFLAC Creation" --title " Axiom 2 Violation! " --msgbox "\nThe ARTIST and COMPOSER tags need to be identical. A SuperFLAC cannot be created from tracks which don't match the Axioms of Classical Tagging.\n\nSee: https://bbritten.com/articles/axioms\n\nFile affected: $f" 15 80
     ((AXIOM_ERRORS++))
   fi
   if [[ $AXIOM_ERRORS -ne 0 ]]; then break; fi
@@ -231,7 +231,7 @@ for f in *.flac; do
   fi
 done
 
-# But if the stripping results in filenames ending 'elipsisflac', we need to
+# But if the stripping results in filenames ending 'ellipsisflac', we need to
 # insert back a dot before the flac extension.
 # ------------------------------------------------------------------------------------------
 for f in *; do

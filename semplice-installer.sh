@@ -100,7 +100,7 @@ tput cup  3 4; tput setaf $LOGO; echo "Version $PROGVERSION"
 
 function downloads {
 # 4. Fetch Semplice components
-# Fetch Semnplice components: BIN files first
+# Fetch Semplice components: BIN files first
 components=(semcheckver.sh semart.sh sembits.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semoffpick.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon)
 total=${#components[@]}
 count=0
@@ -171,7 +171,7 @@ dialog --title " Software Components Completed " --msgbox "\\n\\nAll Semplice's 
 # -----------------------------------------------------
 tput clear; print_header
 tput cup 6 4; tput setaf $INFOTEXT; echo -e "Welcome to the Semplice Installer."
-tput cup 8 4; tput setaf $INFOTEXT; echo -e "• It will install numerous new software packages necessary for Semplice to function correctly. It will also create a bunch of new folders withing your \$HOME folder.\n\n• If you are happy to proceed, tap 'y' when prompted; tapping anything else will cancel the installation without it having touched your system at all." | fold -s -w 76 | sed '2,$s/^/    /'
+tput cup 8 4; tput setaf $INFOTEXT; echo -e "• It will install numerous new software packages necessary for Semplice to function correctly. It will also create a bunch of new folders within your \$HOME folder.\n\n• If you are happy to proceed, tap 'y' when prompted; tapping anything else will cancel the installation without it having touched your system at all." | fold -s -w 76 | sed '2,$s/^/    /'
 tput cup 19 4; tput setaf $ALERT; read -s -n 1 -p "Do you wish to proceed? (y/n): " response
 
 if [[ "$response" == [Yy]* ]]; then
@@ -179,7 +179,7 @@ if [[ "$response" == [Yy]* ]]; then
   tput cup 6 4; echo -e "Checking your network connection is working..."
   if ! ping -c1 -W1 "1.1.1.1" >/dev/null 2>&1; then
     tput clear; print_header
-    tput cup 6 4; tput setaf $ALERT; echo -e "Sadly, you do not appear to be able to reach the Internet.\n\nThis is a requirement for the Giocoso installation." | fold -s -w 76 | sed '2,$s/^/    /'
+    tput cup 6 4; tput setaf $ALERT; echo -e "Sadly, you do not appear to be able to reach the Internet.\n\nThis is a requirement for the Semplice installation." | fold -s -w 76 | sed '2,$s/^/    /'
     tput cup 10 4; tput setaf $MAINTEXT; read -n 1 -p "Quitting in the meantime. Press a key to exit."
     tput reset; tput sgr0
     exit_program
@@ -306,7 +306,7 @@ EOF
   if command -v sacd >/dev/null 2>&1; then SACDOK=1; else SACDOK=0; fi
   if command -v trackverify >/dev/null 2>&1; then TRKVEROK=1; else TRKVEROK=0; fi
   
-  DIALOGTEXT="\nThe Semplice installation has now completed. It's current status is as follows:"
+  DIALOGTEXT="\nThe Semplice installation has now completed. Its current status is as follows:"
   
   if [[ $BASICINSTALLOK -eq 1 ]]; then 
     DIALOGTEXT=$DIALOGTEXT"\n\n  ✓ Your basic Semplice installation is fine"

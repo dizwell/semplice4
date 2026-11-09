@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ####################################################################
 #
-# semtags: routine for setting principle tags for whole album
+# semtags: routine for setting principal tags for whole album
 # Note we use the set-tags-from-file here. That's because we're
 # prompting for the tags in the right order, and hence the order
 # of the tags in the text file is known.

@@ -32,7 +32,7 @@ function check_updates {
 if [[ $pending -gt 0 ]]; then
   print_header
   tput cup 6 4; tput setaf $ALERT; echo "!! You have pending OS software updates !!"
-  tput cup 8 4; tput setaf $MAINTEXT; echo "Do you want to quit the current installation and apply them yourself, or do you wish to proceed with installing Giocoso regardless? [q/p] " | fold -s -w 76 | sed '2,$s/^/    /'
+  tput cup 8 4; tput setaf $MAINTEXT; echo "Do you want to quit the current installation and apply them yourself, or do you wish to proceed with installing Semplice regardless? [q/p] " | fold -s -w 76 | sed '2,$s/^/    /'
   read -s -n 1 choice
   
   # Default to 'q' if the user just presses Enter, or if they type 'q'/'Q'

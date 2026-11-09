@@ -17,7 +17,7 @@ while [[ $FILECOUNT -eq 0 ]]; do
   NEWDIR=$(dialog --backtitle "Semplice FLAC Tagging" --title " Please choose a working folder " --dselect "$WORKINGDIR" 18 80  3>&1 1>&2 2>&3 3>&- )
   exitStatus=$?
 
-  if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then break; fi      # 1 is cancel, 255 is hitting the ESC jkey
+  if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then break; fi      # 1 is cancel, 255 is hitting the ESC key
   if [[ -n $NEWDIR && $NEWDIR != */ ]]; then NEWDIR="$NEWDIR/"; fi       # A highlighted folder comes back without its trailing slash: add it, so the file checks below look inside it
 
   if [[ $1 == "flaconly" ]]; then
