@@ -10,7 +10,6 @@
 ####################################################################
 source "$CONFDIR/bin/semspin.sh"
 source "$CONFDIR/bin/semtput.sh"
-source "$CONFDIR/bin/semparse.sh"
 
 function nice_exit {
 # Clean up any temporary working files that may have been produced

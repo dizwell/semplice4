@@ -8,7 +8,6 @@
 #
 ####################################################################
 source "$CONFDIR/bin/semspin.sh"
-source "$CONFDIR/bin/semparse.sh"
 
 function basename {
   # Uses Bash built-in, so no call to external basename utility needed

@@ -8,7 +8,6 @@
 CANBEBOOSTED=0 DELETESOURCE=0 BOOSTPERFORMED=0
 source "$CONFDIR/bin/semtput.sh" 
 source "$CONFDIR/bin/semspin.sh"
-source "$CONFDIR/bin/semparse.sh"
 
 is_numeric() {
   [[ $1 =~ ^-?[0-9]+([.][0-9]+)?$ ]]

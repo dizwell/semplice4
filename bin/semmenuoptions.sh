@@ -213,8 +213,7 @@ elif [[ $1 == "rip" ]]; then
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup  8 4; tput setaf $MAINTEXT; echo -e "1) Rip CD"
   tput cup  9 4; echo -e "2) Specify Optical Drive"
-  tput cup 10 4; echo -e "3) Supply an Optical Drive read offset"
-  tput cup 11 4; echo -e "4) Rip an SACD"
+  tput cup 10 4; echo -e "3) Rip an SACD"
   tput cup 13 4; echo -e "W) Change Working Folder"
   tput cup 14 4; echo -e "F) Open File Manager"
   tput cup 15 4; echo -e "K) Clean FLAC tags in current folder"
@@ -230,8 +229,7 @@ elif [[ $1 == "rip" ]]; then
    "" ) clear; source "$CONFDIR/bin/semrip.sh"; smenuoptions rip ;;
     1 ) clear; source "$CONFDIR/bin/semrip.sh"; smenuoptions rip ;;
     2 ) clear; source "$CONFDIR/bin/semdevpick.sh"; smenuoptions rip ;;
-    3 ) clear; source "$CONFDIR/bin/semoffpick.sh"; smenuoptions rip ;;
-    4 ) clear; source "$CONFDIR/bin/semsacd.sh"; smenuoptions rip ;;
+    3 ) clear; source "$CONFDIR/bin/semsacd.sh"; smenuoptions rip ;;
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions rip ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions rip;;

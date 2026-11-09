@@ -5,7 +5,6 @@
 # FLAC in a folder and displaying it and/or saving it
 #
 ####################################################################
-source "$CONFDIR/bin/semparse.sh"
 OLDIFS=$IFS
 
 function extract_art {

@@ -9,7 +9,6 @@
 ####################################################################
 BREAKME=0
 source "$CONFDIR/bin/semtput.sh" 
-source "$CONFDIR/bin/semparse.sh" 
 source "$CONFDIR/bin/semspin.sh"
 
 function basename {

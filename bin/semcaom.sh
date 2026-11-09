@@ -7,7 +7,6 @@
 ####################################################################
 CUMPLAYLENGTH=0; COUNTER=1
 source "$CONFDIR/bin/semtput.sh"
-source "$CONFDIR/bin/semparse.sh"
 source "$CONFDIR/bin/semspin.sh"
 
 function basename {

@@ -28,6 +28,18 @@ metaflac $UTFCHARS --show-tag="$1" "$2" 2>/dev/null | awk -v pre="$1=" '
   { if (tolower(substr($0, 1, length(pre))) == tolower(pre)) $0 = substr($0, length(pre) + 1); print }' | flatten_lines
 }
 
+# lookup_drive_offset DEVICE: prints the read offset listed in cddriveoffsets.csv for the drive at
+# DEVICE (as identified by cdparanoia), or nothing if the drive is not listed. Linux only.
+function lookup_drive_offset {
+local driveid
+if ! [[ -f "$CONFDIR/txt/cddriveoffsets.csv" ]]; then
+  wget --quiet https://bbritten.com/software/semplice/cddriveoffsets.csv -O "$CONFDIR/txt/cddriveoffsets.csv"
+fi
+driveid=$(cdparanoia -vsQ -d "$1" 2>&1 | awk -F: '/sensed/ {print $2}' | awk '{print $--NF}')
+if [[ -z $driveid ]]; then return; fi
+$GREPPROG -Rnw "$CONFDIR/txt/cddriveoffsets.csv" -e "$driveid" | awk -F '|' '{print $2; exit;}'
+}
+
 if [[ -f $CONFDIR/txt/semplice.conf ]]; then
   source "$CONFDIR/txt/semplice.conf"                       # Read the configuration file and pick up all its values
 
