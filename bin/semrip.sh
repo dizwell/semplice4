@@ -317,7 +317,7 @@ if [[ -f $CONFDIR/rip/ripaccuracy.txt ]]; then            # Does the file exist
     elif [[ $DISCMISS -eq 1 ]]; then
       dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "This CD is NOT in the AccurateRip database, so no confidence can be given to the rip (but it's probably OK)." 8 80
     else
-      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Please review the $HOME/.local/share/semplice2/rip/ripaccuracy.txt file to see whether this rip was OK." 8 80
+      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Please review the $CONFDIR/rip/ripaccuracy.txt file to see whether this rip was OK." 8 80
     fi
   fi
 fi
