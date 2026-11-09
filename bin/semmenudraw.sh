@@ -149,14 +149,6 @@ else
   MAINLAYOUT_ON_SCREEN=1
 fi
 
-if ! [[ -f "$CONFDIR/art/sempliceicosmall.png" ]]; then
-  if [[ $CONVPROG == convert ]]; then
-    convert "$CONFDIR/art/sempliceico.png" -resize "$CONFLOGOSIZE" "$CONFDIR/art/sempliceicosmall.png" 2>/dev/null
-  elif [[ $CONVPROG == magick ]]; then
-    magick "$CONFDIR/art/sempliceico.png" -resize "$CONFLOGOSIZE" "$CONFDIR/art/sempliceicosmall.png" 2>/dev/null
-  fi
-fi
-
 LOGO_POSITION=$((69 + $LOGOPOS ))
 
 tput cup  1 4; tput setaf $SPINNER; echo -en "♬♪ "; tput setaf $LOGO; echo -en "Semplice: The Digital Music Manager"; tput setaf $SPINNER; echo -en " ♬♪"
