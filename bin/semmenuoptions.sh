@@ -86,14 +86,14 @@ if [[ $1 == "tag" ]]; then
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions tag;;
     X|x ) clear; exit 0 ;;
-    R|r ) clear; smenuoptions rip;;
-    T|t ) clear; smenuoptions tag;;
-    S|s ) clear; smenuoptions super;;
-    A|a ) clear; smenuoptions audio;;
-    M|m ) clear; smenuoptions misc;;
-    Q|q ) clear; smenuoptions quit;;
-    '[D') smenuoptions quit;;
-    '[C') smenuoptions audio;;
+    R|r ) MENUNAV=1; smenuoptions rip;;
+    T|t ) MENUNAV=1; smenuoptions tag;;
+    S|s ) MENUNAV=1; smenuoptions super;;
+    A|a ) MENUNAV=1; smenuoptions audio;;
+    M|m ) MENUNAV=1; smenuoptions misc;;
+    Q|q ) MENUNAV=1; smenuoptions quit;;
+    '[D') MENUNAV=1; smenuoptions quit;;
+    '[C') MENUNAV=1; smenuoptions audio;;
     * ) A=1;;
   esac
   done
@@ -138,14 +138,14 @@ elif [[ $1 == "audio" ]]; then
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions audio;;
     X|x ) clear; exit 0 ;;
-    R|r ) clear; smenuoptions rip;;
-    T|t ) clear; smenuoptions tag;;
-    S|s ) clear; smenuoptions super;;
-    A|a ) clear; smenuoptions audio;;
-    M|m ) clear; smenuoptions misc;;
-    Q|q ) clear; smenuoptions quit;;
-    '[D') smenuoptions tag;;
-    '[C') smenuoptions super;;
+    R|r ) MENUNAV=1; smenuoptions rip;;
+    T|t ) MENUNAV=1; smenuoptions tag;;
+    S|s ) MENUNAV=1; smenuoptions super;;
+    A|a ) MENUNAV=1; smenuoptions audio;;
+    M|m ) MENUNAV=1; smenuoptions misc;;
+    Q|q ) MENUNAV=1; smenuoptions quit;;
+    '[D') MENUNAV=1; smenuoptions tag;;
+    '[C') MENUNAV=1; smenuoptions super;;
     * ) A=1;;
   esac
   done
@@ -186,14 +186,14 @@ elif [[ $1 == "super" ]]; then
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions super;;
     X|x ) clear; exit 0 ;;
-    R|r ) clear; smenuoptions rip;;
-    T|t ) clear; smenuoptions tag;;
-    S|s ) clear; smenuoptions super;;
-    A|a ) clear; smenuoptions audio;;
-    M|m ) clear; smenuoptions misc;;
-    Q|q ) clear; smenuoptions quit;;
-    '[D') smenuoptions audio;;
-    '[C') smenuoptions rip;;
+    R|r ) MENUNAV=1; smenuoptions rip;;
+    T|t ) MENUNAV=1; smenuoptions tag;;
+    S|s ) MENUNAV=1; smenuoptions super;;
+    A|a ) MENUNAV=1; smenuoptions audio;;
+    M|m ) MENUNAV=1; smenuoptions misc;;
+    Q|q ) MENUNAV=1; smenuoptions quit;;
+    '[D') MENUNAV=1; smenuoptions audio;;
+    '[C') MENUNAV=1; smenuoptions rip;;
     * ) A=1;;
   esac
   done
@@ -234,14 +234,14 @@ elif [[ $1 == "rip" ]]; then
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions rip;;
     X|x ) clear; exit 0 ;;
-    R|r ) clear; smenuoptions rip;;
-    T|t ) clear; smenuoptions tag;;
-    S|s ) clear; smenuoptions super;;
-    A|a ) clear; smenuoptions audio;;
-    M|m ) clear; smenuoptions misc;;
-    Q|q ) clear; smenuoptions quit;;
-    '[D') smenuoptions super;;
-    '[C') smenuoptions misc;;
+    R|r ) MENUNAV=1; smenuoptions rip;;
+    T|t ) MENUNAV=1; smenuoptions tag;;
+    S|s ) MENUNAV=1; smenuoptions super;;
+    A|a ) MENUNAV=1; smenuoptions audio;;
+    M|m ) MENUNAV=1; smenuoptions misc;;
+    Q|q ) MENUNAV=1; smenuoptions quit;;
+    '[D') MENUNAV=1; smenuoptions super;;
+    '[C') MENUNAV=1; smenuoptions misc;;
     * ) A=1;;
   esac
   done
@@ -292,14 +292,14 @@ elif [[ $1 == "misc" ]]; then
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions misc;;
     X|x ) clear; exit 0 ;;
-    R|r ) clear; smenuoptions rip;;
-    T|t ) clear; smenuoptions tag;;
-    S|s ) clear; smenuoptions super;;
-    A|a ) clear; smenuoptions audio;;
-    M|m ) clear; smenuoptions misc;;
-    Q|q ) clear; smenuoptions quit;;
-    '[D') smenuoptions rip;;
-    '[C') smenuoptions quit;;
+    R|r ) MENUNAV=1; smenuoptions rip;;
+    T|t ) MENUNAV=1; smenuoptions tag;;
+    S|s ) MENUNAV=1; smenuoptions super;;
+    A|a ) MENUNAV=1; smenuoptions audio;;
+    M|m ) MENUNAV=1; smenuoptions misc;;
+    Q|q ) MENUNAV=1; smenuoptions quit;;
+    '[D') MENUNAV=1; smenuoptions rip;;
+    '[C') MENUNAV=1; smenuoptions quit;;
     * ) A=1;;
   esac
   done
@@ -330,15 +330,15 @@ elif [[ $1 == "quit" ]]; then
    "" ) source "$CONFDIR/bin/semquit.sh" clean; smenuoptions quit ;;
     1 ) source "$CONFDIR/bin/semquit.sh" clean; smenuoptions quit ;;
     2 ) source "$CONFDIR/bin/semquit.sh" noclean; smenuoptions quit ;;
-    R|r ) clear; smenuoptions rip;;
-    T|t ) clear; smenuoptions tag;;
-    S|s ) clear; smenuoptions super;;
-    A|a ) clear; smenuoptions audio;;
-    M|m ) clear; smenuoptions misc;;
+    R|r ) MENUNAV=1; smenuoptions rip;;
+    T|t ) MENUNAV=1; smenuoptions tag;;
+    S|s ) MENUNAV=1; smenuoptions super;;
+    A|a ) MENUNAV=1; smenuoptions audio;;
+    M|m ) MENUNAV=1; smenuoptions misc;;
     X|x ) clear; exit 0 ;;
-    Q|q ) smenuoptions quit;;
-    '[D') smenuoptions misc;;
-    '[C') smenuoptions tag;;
+    Q|q ) MENUNAV=1; smenuoptions quit;;
+    '[D') MENUNAV=1; smenuoptions misc;;
+    '[C') MENUNAV=1; smenuoptions tag;;
     * ) A=1;;
   esac
   done

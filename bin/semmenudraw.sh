@@ -6,7 +6,7 @@ source "$CONFDIR/bin/semtput.sh"
 if [[ $PROGVERSION == *"beta"* ]]; then LOGO_PATH="$CONFDIR/art/sempliceicosmallbeta.png"; else LOGO_PATH="$CONFDIR/art/sempliceicosmall.png"; fi
 if [[ -z $LOGOSIZE ]]; then LOGOSIZE="110x110"; fi; LOGOWIDTH="${LOGOSIZE%x*}"
 if [[ -z $LOGOPOS ]]; then LOGOPOS=0; fi
-clear; tput cup 0 0
+tput cup 0 0
 
 function sixel_graphics {
 tput cup 8 56
@@ -70,12 +70,14 @@ fi
 }
 
 if [[ $1 == "short" ]]; then
+  MAINLAYOUT_ON_SCREEN=0; clear; tput cup 0 0
   tput setaf $DRAWLINES; echo -e "┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                   │
 │                                                                                                   │
 │                                                                                                   │
 └───────────────────────────────────────────────────────────────────────────────────────────────────┘"
 elif  [[ $1 == "playing" ]]; then
+  MAINLAYOUT_ON_SCREEN=0; clear; tput cup 0 0
   tput setaf $DRAWLINES; echo -e  "┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                   │
 │                                                                                                   │
@@ -104,7 +106,10 @@ elif  [[ $1 == "playing" ]]; then
 │                                                                                                   │
 └───────────────────────────────────────────────────────────────────────────────────────────────────┘"
 else
-  tput setaf $DRAWLINES; echo  "┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
+  # Main layout. On a plain menu switch (MENUNAV=1) with the main layout already on screen, the screen
+  # is not cleared: only the header, menu bar, left-hand panel and bottom lines are redrawn, so the
+  # album art (or logo) on the right is left in place and only redrawn when it changes.
+  MAINFRAME="┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                   │
 │                                                                                                   │
 │                                                                                                   │
@@ -131,6 +136,17 @@ else
 ├─────────────────────────────────────────────────┴─────────────────────────────────────────────────┤
 │                                                                                                   │
 └───────────────────────────────────────────────────────────────────────────────────────────────────┘"
+  mapfile -t FRAMELINES <<< "$MAINFRAME"
+  tput setaf $DRAWLINES
+  if [[ $MENUNAV -eq 1 && $MAINLAYOUT_ON_SCREEN -eq 1 ]]; then
+    for r in 0 1 2 3 4 5 6 24 25 26; do tput cup $r 0; printf "%s" "${FRAMELINES[r]}"; done
+    for ((r=7; r<=23; r++)); do tput cup $r 0; printf "│%49s│" ""; done                 # Left panel only
+    PARTIALDRAW=1
+  else
+    clear; tput cup 0 0; printf "%s\n" "$MAINFRAME"
+    PARTIALDRAW=0; DISPLAYED_RIGHT=""
+  fi
+  MAINLAYOUT_ON_SCREEN=1
 fi
 
 if ! [[ -f "$CONFDIR/art/sempliceicosmall.png" ]]; then
@@ -148,18 +164,27 @@ tput cup  2 4; tput setaf $LOGO; echo "Copyright © Howard Rogers 2021-2026, Ver
 
 check_art
 
-if [[ $ARTEMBEDDED -eq 0 ]]; then 
-  tput setaf $LOGO
-  tput cup 8 54; echo -en "$Line1"
-  tput cup 9 54; echo -en "$Line2"
-  tput cup 10 54; echo -en "$Line3"
-  tput cup 11 54; echo -en "$Line4"
-  tput cup 12 54; echo -en "$Line5"
-  tput cup 13 54; echo -en "$Line6"
-  tput cup 14 54; echo -en "$Line7"
-  tput cup 15 54; echo -en "$Line8"
-  sixel_logo
- else
-  sixel_graphics
-  audio_data
+# Right-hand panel: draw the logo or the album art only if what should be there isn't already showing
+RIGHT_WANTED="$ARTEMBEDDED|$ARTCACHEKEY"
+if [[ $RIGHT_WANTED != "$DISPLAYED_RIGHT" ]]; then
+  if [[ $PARTIALDRAW -eq 1 ]]; then
+    for ((r=7; r<=23; r++)); do tput cup $r 51; printf "%49s" ""; done          # Wipe the old picture first
+  fi
+  if [[ $ARTEMBEDDED -eq 0 ]]; then
+    tput setaf $LOGO
+    tput cup 8 54; echo -en "$Line1"
+    tput cup 9 54; echo -en "$Line2"
+    tput cup 10 54; echo -en "$Line3"
+    tput cup 11 54; echo -en "$Line4"
+    tput cup 12 54; echo -en "$Line5"
+    tput cup 13 54; echo -en "$Line6"
+    tput cup 14 54; echo -en "$Line7"
+    tput cup 15 54; echo -en "$Line8"
+    sixel_logo
+  else
+    sixel_graphics
+  fi
+  DISPLAYED_RIGHT=$RIGHT_WANTED
 fi
+if [[ $ARTEMBEDDED -eq 1 ]]; then audio_data; fi                              # Header details: cheap, always redrawn
+MENUNAV=0
