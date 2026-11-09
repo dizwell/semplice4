@@ -4,6 +4,9 @@
 # semtput: routine for making tput work as a bash internal
 # call rather than as an invocation of an external utility
 #
+# This `tput` wrapper is taken from https://github.com/bahamas10/bash-tput
+# with grateful thanks to Dave Eddy and much appreciation: it speeds things up immensely!
+#
 ####################################################################
 
 tput() {
@@ -31,8 +34,9 @@ tput() {
 		setab | AB) echo -n "$ESC[48;5;$2m";;
 		sc) echo -n "${ESC}7";;
 		rc) echo -n "${ESC}8";;
-		cnorm) echo -n "$ESC[?25h";;
+		cnorm) echo -n "$ESC[?12l$ESC[?25h";;
 		civis) echo -n "$ESC[?25l";;
+		cvvis) echo -n "$ESC[?12;25h";;
 		smcup) echo -n "$ESC[?1049h";;
 		rmcup) echo -n "$ESC[?1049l";;
 		clear) echo -n "$ESC[H$ESC[2J";;
