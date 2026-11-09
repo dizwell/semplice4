@@ -267,12 +267,12 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
     PCT=$(echo "scale=2; $COUNT/$DENOM*100" | bc -l)                                        # Divides current sample number by total sample number to derive percent complete
 
     # Percentages passed to dialog's Guage tool need to be integers, which is what {var%.*} achieves
-    echo ${PCT%.*} | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
+    echo ${PCT%.*} | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET and read-retries: $READ_RETRIES \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
     sleep 1
     tput cup 25 0
   done
   COUNTER=$((COUNTER+1))
-  echo 100 | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
+  echo 100 | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET and read-retries: $READ_RETRIES \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
 
   # Before converting to FLAC, we copy all WAVs to the rip folder, to enable later AccurateRip verification check
   # ------------------------------------------------------------------------------------------------------------
