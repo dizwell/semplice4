@@ -176,7 +176,7 @@ maxtracks=$counter
 
 while IFS= read -r line; do
   TRACKNO=$counter
-  STARTSEC=$(echo $line | awk -F: '{ print ($1 * 60) + $2 "." $3 }')
+  STARTSEC=$(echo $line | awk -F: '{ printf "%.6f", ($1 * 60) + $2 + ($3 / 75) }')
   TrackStarts+=($STARTSEC)
   counter=$((counter+1))
 done < "indexfile.txt"
