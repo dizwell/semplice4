@@ -408,6 +408,6 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
     drutil eject
   fi
 fi
-cd "$ORIG_DIR"
+if [[ -n $ORIG_DIR ]]; then cd "$ORIG_DIR"; fi                            # ORIG_DIR is only set once a rip gets going; a cancelled rip never changed folder
 if [[ $OSFAMILY == "MACOS" && $RIPCANCELLED -eq 0 ]]; then drutil eject; fi   # drutil only exists on macOS; a cancelled rip leaves the disc in
 tput cvvis
