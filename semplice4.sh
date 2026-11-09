@@ -101,11 +101,7 @@ clear; smenuoptions tag; clear
 # ===========================================================================================================
 clear
 
-if ! [[ -f "$CONFDIR/bin/semtput.sh" ]]; then 
-  wget -q "https://bbritten.com/software/semplice/bin/semtput.sh" -O "$CONFDIR/bin/semtput.sh";
-else
-  source "$CONFDIR/bin/semtput.sh" 
-fi
+source "$CONFDIR/bin/semtput.sh"                      # Bash-internal tput: part of every installation
 
 export DIALOGRC="$CONFDIR/txt/absemdialog.conf"		# Sets the colour scheme for dialogs
 tput civis; printf '\e[8;28;103t'			# Setting terminal virtual size to 103x28, regardless of what it's actually set to
