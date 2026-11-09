@@ -85,7 +85,6 @@ if [[ $OS == *"ALMA"* || $OS == *"ROCKY"* ]]; then OSFAMILY="RHEL"; fi
 if [[ $OS == *"ARCH"* || $OS == *"CACHY"* || $OS == *"MANJARO"* || $OS == *"ENDEAVOUROS"* || $OS == *"GARUDA"* ]]; then OSFAMILY="ARCH"; fi
 if [[ $OS == *"DEBIAN"* || $OS == *"DEVUAN"* || $OS == *"RASPBIAN"* || $OS == *"LMDE"* ]]; then OSFAMILY="DEBIAN"; fi
 if [[ $OS == *"FEDORA"* || $OS == *"ULTRAMARINE"* ]]; then OSFAMILY="FEDORA"; fi
-if [[ $OS == *"OPENSUSE"* ]]; then OSFAMILY="SUSE"; fi
 if [[ $OS == *"UBUNTU"* || $OS == *"MINT"* || $OS == *"POP!"* || $OS == *"ZORIN"* || $OS == *"ELEMENTARY"* || $OS == *"TUXEDO"* || $OS == *"NEON"* ]]; then OSFAMILY="UBUNTU"; fi
 if [[ $OS == *"MANJARO ARM"* ]]; then OSFAMILY="MANARM"; fi
 if [[ -z $OSFAMILY ]]; then OSFAMILY="ELSE"; fi
@@ -119,9 +118,6 @@ if ! command -v sacd >/dev/null 2>&1; then
       sudo dnf group install -y development-tools >/dev/null 2>&1
       sudo dnf install -y gcc-c++ >/dev/null 2>&1
       sudo dnf install -y python3-devel python3-setuptools python3-wheel >/dev/null 2>&1
-    elif command -v zypper >/dev/null 2>&1; then
-      sudo zypper install -y -t pattern devel_C_C++ >/dev/null 2>&1
-      sudo zypper install -y python3-devel python3-setuptools python3-pip >/dev/null 2>&1
     elif command -v pacman >/dev/null 2>&1; then
       sudo pacman -Syu --noconfirm base-devel python python-setuptools python-wheel >/dev/null 2>&1
     fi
