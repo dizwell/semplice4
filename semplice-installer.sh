@@ -37,7 +37,7 @@ reset
 exit 1
 }
 
-trap exit_program TERM      # Trap to quit nicely if the terminal is closed by clicking 'X' icon in window titlebar (works for xterm, not for all terminals)
+trap exit_program TERM      # Trap to quit nicely if the terminal is closed by clicking 'X' icon in window titlebar
 trap exit_program SIGHUP    # Same thing, different signal
 trap exit_program INT       # Trap to prevent Ctrl+C from working
 
