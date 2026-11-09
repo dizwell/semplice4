@@ -28,11 +28,11 @@ if [[ -z $RENUM_START ]]; then RENUM_START=1; fi                                
 if [[ $RENUM_START == *"+"* ]]; then RENUM_START="${RENUM_START//+}"; fi         # If they supply a "+", strip it
 if [[ $RENUM_START == *"-"* ]]; then RENUM_START="${RENUM_START//-}"; fi         # If they supply a "-", strip it
 
-if ! [[ -z $RENUM_START ]]; then
-  if ! [[ $RENUM_START =~ ^[0-9]+$ ]] ; then                                     # If non-numeric characters are present, the default of 1 applies
-    RENUM_START=1
-  fi
+if ! [[ $RENUM_START =~ ^[0-9]+$ ]] ; then                                       # If non-numeric characters are present, the default of 1 applies
+  RENUM_START=1
 fi
+RENUM_START=$((10#$RENUM_START))                                                  # Force base 10: "08" or "09" would otherwise be read as (invalid) octal
+if [[ $RENUM_START -lt 1 || $RENUM_START -gt 99 ]]; then RENUM_START=1; fi        # Outside the 1-99 range asked for, the default of 1 applies
 
 TRACKNO=$RENUM_START
 
@@ -45,8 +45,7 @@ for f in *.flac; do
     TRACKTITLE="track"
   fi
 
-  FIXEDTRACK="${TRACKNO#0}"		# 2-digit numbers with leading zeroes causing problems for printf. This fixes that.
   FILETITLE=$(tr '~#%&<>:"/\|?*' '_' <<< "$TRACKTITLE") # Make file names NTFS-safe
-  mv -f "$f" "$(printf "%02d" $FIXEDTRACK)"\ -\ "$FILETITLE.flac" 2>/dev/null
+  mv -f "$f" "$(printf "%02d" "$TRACKNO")"\ -\ "$FILETITLE.flac" 2>/dev/null
   TRACKNO=$((TRACKNO+1))
 done
