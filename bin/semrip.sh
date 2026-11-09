@@ -20,7 +20,7 @@
 ####################################################################
 source "$CONFDIR/bin/semtput.sh" 
 source "$CONFDIR/bin/semparse.sh" 
-CD_NOTPRESENT=1 NODEVICE=0
+CD_NOTPRESENT=1 NODEVICE=0 RIPCANCELLED=0
 if [[ -z $OPTICAL_DEVICE ]]; then OPTICAL_DEVICE=/dev/cdrom; fi
 if [[ -z $DELETE_WAV ]]; then DELETE_WAV=1; fi
 tput civis
@@ -55,19 +55,19 @@ function cdrom_identify_macos {
   # 3. Read the configured offset and use it, or set it to a default of 0 and warn
   if [[ -z $DERIVED_OFFSET ]] && [[ -z $OPTICAL_OFFSET ]]; then 
     DEVICE_OFFSET=0
-    dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Using a default read offset " --msgbox "\nAuto-detection of a read offset has failed and you haven't configured one either. A fallback read offset of 0 will be used, but this probably won't be correct.\n\nRips will therefore be performed with the command:\n\ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 12 70
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Using a default read offset " --yes-label "Continue" --no-label "Cancel" --yesno "\nAuto-detection of a read offset has failed and you haven't configured one either. A fallback read offset of 0 will be used, but this probably won't be correct.\n\nRips will therefore be performed with the command:\n\ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 12 70 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
   elif [[ -z $DERIVED_OFFSET ]] && ! [[ -z $OPTICAL_OFFSET ]]; then 
     DEVICE_OFFSET=$OPTICAL_OFFSET
-    dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Using a configured read offset " --msgbox "\nAuto-detection of a read offset has failed but you've manually configured one (of $DEVICE_OFFSET) in the persistent configuration file.\n\nRips will therefore be performed with the command:\n\ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 12 70  
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Using a configured read offset " --yes-label "Continue" --no-label "Cancel" --yesno "\nAuto-detection of a read offset has failed but you've manually configured one (of $DEVICE_OFFSET) in the persistent configuration file.\n\nRips will therefore be performed with the command:\n\ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 12 70 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
   elif [[ ! -z $DERIVED_OFFSET ]] && [[ $AUTOSET_OFFSET -eq 1 ]]; then
     DEVICE_OFFSET=$DERIVED_OFFSET
-    dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Using autodetected read offset " --msgbox "\nYour optical drive has been detected automatically to have \na read offset of: $DEVICE_OFFSET.\n\nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 12 70
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Using autodetected read offset " --yes-label "Continue" --no-label "Cancel" --yesno "\nYour optical drive has been detected automatically to have \na read offset of: $DEVICE_OFFSET.\n\nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 12 70 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
   fi
   
   # 4. Use Hyperaccurate Rip if configured
   if [[ $HYPER_ACCURATERIP -eq 1 ]]; then
     DEVICE_OFFSET=$(($DEVICE_OFFSET - 30))
-    dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "You have enable hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 8 80
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "You have enable hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
   fi  
 }
 
@@ -99,7 +99,7 @@ fi
 # Is there a configured read-offset? Use it if so.
 if ! [[ -z $OPTICAL_OFFSET ]]; then
   DEVICE_OFFSET=$OPTICAL_OFFSET
-  dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "You have manually configured a read offset of: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 8 80
+  dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "You have manually configured a read offset of: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
 else
   # There should be a list of devices and read-offsets. Obtain it if not.
   # ----------------------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ else
     read USEROFFSET
     if [[ -z $USEROFFSET ]]; then
       DEVICE_OFFSET=0
-      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Setting the drive offset to 0, but this probably won't be correct." 8 80
+      dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "Setting the drive offset to 0, but this probably won't be correct." 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
     else
       DEVICE_OFFSET=$USEROFFSET
       echo "  Setting the drive offset to $USEROFFSET"
@@ -131,7 +131,7 @@ else
   else
     if [[ $HYPER_ACCURATERIP -eq 1 ]]; then
       DEVICE_OFFSET=$(($DEVICE_OFFSET - 30))
-      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "You have enable hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 8 80
+      dialog --stdout --backtitle "Semplice Audio CD Ripping" --yes-label "Continue" --no-label "Cancel" --yesno "You have enable hyper-accurate reads, so that will be adjusted to be: $DEVICE_OFFSET. \nRips will therefore be performed with the command: \ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 10 80 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
     fi
   fi
 fi
@@ -365,7 +365,7 @@ else
   cdrom_config
 fi
 
-if [[ $NODEVICE -eq 0 ]]; then
+if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
   perform_rip
   convert_to_flac
 
@@ -390,5 +390,5 @@ if [[ $NODEVICE -eq 0 ]]; then
   fi
 fi
 cd "$ORIG_DIR"
-if [[ $OSFAMILY == "MACOS" ]]; then drutil eject; fi                  # drutil only exists on macOS
+if [[ $OSFAMILY == "MACOS" && $RIPCANCELLED -eq 0 ]]; then drutil eject; fi   # drutil only exists on macOS; a cancelled rip leaves the disc in
 tput cvvis
