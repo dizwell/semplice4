@@ -12,9 +12,10 @@ function cuesheet_edit {
 
 # First, extract the cuesheet to a working file, assuming one exists
 # -----------------------------------------------------------------------------------------
-f=$(ls *.flac | head -1)
+f=$(ls *.flac 2>/dev/null | head -1)
 if ! [[ -z $f ]]; then
-  CUESHEET=$(metaflac $UTFCHARS --show-tag=Cuesheet "$f" | $SEDPROG 's/.*=//g')
+  CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f")
+  CUESHEET="${CUESHEET#*=}"                       # Strip only the leading CUESHEET=, so lines containing '=' survive intact
 fi
 
 # If a cuesheet exists, open it in an editor and then delete the original and replace
@@ -37,6 +38,8 @@ fi
 }
 
 cuesheet_edit
-metaflac --remove-tag=CUESHEET "$f"
-metaflac $UTFCHARS --set-tag-from-file=CUESHEET="$CONFDIR/tmp/tmp_cuesheet.txt" "$f"
-rm -rf "$CONFDIR/tmp/tmp_cuesheet.txt"
+if [[ -f $CONFDIR/tmp/tmp_cuesheet.txt ]]; then   # Only save if a cuesheet was found and opened for editing
+  metaflac --remove-tag=CUESHEET "$f"
+  metaflac $UTFCHARS --set-tag-from-file=CUESHEET="$CONFDIR/tmp/tmp_cuesheet.txt" "$f"
+  rm -f "$CONFDIR/tmp/tmp_cuesheet.txt"
+fi
