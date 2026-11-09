@@ -140,7 +140,7 @@ fi
 function rip_folder_failed {
 # Called when a rip folder cannot be created or entered: say so, and make sure nothing more is ripped
 RIPCANCELLED=1
-dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Cannot use the rip folder " --msgbox "\nSemplice could not create or open this folder:\n\n$1\n\nCheck that it can be written to (on macOS, that your terminal program has permission to use it in System Settings > Privacy & Security). Ripping has stopped." 14 80
+dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Cannot use the rip folder " --msgbox "\nSemplice could not create or open this folder:\n\n$1\n\nRipping has stopped. Check that the disk has space and that the folder can be written to." 12 80
 }
 
 function perform_rip {
@@ -197,7 +197,7 @@ fi                                                                          # cr
 
 # If they haven't cancelled, create the necessary rip folder
 # -----------------------------------------------------------------------------------------
-THISRIP_FOLDER="$WORKINGDIR/SempliceMusicRip-$($DATEPROG '+%Y-%m-%d')"
+THISRIP_FOLDER="$RIPROOT/SempliceMusicRip-$($DATEPROG '+%Y-%m-%d')"
 
 if ! mkdir -p "$THISRIP_FOLDER" 2>/dev/null || ! [[ -w $THISRIP_FOLDER ]]; then
   rip_folder_failed "$THISRIP_FOLDER"; return
@@ -364,6 +364,17 @@ rm -f "$CONFDIR/rip"/*.flac 2>/dev/null
 
 # Actual Program Code to do stuff starts here...
 # ==============================================================================================
+# The rip folder must already exist and be writable: check before anything else happens
+if ! [[ -d $RIPROOT ]]; then
+  RIPPROBLEM="does not exist"
+elif ! [[ -w $RIPROOT ]]; then
+  RIPPROBLEM="exists, but cannot be written to"            # Covers ordinary permissions and macOS locked (uchg) folders
+fi
+if [[ -n $RIPPROBLEM ]]; then
+  dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Rip folder problem " --msgbox "\nThe rip folder:\n\n$RIPROOT\n\n$RIPPROBLEM. Please choose a different rip folder in the configuration (Miscellaneous menu, option 1). Nothing has been ripped." 13 80
+  unset RIPPROBLEM; tput cvvis; return
+fi
+
 if [[ $OSFAMILY == "MACOS" ]]; then
   cdrom_identify_macos
 else

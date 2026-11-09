@@ -151,23 +151,13 @@ if [[ -f $CONFDIR/txt/semplice.conf ]]; then
     NAMEBITS=0
   fi
 
-  if ! [[ -z $RIP_FOLDER ]]; then                                                     # Rip Folder if not present defaults to $HOME/Music, or is created at this point if it doesn't already exist
-    if ! [[ -d $RIP_FOLDER ]]; then
-      mkdir -p "$RIP_FOLDER" 2>/dev/null
-      exitStatus=$?
-      if [[ $exitStatus -eq 0 ]]; then                        # Mkdir returns 0 if successful, non-zero otherwise
-        WORKINGDIR="$RIP_FOLDER"
-      else
-        WORKINGDIR="$HOME/Music"
-      fi
-    else
-      WORKINGDIR="$RIP_FOLDER"
-    fi
-  else                                                      # No folder supplied, so the default kicks in, but we still have to make sure that default exists
-    WORKINGDIR="$HOME/Music"
-    if ! [[ -d $WORKINGDIR ]]; then
-      mkdir -p "$WORKINGDIR"  2>/dev/null
-    fi
+  # Rip folder: the configured RIP_FOLDER, or $HOME/Music if none is configured. It is not created
+  # here: semrip.sh checks that it exists and can be written to before any rip starts. It is held in
+  # RIPROOT, so that reading the configuration never changes the user's working folder (WORKINGDIR).
+  if ! [[ -z $RIP_FOLDER ]]; then
+    RIPROOT="$RIP_FOLDER"
+  else
+    RIPROOT="$HOME/Music"
   fi
 
   if ! [[ -z $CUSTOMTAGS ]]; then                                                     # CUSTOM_TAGS defaults to no, but can be set to yes.
