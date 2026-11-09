@@ -262,6 +262,11 @@ WEZFNTSZ=$CONFWEZFNTSZ
 DIATHEME=\"$CONFDIATHEME\"
 LOGOPOS=$CONFLOGOPOS" > "$CONFDIR/txt/semplice.conf"
 
+# Regenerate the small program logos based on the new logo size parameter (as Giocoso does)
+# ====================================================================
+$CONVPROG "$CONFDIR/art/sempliceicobeta.png" -resize "$CONFLOGOSIZE" "$CONFDIR/art/sempliceicosmallbeta.png" 2>/dev/null
+$CONVPROG "$CONFDIR/art/sempliceico.png" -resize "$CONFLOGOSIZE" "$CONFDIR/art/sempliceicosmall.png" 2>/dev/null
+
 rm -f "$CONFDIR/tmp/ripparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/tagparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/customtagparams" 2>/dev/null
