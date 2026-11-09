@@ -50,6 +50,7 @@ function cdrom_identify_macos {
     TRACK_COUNT=$(diskutil list "$DISK_ID" | $GREPPROG "CD_DA" | wc -l | xargs)
   else
     dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Audio CD needs to be present " --msgbox "\nCD Ripping on a Mac needs the CD to be inserted before running this software!" 8 80
+    RIPCANCELLED=1                                                         # No disc: stop here, rather than relying on later steps failing
     return
   fi
   
