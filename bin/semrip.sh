@@ -240,9 +240,9 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   cd "$THISRIP_FOLDER/$THISRECFOLDER"
   
   if [[ $OSFAMILY != "MACOS" ]]; then  
-    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d $OPTICAL_DEVICE -z=$READ_RETRIES -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &
+    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &
   elif [[ $OSFAMILY == "MACOS" ]]; then 
-    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d "$OPTICAL_DEVICE" -z=$READ_RETRIES -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &  
+    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d "$OPTICAL_DEVICE" --never-skip=$READ_RETRIES -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &  
   fi
   
   while [[ $(cat /tmp/rip.log | $GREPPROG Done | wc -l) -eq 0 ]]; do
@@ -383,7 +383,7 @@ if [[ $NODEVICE -eq 0 ]]; then
       fi
     fi
     echo "" >> ripaccuracy.txt
-    echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE -z=$READ_RETRIES -O $DEVICE_OFFSET" >> ripaccuracy.txt
+    echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" >> ripaccuracy.txt
     eject $OPTICAL_DEVICE
   else
     drutil eject
