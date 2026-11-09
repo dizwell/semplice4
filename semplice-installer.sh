@@ -251,6 +251,8 @@ dialog --title " Software Components Completed " --msgbox "\\n\\nAll Semplice's 
 }
 
 function backup_install {
+# Nothing to back up on a first-ever install, so skip creating an empty backup folder
+if [[ ! -d "$NEWCONF" ]] && ! compgen -G "/usr/bin/semplice*.sh" >/dev/null && ! compgen -G "/usr/local/bin/semplice*.sh" >/dev/null; then return; fi
 tput clear; print_header
 tput cup 6 4; tput setaf $MAINTEXT; echo -n "Backing up prior version's program."
 BACKUPDIR="$HOME/.local/share/semplice-backup-$(date +%Y%m%d-%H%M%S)"
