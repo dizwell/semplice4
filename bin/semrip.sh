@@ -21,6 +21,7 @@
 source "$CONFDIR/bin/semtput.sh" 
 source "$CONFDIR/bin/semparse.sh" 
 CD_NOTPRESENT=1 NODEVICE=0 RIPCANCELLED=0
+if [[ -n $SESSION_DEVICE ]]; then OPTICAL_DEVICE="$SESSION_DEVICE"; fi    # A drive picked this session (Ripping menu, option 2) overrides the configured default
 if [[ -z $OPTICAL_DEVICE ]]; then OPTICAL_DEVICE=/dev/cdrom; fi
 if [[ -z $DELETE_WAV ]]; then DELETE_WAV=1; fi
 tput civis

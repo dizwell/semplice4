@@ -23,7 +23,9 @@ done
 device_name=$(dialog --backtitle "Semplice Audio CD Ripping" --radiolist "Pick the optical device you want to use:" 15 90 0 $DEVLIST 3>&1 1>&2 2>&3 3>&- )
 exitStatus=$?
 
-# Only change the drive if one was actually chosen: Cancel, Esc, or OK with nothing selected leave it as it was
+# Only change the drive if one was actually chosen: Cancel, Esc, or OK with nothing selected leave it as it was.
+# The choice is a per-session override held in SESSION_DEVICE: it is never written to semplice.conf, and
+# re-reading the configuration (which resets OPTICAL_DEVICE to the configured default) does not touch it.
 if [[ $exitStatus -eq 0 && -n $device_name ]]; then
-  export OPTICAL_DEVICE="$device_name"
+  export SESSION_DEVICE="$device_name"
 fi
