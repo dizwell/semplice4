@@ -247,7 +247,6 @@ elif [[ $1 == "rip" ]]; then
   done
 
 elif [[ $1 == "misc" ]]; then
-  if ! [[ -f "$CONFDIR/bin/semcolour.sh" ]]; then wget -q "https://bbritten.com/software/semplice/bin/semcolour.sh" -O "$CONFDIR/bin/semcolour.sh"; fi
   # ======================================================================================================
   tput cup  5 4
   tput setaf $HOTKEY; echo -en "T"; tput setaf $DRAWLINES; echo -en "agging"; echo -en "$SPACER"
