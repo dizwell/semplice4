@@ -130,7 +130,7 @@ if [[ $download_status -ne 0 ]]; then
 fi
 
 # Self-compiled static executables next: these live in exec, not bin
-components=(sacd_extract-linux-x86_64 sacd_extract-linux-arm64 sacd_extract-macos-x86_64 sacd_extract-macos-arm64 semarv-linux-x86_64 semarv-linux-arm64 semarv-macos-x86_64 semarv-macos-arm64)
+components=(sacd_extract-linux-x86_64 sacd_extract-linux-arm64 sacd_extract-macos-x86_64 sacd_extract-macos-arm64 img2sixel-linux-x86_64 img2sixel-linux-arm64 img2sixel-macos-x86_64 img2sixel-macos-arm64 semarv-linux-x86_64 semarv-linux-arm64 semarv-macos-x86_64 semarv-macos-arm64)
 total=${#components[@]}
 count=0
 (
@@ -387,6 +387,7 @@ EOF
   case "$(uname -m)" in arm64|aarch64) ARVARCH="arm64" ;; x86_64) ARVARCH="x86_64" ;; *) ARVARCH="unknown" ;; esac
   if [[ -x "$NEWCONF/exec/semarv-$ARVPLAT-$ARVARCH" ]]; then TRKVEROK=1; else TRKVEROK=0; fi   # Semplice's own AccurateRip checker for this computer
   if [[ -x "$NEWCONF/exec/sacd_extract-$ARVPLAT-$ARVARCH" ]]; then SACDOK=1; else SACDOK=0; fi   # SACD ripping and ISO conversion for this computer
+  if [[ -x "$NEWCONF/exec/img2sixel-$ARVPLAT-$ARVARCH" ]]; then SIXELOK=1; else SIXELOK=0; fi    # Album art and logo display for this computer
   
   DIALOGTEXT="\nThe Semplice installation has now completed. Its current status is as follows:"
   
@@ -404,13 +405,19 @@ EOF
       DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot handle SACD ISOs at all"
     fi    
   
+    if [[ $SIXELOK -eq 1 ]]; then 
+      DIALOGTEXT=$DIALOGTEXT"\n  ✓ Semplice can display album art OK"
+    else
+      DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot display album art at all"
+    fi
+
     if [[ $TRKVEROK -eq 1 ]]; then 
       DIALOGTEXT=$DIALOGTEXT"\n  ✓ Semplice can verify CD rips for accuracy"
     else
       DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot verify CD rips for accuracy"
     fi
   
-    if [[ $CUEPRINTOK -eq 0 || $SACDOK -eq 0 || $TRKVEROK -eq 0 ]]; then
+    if [[ $CUEPRINTOK -eq 0 || $SACDOK -eq 0 || $SIXELOK -eq 0 || $TRKVEROK -eq 0 ]]; then
       DIALOGTEXT=$DIALOGTEXT"\n\nSee the Semplice documentation for how to potentially resolve these issues manually. You can otherwise close this terminal now."
     else 
       DIALOGTEXT=$DIALOGTEXT"\n\nSemplice has full functionality: click OK to return the command line."
@@ -420,7 +427,7 @@ EOF
    DIALOGTEXT=$DIALOGTEXT"\n\nSince even the basic installation seems faulty, you're advised to check your network connection and try re-installing Semplice afresh."
   fi
   
-  dialog --stdout --backtitle "Semplice Software Install" --title " Software installation status " --msgbox "\n$DIALOGTEXT" 17 80 
+  dialog --stdout --backtitle "Semplice Software Install" --title " Software installation status " --msgbox "\n$DIALOGTEXT" 18 80 
     
   # 9. Finish Up
   # -----------------------------------------------------
