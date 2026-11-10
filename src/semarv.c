@@ -17,9 +17,12 @@
  *   RESULT: NOTINDB                      the disc is not in the AccurateRip database
  *   RESULT: ERROR <reason>               the check could not be done
  *
- * Needs nothing but a C compiler to build, and curl at run time. Build a static binary with:
- *   cc -O2 -static -o semarv semarv.c      (Linux)
- *   cc -O2 -o semarv semarv.c              (macOS, which does not allow fully static binaries)
+ * Needs nothing but a C compiler to build, and curl at run time. Build it on each platform as
+ * (names as Giocoso's exec programs: semarv-<macos|linux>-<arm64|x86_64>):
+ *   cc -O2 -static -o semarv-linux-x86_64 semarv.c                          (Linux, Intel/AMD)
+ *   cc -O2 -static -o semarv-linux-arm64 semarv.c                           (Linux, 64-bit ARM)
+ *   cc -O2 -mmacosx-version-min=10.13 -o semarv-macos-x86_64 semarv.c       (Intel Mac)
+ *   cc -O2 -mmacosx-version-min=11.0 -o semarv-macos-arm64 semarv.c         (Apple Silicon Mac)
  *
  * Exit status: 0 for MATCH, 1 for anything else.
  */
