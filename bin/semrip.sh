@@ -206,11 +206,12 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   # Now we rip...
   # --------------
   tput civis
+  if [[ $RIPMODE == "fast" ]]; then FASTFLAG="-Z"; RIPMODETEXT="fast"; else FASTFLAG=""; RIPMODETEXT="safe"; fi   # Fast mode: cdparanoia reads once, without its error checking
   
   if [[ $OSFAMILY != "MACOS" ]]; then  
-    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &
+    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES $FASTFLAG -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &
   elif [[ $OSFAMILY == "MACOS" ]]; then 
-    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d "$OPTICAL_DEVICE" --never-skip=$READ_RETRIES -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &  
+    tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d "$OPTICAL_DEVICE" --never-skip=$READ_RETRIES $FASTFLAG -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &  
   fi
   
   while [[ $(cat /tmp/rip.log | $GREPPROG Done | wc -l) -eq 0 ]]; do
@@ -230,12 +231,12 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
     PCT=$(echo "scale=2; $COUNT/$DENOM*100" | bc -l)                                        # Divides current sample number by total sample number to derive percent complete
 
     # Percentages passed to dialog's Guage tool need to be integers, which is what {var%.*} achieves
-    echo ${PCT%.*} | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET and read-retries: $READ_RETRIES \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
+    echo ${PCT%.*} | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET, read-retries: $READ_RETRIES, $RIPMODETEXT mode \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
     sleep 1
     tput cup 25 0
   done
   COUNTER=$((COUNTER+1))
-  echo 100 | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET and read-retries: $READ_RETRIES \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
+  echo 100 | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET, read-retries: $READ_RETRIES, $RIPMODETEXT mode \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
 
   # Before converting to FLAC, we copy all WAVs to the rip folder, to enable later AccurateRip verification check
   # ------------------------------------------------------------------------------------------------------------
@@ -343,7 +344,7 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
     if [[ -n $SEMARV ]]; then
       verify_rip
       echo "" >> "$CONFDIR/rip/ripaccuracy.txt"
-      echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" >> "$CONFDIR/rip/ripaccuracy.txt"
+      echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES $FASTFLAG -O $DEVICE_OFFSET" >> "$CONFDIR/rip/ripaccuracy.txt"
     else
       dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Semplice's AccurateRip checker (semarv) is missing for this computer, so this rip cannot be verified in the AccurateRip database." 8 80
     fi
