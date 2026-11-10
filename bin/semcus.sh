@@ -22,18 +22,19 @@ if [[ ${#USED_NAMES[@]} -eq 0 ]]; then return; fi
 
 # Build the form with one row per tag in use: consecutive rows, so no gaps.
 # Existing values are read from the first FLAC, for display.
-local g row=0 LABEL LABELWIDTH=0 FIELDCOL FIELDWIDTH
+local g row=0 SHOWNAME LABEL LABELWIDTH=0 FIELDCOL FIELDWIDTH
 local -a CUSTOMSTRING=()
 g=$(find "$(pwd)" -maxdepth 1 -name "*.flac" | sort | head -n 1)
 for NAME in "${USED_NAMES[@]}"; do                                                # Find the longest label, so every input field starts clear of it
-  row=$((row+1)); LABEL="$row. ${NAME//_/ }:"
+  row=$((row+1)); SHOWNAME="${NAME//_/ }"; LABEL="$row. ${SHOWNAME:0:20}:"         # Labels show at most 20 characters of a tag's name
   if [[ ${#LABEL} -gt $LABELWIDTH ]]; then LABELWIDTH=${#LABEL}; fi
 done
 FIELDCOL=$((LABELWIDTH+3)); FIELDWIDTH=$((90-FIELDCOL))                          # Two spaces' gap after the longest label; field fills the rest of the form
 row=0
 for NAME in "${USED_NAMES[@]}"; do
   row=$((row+1))
-  CUSTOMSTRING+=("$row. ${NAME//_/ }:" "$row" 1 "$(get_tag "$NAME" "$g")" "$row" $FIELDCOL $FIELDWIDTH 256)
+  SHOWNAME="${NAME//_/ }"
+  CUSTOMSTRING+=("$row. ${SHOWNAME:0:20}:" "$row" 1 "$(get_tag "$NAME" "$g")" "$row" $FIELDCOL $FIELDWIDTH 256)
 done
 
 exec 3>&1
