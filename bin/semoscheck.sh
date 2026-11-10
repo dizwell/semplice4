@@ -5,6 +5,7 @@
 # prerequisites are present.
 #
 ####################################################################
+COPYRIGHT="2019-2026"                             # Copyright years, used by every screen that displays them (set here, as bin/ is always current)
 if [[ -f "$CONFDIR/bin/semtput.sh" ]]; then
   source "$CONFDIR/bin/semtput.sh"
 fi

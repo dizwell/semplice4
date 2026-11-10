@@ -53,7 +53,6 @@
 # ==============================================================================================================
 echo -ne "\033]0;Semplice: The Digital Music Manager\007"
 CONFDIR="$HOME/.local/share/semplice4"  OLDIFS=$IFS
-COPYRIGHT="2019-2026"                             # Copyright years, shown on every screen that displays them
 PROGFILE="${BASH_SOURCE[0]}"                      # This script's own path (a symlink such as /usr/local/bin/semplice is fine)
 if ! sed -n '10p' "$PROGFILE" | grep -q '?'; then PROGVERSION="4.00"; else PROGVERSION="4.00-beta"; fi
 mkdir -p "$CONFDIR" "$CONFDIR/txt" "$CONFDIR/bin" "$CONFDIR/tmp" "$CONFDIR/art" "$CONFDIR/rip" 2>/dev/null	   # Create a folder structure, if it doesn't already exist (and suppress errors if it does!)
