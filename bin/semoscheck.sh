@@ -142,44 +142,6 @@ if ! command -v sacd >/dev/null 2>&1; then
 fi
 }
 
-function audiotools_install {
-if ! command -v trackverify >/dev/null 2>&1; then    
-  if [[ ! $OSFAMILY == "MACOS" ]]; then     # Unfortunately, I do not have a way to install trackverify on MacOS at this time
-    dialog --stdout --title " Installing Semplice's Software Dependencies " --backtitle "Semplice Software Install" \
-           --msgbox "\nAbout to install Audiotools, for CD Rip verification purposes.\n\nClick OK to proceed." 10 80
-
-    tput cup 24 4; echo -en "Processing. Please wait..."
-    wget -q https://bbritten.com/software/semplice/tmp/audiotools.tar.gz \
-         -O "$CONFDIR/tmp/audiotools.tar.gz"
-    tar -xvzf "$CONFDIR/tmp/audiotools.tar.gz" -C "$CONFDIR/tmp" >/dev/null 2>&1
-    mv "$CONFDIR/tmp/audiotools-3.1.1" "$CONFDIR/tmp/audiotools"
-
-    cd "$CONFDIR/tmp/audiotools"
-
-    # Detect Python major.minor version
-    PYVER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-    PYMAJOR=$(echo "$PYVER" | cut -d. -f1)
-    PYMINOR=$(echo "$PYVER" | cut -d. -f2)
-
-    # Patch setup.py only if Python >= 3.12 (distutils removed)
-    if [[ $PYMAJOR -ge 3 && $PYMINOR -ge 12 ]]; then
-      sed -i 's/from __future__ import print_function/from setuptools import setup/' setup.py
-    fi
-
-    # Build and install
-    sudo python3 setup.py build >/dev/null 2>&1
-    sudo python3 setup.py install >/dev/null 2>&1
-
-    cd
-    sudo rm -rf "$CONFDIR/tmp/audiotools"
-    sudo rm -f "$CONFDIR/tmp/audiotools.tar.gz"
-  fi
-  
-  if ! command -v trackverify >/dev/null 2>&1; then
-    dialog --stdout --backtitle "Semplice Software Install" --title " Software installation failure " --msgbox "\nThe automated installation of audiotools has **failed**. \n\nYou may be able to install it yourself later on, but until you do, Semplice will lack the ability to perform track verification after a CD rip. This does NOT affect any other Semplice functionality.\n\nClick OK to proceed." 14 80     
-  fi
-fi
-}
 
 # Now define the software tools etc. required for each family
 # -----------------------------------------------------------------------------
@@ -222,7 +184,7 @@ case $OSFAMILY in
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
 	
 	# Compile Libsixel
-	dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we have to compile the Libsixel, AudioTools and SACD support packages. This can take a **very** long time! Please be even more patient than before..." 12 70
+	dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we have to compile the Libsixel and SACD support packages. This can take a **very** long time! Please be even more patient than before..." 12 70
 	tput cup 24 4	
 	git clone https://github.com/saitoha/libsixel.git > /dev/null 2>&1
 	cd libsixel
@@ -231,13 +193,6 @@ case $OSFAMILY in
 	make >> "$HOME/Desktop/sixelinstall.log" 2>&1
 	sudo make install >> "$HOME/Desktop/sixelinstall.log" 2>&1
 	sudo ldconfig > /dev/null 2>&1
-	
-	# Compile python audio tools
-	tput cup 24 4
-	git clone https://github.com/tuffy/python-audio-tools.git > /dev/null 2>&1
-	cd python-audio-tools
-	python3 setup.py build > "$HOME/Desktop/audioinstall.log" 2>&1
-	sudo python3 setup.py install >> "$HOME/Desktop/audioinstall.log" 2>&1
 	
 	cd
 	rm -rf libsixel > /dev/null 2>&1
@@ -290,7 +245,7 @@ case $OSFAMILY in
     ) | dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
 	
-	dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we have to compile the Libsixel, AudioTools and SACD support packages. This can take a **very** long time! Please be even more patient than before..." 12 70
+	dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we have to compile the Libsixel and SACD support packages. This can take a **very** long time! Please be even more patient than before..." 12 70
     if ! command -v yay &> /dev/null
 	then
         dialog  --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\nThe 'Yay' utility is required to compile additional necessary Semplice components. It takes a long time to install and there won't be much by way of progress indicators.\\n\\nClick OK to begin the Yay installation process now." 12 70
@@ -317,12 +272,6 @@ case $OSFAMILY in
 	echo '#!/bin/sh' > /tmp/gcc-patch/gcc
 	echo '/usr/bin/gcc -Wno-error=implicit-function-declaration "$@"' >> /tmp/gcc-patch/gcc
 	chmod +x /tmp/gcc-patch/gcc
-		
-	if ! command -v trackverify &> /dev/null
-	then
-  	  dialog  --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we need to compile the Audiotools package, which allows Semplice to verify CD Rips. This can run for many minutes..." 12 70	 	
-	  PATH="/tmp/gcc-patch:$PATH" yay -S audiotools --noconfirm > "$HOME/Desktop/audioinstall.log" 2>&1
-	fi
 		
 	dialog  --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNext, we need to compile the libsixel package, without which Semplice cannot display graphics or album artwork..." 12 70	 	
 	PATH="/tmp/gcc-patch:$PATH" yay -Rdd libsixel --noconfirm > "$HOME/Desktop/sixelinstall.log" 2>&1 
@@ -384,7 +333,6 @@ case $OSFAMILY in
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
-    audiotools_install
     
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -439,7 +387,6 @@ case $OSFAMILY in
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
-    audiotools_install
     
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -485,7 +432,6 @@ case $OSFAMILY in
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     sacd_install
-    audiotools_install
     
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -538,17 +484,6 @@ case $OSFAMILY in
     tput cup 24 4
     sacd_install
     
-	# Compile Audiotools
-	cd
-	wget https://sourceforge.net/projects/audiotools/files/audiotools-3.1.1.tar.gz/download -O audiotools.tar.gz >/dev/null 2>&1
-	tar xf audiotools.tar.gz >/dev/null 2>&1
-	cd audiotools-3.1.1
-	python3 setup.py build >/dev/null 2>&1
-	tput cup 24 4
-	sudo python3 setup.py install >/dev/null 2>&1
-	cd
-	rm -rf audiotools-3.1.1 >/dev/null 2>&1
-	
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
   fi
@@ -604,7 +539,6 @@ case $OSFAMILY in
     tput cup 24 4
     cuetools_install
     sacd_install
-    audiotools_install
 
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
