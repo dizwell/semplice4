@@ -152,7 +152,7 @@ fi
 LOGO_POSITION=$((69 + $LOGOPOS ))
 
 tput cup  1 4; tput setaf $SPINNER; echo -en "♬♪ "; tput setaf $LOGO; echo -en "Semplice: The Digital Music Manager"; tput setaf $SPINNER; echo -en " ♬♪"
-tput cup  2 4; tput setaf $LOGO; echo "Copyright © Howard Rogers 2021-2026, Version $PROGVERSION"
+tput cup  2 4; tput setaf $LOGO; echo "Copyright © H. Rogers $COPYRIGHT, Version $PROGVERSION"
 
 check_art
 

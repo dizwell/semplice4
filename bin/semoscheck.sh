@@ -24,7 +24,7 @@ tput setaf $DRAWLINES; echo -e "┌───────────────
 │                                                                                                   │
 └───────────────────────────────────────────────────────────────────────────────────────────────────┘"
 tput cup  1 4; tput setaf $LOGO; echo -e "♬♪ Semplice Digital Music Manager Installer ♬♪"
-tput cup  2 4; echo -e "Copyright © Howard Rogers $COPYRIGHT"
+tput cup  2 4; echo -e "Copyright © H. Rogers $COPYRIGHT"
 tput cup  3 4; echo -e "Version $PROGVERSION"
 }
 
