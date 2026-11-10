@@ -1,7 +1,0 @@
-COMPOSER=Anton Bruckner
-ARTIST=Anton Bruckner
-ALBUM=String Quintet (Melos - 1992)
-GENRE=Chamber
-PERFORMER=Melos Quartet
-DATE=1992
-TAGDATE=1794081490
