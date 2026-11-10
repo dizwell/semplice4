@@ -207,6 +207,16 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   # Now we rip...
   # --------------
   tput civis
+  # The disc's total length (for the progress bar) is asked for once, BEFORE ripping starts: querying the
+  # drive while it is ripping interrupts the rip and slows it down badly.
+  if [[ $OSFAMILY != "MACOS" ]]; then
+    DENOM=$(cdparanoia -sQ -d $OPTICAL_DEVICE 2>&1 | $GREPPROG TOTAL | awk '{print $2}')      # Gets total number of FRAMES
+  else
+    DENOM=$(cdparanoia -Q -d "$OPTICAL_DEVICE" 2>&1 | $GREPPROG TOTAL | awk '{print $2}')    # Gets total number of FRAMES
+  fi
+  DENOM=$((DENOM*1176))                                                                     # Gets total number of SAMPLES
+  if [[ $DENOM -le 0 ]]; then DENOM=1; fi                                                   # Never divide by zero
+
   
   if [[ $OSFAMILY != "MACOS" ]]; then  
     tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES $FASTFLAG -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &
@@ -221,12 +231,6 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
     # The log file produced during the rip outputs which SAMPLE the rip has got to.
     # You can therefore legitimately divide the current sample number by the total sample number
     # to derive a 'percentage complete'.
-    if [[ $OSFAMILY != "MACOS" ]]; then
-      DENOM=$(cdparanoia -sQ -d $OPTICAL_DEVICE 2>&1 | $GREPPROG TOTAL | awk '{print $2}')    # Gets total number of FRAMES
-    elif [[ $OSFAMILY == "MACOS" ]]; then
-      DENOM=$(cdparanoia -Q -d "$OPTICAL_DEVICE" 2>&1 | $GREPPROG TOTAL | awk '{print $2}')    # Gets total number of FRAMES   
-    fi
-    DENOM=$((DENOM*1176))                                                                   # Gets total number of SAMPLES
     COUNT=$(tail -1 /tmp/rip.log | $GREPPROG [read] | awk -F'@' '{print $2}')               # Inspects the log file to determine current sample being read
     PCT=$(echo "scale=2; $COUNT/$DENOM*100" | bc -l)                                        # Divides current sample number by total sample number to derive percent complete
 
