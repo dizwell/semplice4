@@ -1,2 +1,6 @@
 # macOS Finder metadata: never committed
 .DS_Store
+
+# Scratch artwork Semplice writes while showing album art: never committed
+/art/albumart.jpg
+/art/displayalbumart.jpg

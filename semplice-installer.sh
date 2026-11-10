@@ -100,7 +100,7 @@ tput cup  3 4; tput setaf $LOGO; echo "Version $PROGVERSION"
 
 function downloads {
 # Fetch Semplice components: BIN files first
-components=(semart.sh sembits.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh)
+components=(semart.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semmaxv.sh semmeta.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh)
 total=${#components[@]}
 count=0
 
@@ -378,7 +378,7 @@ EOF
   # -----------------------------------------------------
   COUNTBIN=$(ls "$CONFDIR"/bin/*.sh 2>/dev/null | wc -l)
   COUNTEXC=$(( $(ls /usr/local/bin/semplice4.sh 2>/dev/null | wc -l) + $(ls /usr/bin/semplice4.sh 2>/dev/null | wc -l) ))
-  if [[ $COUNTBIN -eq 28 ]]; then COUNTBINOK=1; else COUNTBINOK=0; fi
+  if [[ $COUNTBIN -eq 27 ]]; then COUNTBINOK=1; else COUNTBINOK=0; fi
   if [[ $COUNTEXC -eq 1 ]]; then COUNTXECOK=1; else COUNTXECOK=0; fi
   if [[ $COUNTBINOK -eq 1 && $COUNTXECOK -eq 1 ]]; then BASICINSTALLOK=1; else BASICINSTALLOK=0; fi
   
