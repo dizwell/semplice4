@@ -161,7 +161,7 @@ fi
 chmod +x "$NEWCONF/exec/"*
 
 # Art files next
-components=(Luxi_License.txt luximr.ttf sempliceico.png sempliceicobeta.png sempliceico.svg sempliceicosmall.png sempliceicosmallbeta.png)
+components=(Luxi_License.txt luximr.ttf sempliceico.png sempliceicobeta.png sempliceico.svg)
 total=${#components[@]}
 count=0
 (
