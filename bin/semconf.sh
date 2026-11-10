@@ -24,7 +24,7 @@ if [[ -f "$CONFFILE" ]]; then
   confoffset=$(cat "$CONFFILE" | $GREPPROG -i OPTICAL_OFFSET= | awk -F= '{print $2}') # Confoffset is allowed to be null. Indeed, it's preferable for it to be so, triggering automatic offset detection.
   confhyper=$(cat "$CONFFILE" | $GREPPROG -i HYPER_ACCURATERIP= | awk -F= '{print $2}'); if [[ -z $confhyper ]]; then confhyper='no'; fi
   confretries=$(cat "$CONFFILE" | $GREPPROG -i READ_RETRIES= | awk -F= '{print $2}'); if [[ -z $confretries ]]; then confretries=40; fi
-  confripmode=$(cat "$CONFFILE" | $GREPPROG -i RIPMODE= | awk -F= '{print $2}'); if [[ -z $confripmode ]]; then confripmode='safe'; fi
+  confripmode=$(cat "$CONFFILE" | $GREPPROG -i RIPMODE= | awk -F= '{print $2}'); if [[ -z $confripmode ]]; then confripmode='fast'; fi
   confflac=$(cat "$CONFFILE" | $GREPPROG -i FLAC_QUALITY= | awk -F= '{print $2}'); if [[ -z $confflac ]]; then confflac='standard'; fi
   confdelete=$(cat "$CONFFILE" | $GREPPROG -i DELETE_WAV= | awk -F= '{print $2}'); if [[ -z $confdelete ]]; then confdelete='yes'; fi
   confart=$(cat "$CONFFILE" | $GREPPROG -i DELETE_ART= | awk -F= '{print $2}'); if [[ -z $confart ]]; then confart='yes'; fi
@@ -58,7 +58,7 @@ fi
 
 # First, prompt for CD Ripping parameters
 # ====================================================================
-dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters concerning CD Ripping:" 17 90 10 "Default optical drive " 1 1  "$confdrive"     1 50 35 0 "Default read offset " 2 1  "$confoffset" 2 50 35 0 "Use Hyper-AccurateRip " 3 1  "$confhyper"     3 50 6 0 "Number of re-reads on errors " 4 1  "$confretries"    4 50 35 0  "Default FLAC audio resolution " 5 1  "$confflac"     5 50 35 0 "Delete intermediate files after converting " 6 1  "$confdelete"  6 50 6 0  "Rip CDs to folder " 7 1  "$confwkdir"     7 50 35 0 "Rip mode (safe or fast) " 8 1  "$confripmode"     8 50 6 0 2>"$CONFDIR/tmp/ripparams"
+dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters concerning CD Ripping:" 17 90 10 "Default optical drive " 1 1  "$confdrive"     1 50 35 0 "Default read offset " 2 1  "$confoffset" 2 50 35 0 "Use Hyper-AccurateRip " 3 1  "$confhyper"     3 50 6 0 "Number of re-reads on errors " 4 1  "$confretries"    4 50 35 0  "Default FLAC audio resolution " 5 1  "$confflac"     5 50 35 0 "Delete intermediate files after converting " 6 1  "$confdelete"  6 50 6 0  "Rip CDs to folder " 7 1  "$confwkdir"     7 50 35 0 "Rip mode (fast/safe) " 8 1  "$confripmode"     8 50 6 0 2>"$CONFDIR/tmp/ripparams"
 exitStatus=$?
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
@@ -72,7 +72,7 @@ CONFFLAC="${ripparams[4]}"; if [[ -z $CONFFLAC ]]; then CONFFLAC="standard"; fi
 CONFDELETE="${ripparams[5]}"; if [[ -z $CONFDELETE ]]; then CONFDELETE="yes"; fi
 CONFWKDIR="${ripparams[6]}"; if [[ -z $CONFWKDIR ]]; then CONFWKDIR='$HOME/Music'; fi
 CONFRIPMODE="${ripparams[7]}"
-if [[ ${CONFRIPMODE,,} == "safe" || ${CONFRIPMODE,,} == "fast" ]]; then CONFRIPMODE=${CONFRIPMODE,,}; else CONFRIPMODE="safe"; fi   # Anything but 'fast' means safe
+if [[ ${CONFRIPMODE,,} == "safe" || ${CONFRIPMODE,,} == "fast" ]]; then CONFRIPMODE=${CONFRIPMODE,,}; else CONFRIPMODE="fast"; fi   # Anything but 'safe' means fast (the default)
 
 # Check for legal values and replace with defaults if not legal
 # ====================================================================

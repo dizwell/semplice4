@@ -72,7 +72,7 @@ if [[ -f $CONFDIR/txt/semplice.conf ]]; then
 
   if [[ $OPTICAL_OFFSET == *"+"* ]]; then OPTICAL_OFFSET="${OPTICAL_OFFSET//+}"; fi    # Positive offsets have the '+' stripped if supplied: it's not syntactically necessary
 
-  if [[ ${RIPMODE,,} == "fast" ]]; then RIPMODE="fast"; else RIPMODE="safe"; fi       # Rip mode is safe (cdparanoia's full checking) unless explicitly set to fast (-Z: no checking, much quicker)
+  if [[ ${RIPMODE,,} == "safe" ]]; then RIPMODE="safe"; else RIPMODE="fast"; fi       # Rip mode is fast (-Z: no checking, much quicker, confirmed by AccurateRip) unless explicitly set to safe (cdparanoia's full checking)
 
   if ! [[ -z $HYPER_ACCURATERIP ]]; then                                          # Hyper AccurateRip, if set, must be Yes or No, with the default being No and being interpreted as 0 or 1.
     if [[ ${HYPER_ACCURATERIP^^} == "YES" ]] ; then
@@ -232,7 +232,7 @@ OPTICAL_DEVICE=/dev/cdrom
 OPTICAL_OFFSET=
 HYPER_ACCURATERIP=no
 READ_RETRIES=40
-RIPMODE=safe
+RIPMODE=fast
 FLAC_QUALITY=standard
 DELETE_WAV=yes
 RIP_FOLDER="\$HOME/Music"
