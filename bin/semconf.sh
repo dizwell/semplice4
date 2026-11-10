@@ -12,6 +12,11 @@
 if ! [[ -d "$CONFDIR/tmp" ]]; then mkdir -p "$CONFDIR/tmp" 2>/dev/null; fi
 CONFFILE="$CONFDIR/txt/semplice.conf"
 
+# Cancel or Esc on any page abandons the entire edit: nothing is saved, and the configuration stays exactly as it was
+function cancel_config {
+rm -f "$CONFDIR/tmp/ripparams" "$CONFDIR/tmp/tagparams" "$CONFDIR/tmp/customtagparams" "$CONFDIR/tmp/superparams" "$CONFDIR/tmp/audioparams" "$CONFDIR/tmp/miscparams" 2>/dev/null
+}
+
 # Read parameters from an existing config file, if present
 # ====================================================================
 if [[ -f "$CONFFILE" ]]; then
@@ -53,6 +58,8 @@ fi
 # First, prompt for CD Ripping parameters
 # ====================================================================
 dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters concerning CD Ripping:" 17 90 10 "Default optical drive " 1 1  "$confdrive"     1 50 35 0 "Default read offset " 2 1  "$confoffset" 2 50 35 0 "Use Hyper-AccurateRip " 3 1  "$confhyper"     3 50 6 0 "Number of re-reads on errors " 4 1  "$confretries"    4 50 35 0  "Default FLAC audio resolution " 5 1  "$confflac"     5 50 35 0 "Delete intermediate files after converting " 6 1  "$confdelete"  6 50 6 0  "Rip CDs to folder " 7 1  "$confwkdir"     7 50 35 0 2>"$CONFDIR/tmp/ripparams"
+exitStatus=$?
+if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
 readarray -t ripparams < "$CONFDIR/tmp/ripparams" 2>/dev/null
 
@@ -81,6 +88,8 @@ fi
 # Next, prompt for FLAC tagging parameters
 # ====================================================================
 dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters affecting FLAC tagging:" 17 90 10 "Delete album art after embedding" 1 1  "$confart" 1 65 6 0 "Prevent conversion of accented to non-accented characters" 2 1  "$confaccents"  2 65 6 0 "Force filenames to display bitdepth/sample rate" 3 1  "$confbits"     3 65 6 0 "Display album art when extracting" 4 1  "$confdisplay"     4 65 6 0 "Default text editor" 5 1  "$confeditor"  5 65 19 0  "Use Custom Tags" 6 1  "$confcustom"  6 65 6 0   2>"$CONFDIR/tmp/tagparams"
+exitStatus=$?
+if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
 readarray -t tagparams < "$CONFDIR/tmp/tagparams" 2>/dev/null
 CONFART="${tagparams[0]}";     if [[ -z $CONFART ]]; then CONFART="yes"; fi
@@ -112,6 +121,8 @@ if [[ $CONFCUSTOM == "yes" ]]; then
   "Custom Tag 7 : " 7 1  "$confcustom7" 7 17 17 0 \
   "Custom Tag 8 : " 8 1  "$confcustom8" 8 17 17 0 \
   "Custom Tag 9 : " 9 1  "$confcustom9" 9 17 17 0 2>"$CONFDIR/tmp/customtagparams"
+  exitStatus=$?
+  if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
   readarray -t customparams < "$CONFDIR/tmp/customtagparams" 2>/dev/null
   CONFCUSTOM1="${customparams[0]}"; CONFCUSTOM1="${CONFCUSTOM1// /_}"; CONFCUSTOM1="${CONFCUSTOM1^^}"
   CONFCUSTOM2="${customparams[1]}"; CONFCUSTOM2="${CONFCUSTOM2// /_}"; CONFCUSTOM2="${CONFCUSTOM2^^}"
@@ -128,6 +139,8 @@ fi
 # ====================================================================
 dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters affecting SuperFLAC management:" 17 90 10 \
 "Auto-delete per-track FLACs after SuperFLAC creation " 1 1  "$confautodel" 1 70 6 0 2>"$CONFDIR/tmp/superparams"
+exitStatus=$?
+if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
 readarray -t superparams < "$CONFDIR/tmp/superparams" 2>/dev/null
 CONFAUTODEL="${superparams[0]}"; if [[ -z $CONFAUTODEL ]]; then CONFAUTODEL="no"; fi
@@ -139,6 +152,8 @@ if [[ ${CONFAUTODEL,,} == "yes" || ${CONFAUTODEL,,} == "no" ]]; then CONFAUTODEL
 # Now, the Audio processing parameters
 # ====================================================================
 dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters for Audio Processing:" 17 90 10 "Lossy codec quality setting (1-9)" 1 1  "$confqual" 1 65 9 0 "Delete source files after codec conversion" 2 1  "$confaudiodel"  2 65 9 0 "Apply audio boost automatically if appropriate" 3 1  "$confboost" 3 65 9 0 "Apply real or metadata audio boost?" 4 1 "$confmetavol" 4 65 9 0 2>"$CONFDIR/tmp/audioparams"
+exitStatus=$?
+if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
 readarray -t audioparams < "$CONFDIR/tmp/audioparams" 2>/dev/null
 CONFQUAL="${audioparams[0]}";     if [[ -z $CONFQUAL ]]; then CONFQUAL="4"; fi
@@ -156,6 +171,8 @@ dialog --backtitle "Semplice Configuration File Editor" --title " Program Config
 "Semplice font size (in points)" 5 1 "$confwezfntsz" 5 55 35 0 \
 "Dialog colour theme name" 6 1 "$confdiatheme" 6 55 35 0 \
 2>"$CONFDIR/tmp/miscparams"
+exitStatus=$?
+if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
 readarray -t miscparams < "$CONFDIR/tmp/miscparams" 2>/dev/null
 CONFARTSIZE="${miscparams[0]}";  if [[ -z $CONFARTSIZE ]]; then CONFARTSIZE="380"; fi
