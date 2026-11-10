@@ -41,7 +41,8 @@ TOTCOUNT=$((FLACCOUNT+ISOCOUNT+APECOUNT+ALACCOUNT+MP3COUNT+OGGCOUNT+WMACOUNT+WAV
 
 if [[ $TOTCOUNT -eq 0 ]]; then
   dialog --stdout --backtitle "Semplice Audio Conversion" --title " No valid music files detected " --msgbox "\nThe working folder needs to contain files of a type that Semplice can convert or work with: \n\nISO, DSF, AIF, WAV, WMA, OGG, MP3, ALAC, APE or FLAC" 10 80
-  break
+  INPUTFORMAT="DONE"                                                   # Nothing to convert: end the conversion here
+  return
 fi
 
 SOURCELIST=()
@@ -59,6 +60,7 @@ if [[ $DSFCOUNT -gt 0 ]]; then SOURCELIST+=("DSF" "DSF - High resolution lossles
 
 function prompt_source {
 type_count
+if [[ $INPUTFORMAT == "DONE" ]]; then return; fi
 SOURCECODEC=$(dialog --no-tags --backtitle "Semplice Audio Conversion" --radiolist "Pick the SOURCE audio format" 10 80 0 "${SOURCELIST[@]}"  3>&1 1>&2 2>&3 3>&- )
 
 exitStatus=$?
@@ -122,15 +124,12 @@ IN=${INPUTFORMAT,,}
 if [[ $INPUTFORMAT == "FLAC" ]]; then
   f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)						# The first FLAC found will be the source of truth
   COMMENT=$(get_tag Comment "$f")
-  PERFORMER=$(get_tag Performer "$f")
   DESCRIPTION=$(get_tag Description "$f")
 fi
 
 # If comment is null, but DESCRIPTION isn't, then make the COMMENT=DESCRIPTION
-if [[ -z $COMMENT ]]; then 
-  if [[ ! -z $DESCRPTION ]]; then
-    COMMENT="$DESCRIPTION"
-  fi
+if [[ -z $COMMENT && -n $DESCRIPTION ]]; then
+  COMMENT="$DESCRIPTION"
 fi
 
 # If input AND output are standard FLAC, we'll need to spot the difference between
@@ -287,15 +286,6 @@ if [[ $INPUTFORMAT == "DSF" ]]; then                # Only major difference to a
   fi
   MESSAGE="Converting DSF files to $DISPLAYOUT. Please wait…  "
   "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x ffmpeg -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
-  if [[ $AUDIOIN_DELETION == "1" ]]; then
-    if [[ $BITS != "-16" && $BITS != "-24" ]]; then
-      "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x rm -rf {} \;             # if asked, delete the input files
-    elif [[ $BITS = "-24" ]]; then
-      "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -E "*-24.*" -x rm -rf {} \; # flacs that were converted to 24-bit flacs, only delete the non-24-bit ones.
-    elif [[ $BITS = "-16" ]]; then
-      "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -E "*-16.*" -x rm -rf {} \; # flacs that were converted to 16-bit flacs, only delete the non-16-bit ones.
-    fi
-  fi
 elif ! [[ $INPUTFORMAT == "DONE" ]]; then
   MESSAGE="Converting $DISPLAYIN files to $DISPLAYOUT. Please wait…  "
   if [[ ! $IN == "aiff" ]]; then    # AIFFs come with multiple possible extensions, so they need a separate '-e' extension clause
@@ -321,12 +311,15 @@ if [[ $AUDIOIN_DELETION == "1" ]]; then
   fi
 fi
 
-# Make sure we put comments back, for FLAC files at least.
-if [[ $OUTPUTFORMAT == "FLAC" ]]; then
-  for f in *$BITS*.flac; do
-    tag=COMMENT; metaflac $UTFCHARS "--set-tag=$tag=$COMMENT" "$f" 2>/dev/null
-    tag=DESCRIPTION; metaflac $UTFCHARS "--remove-tag=$tag" "$f" 2>/dev/null
-  done
+# Make sure we put comments back, for all FLAC outputs (standard, hi-res and super hi-res). The first source
+# FLAC's COMMENT represents the whole album. If there was none, ffmpeg's DESCRIPTION is left for cleaning to carry over.
+if [[ $OUT == "flac" ]]; then
+  if [[ -n $COMMENT ]]; then
+    for f in *$BITS*.flac; do
+      metaflac $UTFCHARS --remove-tag=COMMENT --remove-tag=DESCRIPTION "$f" 2>/dev/null
+      metaflac $UTFCHARS "--set-tag=COMMENT=$COMMENT" "$f" 2>/dev/null
+    done
+  fi
   source "$CONFDIR/bin/semclean.sh"
   ALREADYCLEAN=1
 fi
