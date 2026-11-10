@@ -29,11 +29,12 @@ function offset_confirm {
 # Applies the hyper-accurate adjustment (if on) to whichever offset this rip is using, then shows it
 # with Continue/Cancel. Expects DEVICE_OFFSET and OFFSETSOURCE to be set.
 local hypernote=""
+if [[ $RIPMODE == "fast" ]]; then FASTFLAG="-Z"; RIPMODETEXT="fast"; else FASTFLAG=""; RIPMODETEXT="safe"; fi   # Fast mode: cdparanoia reads once, without its error checking
 if [[ $HYPER_ACCURATERIP -eq 1 ]]; then
   DEVICE_OFFSET=$((DEVICE_OFFSET - 30))
   hypernote="\n\nHyper-accurate reads are switched on, so it has been reduced by 30."
 fi
-dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Read offset " --yes-label "Continue" --no-label "Cancel" --yesno "\nRead offset: $DEVICE_OFFSET\n($OFFSETSOURCE)$hypernote\n\nRips will be performed with the command:\n\ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" 15 76 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
+dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Read offset " --yes-label "Continue" --no-label "Cancel" --yesno "\nRead offset: $DEVICE_OFFSET\n($OFFSETSOURCE)$hypernote\n\nRips will be performed with the command:\n\ncdparanoia -B $OPTICAL_DEVICE --never-skip=$READ_RETRIES ${FASTFLAG:+$FASTFLAG }-O $DEVICE_OFFSET" 15 76 || { RIPCANCELLED=1; return; }     # Cancel/Esc: stop before ripping
 }
 
 function cdrom_identify_macos {
@@ -206,7 +207,6 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   # Now we rip...
   # --------------
   tput civis
-  if [[ $RIPMODE == "fast" ]]; then FASTFLAG="-Z"; RIPMODETEXT="fast"; else FASTFLAG=""; RIPMODETEXT="safe"; fi   # Fast mode: cdparanoia reads once, without its error checking
   
   if [[ $OSFAMILY != "MACOS" ]]; then  
     tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES $FASTFLAG -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &
