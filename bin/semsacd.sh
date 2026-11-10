@@ -5,16 +5,12 @@
 # network to an ISO file. Relies on the sacd_extract program
 # written by EuFlo, whose website can be visited at:
 # https://github.com/EuFlo/sacd-ripper
-# The version of sacd_extract included as part of the Semplice
-# binaries was current as at March 16th 2024.
+# Semplice's copies of sacd_extract are built from that source by
+# src/build-sacd_extract.sh, one per platform, in exec/.
 #
 ####################################################################
 source "$CONFDIR/bin/semtput.sh" 
-badip=1  CPUARCH=$(uname -m)
-chmod +x "$CONFDIR/exec/sacd_extract"
-chmod +x "$CONFDIR/exec/sacd_extract_arm"
-chmod +x "$CONFDIR/exec/sacd_extract-macintel"
-chmod +x "$CONFDIR/exec/sacd_extract-macsilicon"
+badip=1
 
 if [[ $OSFAMILY == "MACOS" ]]; then
   IFACE=$(route get default 2>/dev/null | awk '/interface:/{print $2}')
@@ -74,25 +70,11 @@ if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
 fi
 }
 
-function determine_ripper {
-if [[ $OSFAMILY == "MACOS" && $CPUARCH == "x86_64" ]]; then
-  RIPPER="$CONFDIR/exec/sacd_extract-macintel"
+# SACDEXTRACT is sacd_extract-<macos|linux>-<arm64|x86_64>, set by semoscheck.sh
+if [[ ! -x $SACDEXTRACT ]]; then
+  dialog --stdout --backtitle "Semplice SACD Ripping" --title " SACD Ripper Missing " --msgbox "\nSemplice's SACD ripping program for this computer could not be found, so SACD ripping is not possible." 8 80
+  return
 fi
-
-if [[ $OSFAMILY == "MACOS" && $CPUARCH == "arm64" ]]; then
-  RIPPER="$CONFDIR/exec/sacd_extract-macsilicon"
-fi
-
-if [[ $OSFAMILY != "MACOS" && $CPUARCH == "x86_64" ]]; then
-  RIPPER="$CONFDIR"/exec/sacd_extract
-fi
-
-if [[ $OSFAMILY != "MACOS" && $CPUARCH == "arm64" ]]; then
-  RIPPER="$CONFDIR"/exec/sacd_extract_arm
-fi
-}
-
-determine_ripper
 rip_folder
 if [[ -z $RIPDIR ]]; then return; fi                  # Folder prompt cancelled: go back to the Ripping menu, creating nothing
 
@@ -115,7 +97,7 @@ if [[ $GOODIP -eq 1 ]]; then
     tput cup 25 4; echo -e "Invoking the SACD ripper in another terminal session..."
     if ! [[ -d "$RIPDIR"/SACD_ISORIPS ]]; then mkdir "$RIPDIR"/SACD_ISORIPS 2>/dev/null; fi 
     # The ripper runs in its own WezTerm window (all platforms), which stays open until Enter is pressed
-    wezterm start --always-new-process -- bash -c '"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "' "$RIPPER" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
+    wezterm start --always-new-process -- bash -c '"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "' "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
   else
     dialog --stdout --backtitle "Semplice SACD Ripping" --title " Networking Error! " --msgbox "\nAn SACD player cannot be contacted at this IP address." 8 80
   fi

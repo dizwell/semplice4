@@ -130,7 +130,7 @@ if [[ $download_status -ne 0 ]]; then
 fi
 
 # Self-compiled static executables next: these live in exec, not bin
-components=(sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon semarv-linux-x86_64 semarv-linux-arm64 semarv-macos-x86_64 semarv-macos-arm64)
+components=(sacd_extract-linux-x86_64 sacd_extract-linux-arm64 sacd_extract-macos-x86_64 sacd_extract-macos-arm64 semarv-linux-x86_64 semarv-linux-arm64 semarv-macos-x86_64 semarv-macos-arm64)
 total=${#components[@]}
 count=0
 (
@@ -383,10 +383,10 @@ EOF
   if [[ $COUNTBINOK -eq 1 && $COUNTXECOK -eq 1 ]]; then BASICINSTALLOK=1; else BASICINSTALLOK=0; fi
   
   if command -v cueprint >/dev/null 2>&1; then CUEPRINTOK=1; else CUEPRINTOK=0; fi
-  if command -v sacd >/dev/null 2>&1; then SACDOK=1; else SACDOK=0; fi
   case "$(uname -s)" in Darwin) ARVPLAT="macos" ;; Linux) ARVPLAT="linux" ;; *) ARVPLAT="unknown" ;; esac
   case "$(uname -m)" in arm64|aarch64) ARVARCH="arm64" ;; x86_64) ARVARCH="x86_64" ;; *) ARVARCH="unknown" ;; esac
   if [[ -x "$NEWCONF/exec/semarv-$ARVPLAT-$ARVARCH" ]]; then TRKVEROK=1; else TRKVEROK=0; fi   # Semplice's own AccurateRip checker for this computer
+  if [[ -x "$NEWCONF/exec/sacd_extract-$ARVPLAT-$ARVARCH" ]]; then SACDOK=1; else SACDOK=0; fi   # SACD ripping and ISO conversion for this computer
   
   DIALOGTEXT="\nThe Semplice installation has now completed. Its current status is as follows:"
   

@@ -110,38 +110,6 @@ if ! command -v cueprint >/dev/null 2>&1; then
 fi
 }
 
-function sacd_install {
-if ! command -v sacd >/dev/null 2>&1; then
-  if [[ ! $OSFAMILY == "MACOS" ]]; then
-    # Install build tools, distro-independent
-    if command -v apt >/dev/null 2>&1; then
-      sudo apt update >/dev/null 2>&1
-      sudo apt install -y build-essential >/dev/null 2>&1
-    elif command -v dnf >/dev/null 2>&1; then
-      sudo dnf group install -y development-tools >/dev/null 2>&1
-      sudo dnf install -y gcc-c++ >/dev/null 2>&1
-    elif command -v pacman >/dev/null 2>&1; then
-      sudo pacman -Syu --noconfirm base-devel >/dev/null 2>&1
-    fi
-
-    dialog --stdout --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --backtitle "Semplice Software Install" --msgbox "\nAbout to install sacd, for SACD conversion purposes. \n\nClick OK to proceed." 10 80
-    tput cup 24 4; echo -en "Processing. Please wait..."
-    cd
-    git clone https://github.com/Sound-Linux-More/sacd.git >/dev/null 2>&1
-    cd sacd
-    make >/dev/null 2>&1
-    sudo make install >/dev/null 2>&1
-    cd
-    rm -rf sacd >/dev/null >/dev/null 2>&1
-  fi
-
-  if ! command -v sacd >/dev/null 2>&1; then
-    dialog --stdout --backtitle "Semplice Software Install" --title " Software installation failure " --msgbox "\nThe automated installation of sacd has **failed**. \n\nYou may be able to install it yourself later on, but until you do, Semplice will lack SACD ripping and conversion capabilities. This does NOT affect any other Semplice functionality.\n\nClick OK to proceed." 14 80     
-  fi
-fi
-}
-
-
 # Now define the software tools etc. required for each family
 # -----------------------------------------------------------------------------
 case $OSFAMILY in
@@ -196,9 +164,6 @@ case $OSFAMILY in
 	cd
 	rm -rf libsixel > /dev/null 2>&1
 	
-	# Compile SACD ISO support
-	tput cup 24 4	
-    sacd_install
 	
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -276,8 +241,6 @@ case $OSFAMILY in
 	PATH="/tmp/gcc-patch:$PATH" yay -Rdd libsixel --noconfirm > "$HOME/Desktop/sixelinstall.log" 2>&1 
 	PATH="/tmp/gcc-patch:$PATH" yay -S libsixel-git --noconfirm >> "$HOME/Desktop/sixelinstall.log" 2>&1
 		
-	sacd_install >/dev/null 2>&1
-	echo "sacd installed"
 	
     # Confirmation when concluded
     dialog --backtitle "Semplice Software Install" --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -330,8 +293,6 @@ case $OSFAMILY in
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
-    tput cup 24 4
-    sacd_install
     
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -384,8 +345,6 @@ case $OSFAMILY in
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
-    tput cup 24 4
-    sacd_install
     
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -429,8 +388,6 @@ case $OSFAMILY in
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
-    tput cup 24 4
-    sacd_install
     
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -480,8 +437,6 @@ case $OSFAMILY in
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
-    tput cup 24 4
-    sacd_install
     
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -537,7 +492,6 @@ case $OSFAMILY in
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
     cuetools_install
-    sacd_install
 
     # Confirmation when concluded
     dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -663,7 +617,7 @@ else
 fi
 
 # Platform and architecture, used to pick the right self-compiled programs in exec/ (named as Giocoso's:
-# <program>-<macos|linux>-<arm64|x86_64>). sacd_extract keeps its own older names for now.
+# <program>-<macos|linux>-<arm64|x86_64>).
 # -----------------------------------------------------------------------------
 case "$(uname -s)" in
     Darwin) OS_PLATFORM="macos" ;;
@@ -677,6 +631,8 @@ case "$(uname -m)" in
     *)             OS_ARCHITECTURE="unknown" ;;
 esac
 SEMARV="$CONFDIR/exec/semarv-${OS_PLATFORM}-${OS_ARCHITECTURE}"
+SACDEXTRACT="$CONFDIR/exec/sacd_extract-${OS_PLATFORM}-${OS_ARCHITECTURE}"
+chmod +x "$SEMARV" "$SACDEXTRACT" 2>/dev/null
 
 echo "SEDPROG=$SEDPROG
 GREPPROG=$GREPPROG
@@ -686,4 +642,5 @@ FDPROG=$FDPROG
 CONVPROG=$CONVERTER
 OS_PLATFORM=$OS_PLATFORM
 OS_ARCHITECTURE=$OS_ARCHITECTURE
-SEMARV=\"$SEMARV\"" > "$CONFDIR/txt/programvariables.txt"
+SEMARV=\"$SEMARV\"
+SACDEXTRACT=\"$SACDEXTRACT\"" > "$CONFDIR/txt/programvariables.txt"
