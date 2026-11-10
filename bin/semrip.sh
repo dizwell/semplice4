@@ -67,7 +67,7 @@ else
 fi
 
 if [[ $VALID_DEVICE -eq 0 ]]; then
-  if [[ $OS_FAMILY != "MACOS" ]]; then 
+  if [[ $OSFAMILY != "MACOS" ]]; then 
     DEVICENAME=$(cdparanoia -vsQ -d $OPTICAL_DEVICE 2>&1 | awk -F: '/sensed/ {print $2}')
     DEVICENAME=$(echo $DEVICENAME | $SEDPROG 's/^[   ]*//;s/[    ]*$//')
     CD_NOTPRESENT=$(cdparanoia -vsQ -d $OPTICAL_DEVICE 2>&1 | $GREPPROG "Unable to open disc" | wc -l)  
