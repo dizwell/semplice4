@@ -323,15 +323,12 @@ metaflac $UTFCHARS --remove-tag="Encoder" "$f"
 metaflac $UTFCHARS --import-picture-from="albumart.jpg" "$f"
 
 if [[ $CUSTOMTAGS -eq 1 ]]; then
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG1=$CUSTOMTAGVALUE1" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG2=$CUSTOMTAGVALUE2" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG3=$CUSTOMTAGVALUE3" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG4=$CUSTOMTAGVALUE4" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG5=$CUSTOMTAGVALUE5" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG6=$CUSTOMTAGVALUE6" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG7=$CUSTOMTAGVALUE7" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG8=$CUSTOMTAGVALUE8" "$f"
-  metaflac $UTFCHARS --set-tag="$CUSTOMTAG9=$CUSTOMTAGVALUE9" "$f"
+  for ((ct=1; ct<=9; ct++)); do                                       # Only copy custom tags that are in use and have a value
+    CTNAME="CUSTOMTAG$ct"; CTVAL="CUSTOMTAGVALUE$ct"
+    if [[ -n ${!CTNAME} && ${!CTNAME} != "XqXXqXX" && -n ${!CTVAL} ]]; then
+      metaflac $UTFCHARS --set-tag="${!CTNAME}=${!CTVAL}" "$f"
+    fi
+  done
 fi
 
 # Finally, embed the cuesheet and tidy up

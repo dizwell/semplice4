@@ -230,15 +230,12 @@ for g in split/*.flac; do
     if [ -f albumart ]; then metaflac $UTFCHARS --import-picture-from="albumart" "$g"; fi
 
     if [[ $CUSTOMTAGS -eq 1 ]]; then
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG1=$CUSTOMTAGVALUE1" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG2=$CUSTOMTAGVALUE2" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG3=$CUSTOMTAGVALUE3" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG4=$CUSTOMTAGVALUE4" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG5=$CUSTOMTAGVALUE5" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG6=$CUSTOMTAGVALUE6" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG7=$CUSTOMTAGVALUE7" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG8=$CUSTOMTAGVALUE8" "$g"
-      metaflac $UTFCHARS --set-tag="$CUSTOMTAG9=$CUSTOMTAGVALUE9" "$g"
+      for ((ct=1; ct<=9; ct++)); do                                       # Only copy custom tags that are in use and have a value
+        CTNAME="CUSTOMTAG$ct"; CTVAL="CUSTOMTAGVALUE$ct"
+        if [[ -n ${!CTNAME} && ${!CTNAME} != "XqXXqXX" && -n ${!CTVAL} ]]; then
+          metaflac $UTFCHARS --set-tag="${!CTNAME}=${!CTVAL}" "$g"
+        fi
+      done
     fi
 
     counter=$((counter+1))
