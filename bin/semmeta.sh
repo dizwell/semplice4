@@ -45,11 +45,20 @@ while true; do
 done
 }
 
-# copy_to_clipboard FILE: puts FILE's contents on the clipboard using the terminal's own clipboard escape
-# sequence (OSC 52), which WezTerm supports on both macOS and Linux: no extra clipboard programs needed.
+# copy_to_clipboard FILE: puts FILE's contents on the clipboard. On macOS, pbcopy is built in and always works.
+# On Linux, use wl-copy (Wayland) or xclip (X11) if installed; otherwise fall back to the terminal's own clipboard
+# escape sequence (OSC 52), which WezTerm understands.
 function copy_to_clipboard
 {
-printf '\033]52;c;%s\a' "$(base64 < "$1" | tr -d '\n')" > /dev/tty
+if [[ $(uname) == "Darwin" ]]; then
+  pbcopy < "$1"
+elif [[ -n $WAYLAND_DISPLAY ]] && command -v wl-copy >/dev/null 2>&1; then
+  wl-copy < "$1"
+elif [[ -n $DISPLAY ]] && command -v xclip >/dev/null 2>&1; then
+  xclip -selection clipboard < "$1"
+else
+  printf '\033]52;c;%s\a' "$(base64 < "$1" | tr -d '\n')" > /dev/tty
+fi
 }
 
 list_metadata
