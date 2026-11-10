@@ -35,7 +35,7 @@ $SEDPROG -i 's/comment\[/Tag \[:/g' "$CONFDIR/tmp/listmetadata.txt"
 # entire listing, then shows the listing again. OK closes it.
 while true; do
   dialog --backtitle "Semplice FLAC Tagging" --title " Metadata used by FLACs in current working folder " --exit-label "OK" \
-         --help-button --help-label "Copy to Clipboard" --textbox "$CONFDIR/tmp/listmetadata.txt" 20 90
+         --help-button --help-label " Copy to Clipboard " --textbox "$CONFDIR/tmp/listmetadata.txt" 20 90
   if [[ $? -eq 2 ]]; then
     copy_to_clipboard "$CONFDIR/tmp/listmetadata.txt"
     dialog --backtitle "Semplice FLAC Tagging" --title " Copied " --msgbox "\nThe entire metadata listing has been copied to the clipboard." 7 70
