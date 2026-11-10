@@ -102,14 +102,10 @@ if [[ -f $CONFDIR/txt/semplice.conf ]]; then
     DELETE_ART=1
   fi
 
-  if ! [[ -z $ACCENTS ]]; then                                                            # Accents, if set, must be explicitly set to 'Yes' before utfchars is set, otherwise utfchars is left unset.
-    if [[ ${ACCENTS^^} == "YES" ]]; then
-          UTFCHARS="--no-utf8-convert"
-        else
-          UTFCHARS=""
-        fi
-  else
+  if [[ ${ACCENTS^^} == "NO" ]]; then                                                     # Accents are preserved (yes) by default: only an explicit 'no' allows conversion (as Giocoso)
     UTFCHARS=""
+  else
+    UTFCHARS="--no-utf8-convert"
   fi
 
   if ! [[ -z $AUTODELETE_PERTRACK_FLACS ]]; then                          # AutoDelete-pertrack-flacs, if set, must be explicitly set to 'Yes' before autodelete happens. Otherwise, per-track FLACs are left untouched.

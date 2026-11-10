@@ -27,7 +27,7 @@ if [[ -f "$CONFFILE" ]]; then
   confflac=$(cat "$CONFFILE" | $GREPPROG -i FLAC_QUALITY= | awk -F= '{print $2}'); if [[ -z $confflac ]]; then confflac='standard'; fi
   confdelete=$(cat "$CONFFILE" | $GREPPROG -i DELETE_WAV= | awk -F= '{print $2}'); if [[ -z $confdelete ]]; then confdelete='yes'; fi
   confart=$(cat "$CONFFILE" | $GREPPROG -i DELETE_ART= | awk -F= '{print $2}'); if [[ -z $confart ]]; then confart='yes'; fi
-  confaccents=$(cat "$CONFFILE" | $GREPPROG -i ACCENTS= | awk -F= '{print $2}'); if [[ -z $confaccents ]]; then confaccents='no'; fi
+  confaccents=$(cat "$CONFFILE" | $GREPPROG -i ACCENTS= | awk -F= '{print $2}'); if [[ -z $confaccents ]]; then confaccents='yes'; fi
   confbits=$(cat "$CONFFILE" | $GREPPROG -i NAMEBITS= | awk -F= '{print $2}'); if [[ -z $confbits ]]; then confbits='no'; fi
   confdisplay=$(cat "$CONFFILE" | $GREPPROG -i DISPLAYONEXTRACT= | awk -F= '{print $2}'); if [[ -z $confdisplay ]]; then confdisplay='yes'; fi
   confeditor=$(cat "$CONFFILE" | $GREPPROG -i EDITOR= | awk -F= '{print $2}'); if [[ -z $confeditor ]]; then confeditor='nano'; fi
@@ -93,7 +93,7 @@ if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; f
 
 readarray -t tagparams < "$CONFDIR/tmp/tagparams" 2>/dev/null
 CONFART="${tagparams[0]}";     if [[ -z $CONFART ]]; then CONFART="yes"; fi
-CONFACCENTS="${tagparams[1]}"; if [[ -z $CONFACCENTS ]]; then CONFACCENTS="no"; fi
+CONFACCENTS="${tagparams[1]}"; if [[ -z $CONFACCENTS ]]; then CONFACCENTS="yes"; fi
 CONFBITS="${tagparams[2]}";    if [[ -z $CONFBITS ]]; then CONFBITS="no"; fi
 CONFDISPLAY="${tagparams[3]}"; if [[ -z $CONFDISPLAY ]]; then CONFDISPLAY="yes"; fi
 CONFEDITOR="${tagparams[4]}";  if [[ -z $CONFEDITOR ]]; then CONFEDITOR="nano"; fi
@@ -102,7 +102,7 @@ CONFCUSTOM="${tagparams[5]}";  if [[ -z $CONFCUSTOM ]]; then CONFCUSTOM="no"; fi
 # Check for legal values and replace with defaults if not legal
 # ====================================================================
 if [[ ${CONFART,,} == "yes" || ${CONFART,,} == "no" ]]; then CONFART=${CONFART,,}; else CONFART="yes"; fi
-if [[ ${CONFACCENTS,,} == "yes" || ${CONFACCENTS,,} == "no" ]]; then CONFACCENTS=${CONFACCENTS,,}; else CONFACCENTS="no"; fi
+if [[ ${CONFACCENTS,,} == "yes" || ${CONFACCENTS,,} == "no" ]]; then CONFACCENTS=${CONFACCENTS,,}; else CONFACCENTS="yes"; fi
 if [[ ${CONFBITS,,} == "yes" || ${CONFBITS,,} == "no" ]]; then CONFBITS=${CONFBITS,,}; else CONFBITS="no"; fi
 if [[ ${CONFDISPLAY,,} == "yes" || ${CONFDISPLAY,,} == "no" ]]; then CONFDISPLAY=${CONFDISPLAY,,}; else CONFDISPLAY="yes"; fi
 if [[ ${CONFCUSTOM,,} == "yes" || ${CONFCUSTOM,,} == "no" ]]; then CONFCUSTOM=${CONFCUSTOM,,}; else CONFCUSTOM="no"; fi
