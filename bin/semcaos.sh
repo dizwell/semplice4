@@ -90,9 +90,6 @@ if [[ $f == *"…flac"* ]]; then
   mv "${f}" "${f/…flac/….flac}"
 fi
 
-if [[ ${f} != ${f//\'/’} ]]; then
-  mv "${f}" "${f//\'/’}"
-fi
 
 # If the cuesheet is now embedded, the file can be split as normal: invoke cao_split
 # -----------------------------------------------------------------------------------------
@@ -248,7 +245,7 @@ for g in split/*.flac; do
     counter=$((counter+1))
 
     # Whilst tags can contain forbidden characters, physical file names need to be NTFS-safe. Even Linux users might use Windows servers or USB disks formatted with NTFS for easy device sharing!
-    tracktitle="$(tr "'~#%&<>:\"/\|?*" "_" <<< "$tracktitle")"
+    tracktitle="$(tr "~#%&<>:\"/\|?*" "_" <<< "$tracktitle")"     # Straight apostrophes are allowed (NTFS accepts them)
     mv "$g" split/"$tracknum - $tracktitle".flac
   fi
 done

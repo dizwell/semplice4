@@ -239,14 +239,7 @@ for f in *; do
   fi
 done
 
-# And finally remove single quotes from filesnames: they break ffmpeg too.
-# Replace with the Unicode Curly Quote which resembles the straight apostrophe.
-# ------------------------------------------------------------------------------------------
-for f in *.flac; do
-  if [[ ${f} != "${f//\'/’}" ]]; then
-    mv "${f}" "${f//\'/’}"
-  fi
-done
+# Straight apostrophes in file names are left alone: the concatenation list below escapes them for ffmpeg.
 
 # Now create the cuesheet...
 # ------------------------------------------------------------------------------------------
@@ -265,10 +258,6 @@ for f in *.flac; do
 
   if [[ "$TITLE" == *"..."* ]]; then
     TITLE="${TITLE//.../…}"                               # Metadata three consecutive dots get replaced by proper ellipsis
-  fi
-
-  if [[ "$TITLE" == *"'"* ]]; then
-    TITLE="${TITLE//\'/’}"                                # Metadata straight single quote gets replaced by Unicode Curly Quote
   fi
 
   if [[ $COUNTER -eq 1 ]]; then
