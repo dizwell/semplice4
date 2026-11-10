@@ -191,10 +191,10 @@ fi
 
 # Finally, /usr/bin and miscellaneous stuff
 if [[ $OS == "DARWIN" ]]; then
-  sudo rm -f "/usr/local/bin/semplice4.sh"
+  rm -f "$NEWCONF/semplice4.sh"
   downloaded=0
   for attempt in {1..5}; do
-    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice4.sh" -O "/usr/local/bin/semplice4.sh" && [[ $(head -c2 "/usr/local/bin/semplice4.sh") == '#!' ]]; then
+    if wget -q --tries=1 "$REMOTESOURCE/semplice4.sh" -O "$NEWCONF/semplice4.sh" && [[ $(head -c2 "$NEWCONF/semplice4.sh") == '#!' ]]; then
       downloaded=1
       break
     fi
@@ -202,16 +202,19 @@ if [[ $OS == "DARWIN" ]]; then
   done
   if [[ $downloaded -eq 0 ]]; then
     dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
-    sudo rm -f "/usr/local/bin/semplice4.sh"
+    rm -f "$NEWCONF/semplice4.sh"
     exit 1
   fi
-  sudo chmod +x /usr/local/bin/semplice4.sh
-  sudo rm -f /usr/local/bin/semplice 2>/dev/null; sudo ln -s /usr/local/bin/semplice4.sh /usr/local/bin/semplice 2>/dev/null 
+  chmod +x "$NEWCONF/semplice4.sh"
+  # The main script lives in the program folder (so git pull keeps it current); /usr/local/bin just links to it
+  sudo rm -f "/usr/local/bin/semplice4.sh" "/usr/local/bin/semplice" 2>/dev/null
+  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/local/bin/semplice4.sh"
+  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/local/bin/semplice" 
 else
-  sudo rm -f "/usr/bin/semplice4.sh"
+  rm -f "$NEWCONF/semplice4.sh"
   downloaded=0
   for attempt in {1..5}; do
-    if sudo wget -q --tries=1 "$REMOTESOURCE/semplice4.sh" -O "/usr/bin/semplice4.sh" && [[ $(head -c2 "/usr/bin/semplice4.sh") == '#!' ]]; then
+    if wget -q --tries=1 "$REMOTESOURCE/semplice4.sh" -O "$NEWCONF/semplice4.sh" && [[ $(head -c2 "$NEWCONF/semplice4.sh") == '#!' ]]; then
       downloaded=1
       break
     fi
@@ -219,11 +222,14 @@ else
   done
   if [[ $downloaded -eq 0 ]]; then
     dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
-    sudo rm -f "/usr/bin/semplice4.sh"
+    rm -f "$NEWCONF/semplice4.sh"
     exit 1
   fi
-  sudo chmod +x /usr/bin/semplice4.sh
-  sudo rm -f /usr/bin/semplice 2>/dev/null; sudo ln -s /usr/bin/semplice4.sh /usr/bin/semplice 2>/dev/null
+  chmod +x "$NEWCONF/semplice4.sh"
+  # The main script lives in the program folder (so git pull keeps it current); /usr/bin just links to it
+  sudo rm -f "/usr/bin/semplice4.sh" "/usr/bin/semplice" 2>/dev/null
+  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/bin/semplice4.sh"
+  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/bin/semplice"
 fi
 
 # Only create a desktop launcher if this is NOT macOS.
