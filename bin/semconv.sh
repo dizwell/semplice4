@@ -222,58 +222,25 @@ case $OUTPUTFORMAT in
 esac
 
 if [[ $INPUTFORMAT == "ISO" ]]; then
-  if [[ $OSFAMILY != "MACOS" ]]; then
-    SACD_EXISTS=1; type "sacd" >/dev/null 2>&1 || SACD_EXISTS=0			# SACD_EXISTS will be 0 if the 'sacd' package is not installed, and 1 if it is (by virtue of the original forced assignment).
-  else
-    SACD_EXISTS=1
-  fi
-  
-  if [[ $SACD_EXISTS -eq 0 ]]; then
-    dialog --stdout --backtitle "Semplice Audio Conversion" --msgbox "Semplice can't currently handle SACD ISOs, but could if you installed the sacd utility. See Section 4 of: \n\nhttps://bbritten.com/softwares/semplice/semaudio/audiocodecs\n\n...for details." 12 80
+  # SACDEXTRACT is sacd_extract-<macos|linux>-<arm64|x86_64>, set by semoscheck.sh
+  if [[ ! -x $SACDEXTRACT ]]; then
+    dialog --stdout --backtitle "Semplice Audio Conversion" --msgbox "\nSemplice's SACD program for this computer could not be found, so SACD ISOs cannot be converted." 8 80
     return
-  else
-    if [[ $OSFAMILY != "MACOS" ]]; then
-      MESSAGE="Splitting the ISO. Please wait…  "
-	  for f in *.iso; do
-	    if [[ $XHIRES -eq 1 ]]; then
-	      sacd -s -i "$f" -r 176400 &>/dev/null & spinner $!            # Extract the files from the ISO as 176.4KHz WAVs
-		  LOWPASS=87000
-	    elif [[ $HIRES -eq 1 ]]; then
-		  sacd -s -i "$f" -r 88200 &>/dev/null & spinner $!             # Extract the files from the ISO as 88.2KHz WAVs
-		  LOWPASS=43000
-	    else
-		  sacd -s -i "$f" &>/dev/null & spinner $!                      # Extract the files as standard WAVs
-		  LOWPASS=21000
-	    fi
-	  done
-	  MESSAGE="Converting the output files to $DISPLAYOUT. Please wait…  "
-      "$FDPROG" -j "$THREADS" -d 1 -t f -e wav -x ffmpeg -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $! # Now convert the WAVs
-      "$FDPROG" -j "$THREADS" -d 1 -t f -e wav -x rm -rf {} \;               # Always delete the intermediate WAV files
-      INPUTFORMAT="DONE"
-    
-    else	# macOS is in use
-      if [[ $(uname -m) == "arm64" ]]; then USEINTEL=0; else USEINTEL=1; fi
-      MESSAGE="Splitting the ISO. Please wait…  "
-		for f in *.iso; do
-		  # On macOS, you can only extract to DSF (or an equivalent 1-bit format, which we don't bother with), end of. The conversion to FLAC has to be done afterwards
-		  # This command therefore extracts from ISO to DSF, moves all the DSFs into the source folder and then deletes the "Stereo" subfolder sacd_extract originally writes them to
-		  if [[ $USEINTEL -eq 1 ]]; then
-		    "$CONFDIR"/exec/sacd_extract-macintel -2 -s -i "$f" >/dev/null  & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
-		  elif [[ $USEINTEL -eq 0 ]]; then
-		    "$CONFDIR"/exec/sacd_extract-macsilicon -2 -s -i "$f" >/dev/null  & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
-		  fi
-		done
-		MESSAGE="Converting the output files to $DISPLAYOUT. Please wait…  "
-		if [[ $XHIRES -eq 1 ]]; then
-		  LOWPASS=87000
-        elif [[ $HIRES -eq 1 ]]; then
-          LOWPASS=43000
-        else
-          LOWPASS=21000
-        fi
-        "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x ffmpeg -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
-    fi
   fi
+  MESSAGE="Splitting the ISO. Please wait…  "
+  for f in *.iso; do
+    # Extract the ISO to DSFs, move them all into the source folder and delete the "Stereo" subfolder sacd_extract originally writes them to
+    "$SACDEXTRACT" -2 -s -i "$f" >/dev/null & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
+  done
+  MESSAGE="Converting the output files to $DISPLAYOUT. Please wait…  "
+  if [[ $XHIRES -eq 1 ]]; then
+    LOWPASS=87000
+  elif [[ $HIRES -eq 1 ]]; then
+    LOWPASS=43000
+  else
+    LOWPASS=21000
+  fi
+  "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x ffmpeg -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
 fi
 
 if [[ $INPUTFORMAT == "DSF" ]]; then                # Only major difference to any other conversion is addition of a low-pass filter to stop quantisation effects appearing in the output
@@ -286,7 +253,7 @@ if [[ $INPUTFORMAT == "DSF" ]]; then                # Only major difference to a
   fi
   MESSAGE="Converting DSF files to $DISPLAYOUT. Please wait…  "
   "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x ffmpeg -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
-elif ! [[ $INPUTFORMAT == "DONE" ]]; then
+elif [[ $INPUTFORMAT != "ISO" ]]; then           # ISOs were dealt with above
   MESSAGE="Converting $DISPLAYIN files to $DISPLAYOUT. Please wait…  "
   if [[ ! $IN == "aiff" ]]; then    # AIFFs come with multiple possible extensions, so they need a separate '-e' extension clause
     "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x ffmpeg -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
@@ -296,7 +263,7 @@ elif ! [[ $INPUTFORMAT == "DONE" ]]; then
 fi
 
 if [[ $AUDIOIN_DELETION == "1" ]]; then
-  if [[ $OSFAMILY == "MACOS" && $INPUTFORMAT == "ISO" ]]; then			# On macOS, we delete the intermediate DSFs, not the source ISO.
+  if [[ $INPUTFORMAT == "ISO" ]]; then			# For ISOs, we delete the intermediate DSFs, not the source ISO.
      "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x rm -rf {} \;
   elif [[ $INPUTFORMAT == "WMA" || $INPUTFORMAT == "OGG" || $INPUTFORMAT == "MP3" ]]; then
     "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x rm -rf {} \;
