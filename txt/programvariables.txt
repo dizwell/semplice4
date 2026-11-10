@@ -1,6 +1,0 @@
-SEDPROG=gsed
-GREPPROG=grep
-DATEPROG=gdate
-MD5PROG=md5sum
-FDPROG=fd
-CONVPROG=magick

@@ -4,3 +4,13 @@
 # Scratch artwork Semplice writes while showing album art: never committed
 /art/albumart.jpg
 /art/displayalbumart.jpg
+
+# Personal settings and working files: each user's own, never committed
+/txt/semplice.conf
+/txt/semplice.conf-*.bkp
+/txt/prior.txt
+/txt/sacdip.txt
+/txt/sacddir.txt
+/txt/programvariables.txt
+/tmp/
+/rip/
