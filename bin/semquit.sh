@@ -20,17 +20,6 @@ tput cvvis
 exit 0
 }
 
-function warn_corrupt {
-# semclean.sh lists every FLAC whose audio MD5 does not match its stored checksum
-local LIST="$CONFDIR/tmp/corruptflacs.txt" FILES COUNT
-if [[ -s $LIST ]]; then
-  COUNT=$(wc -l < "$LIST" | xargs)
-  FILES=$(head -n 8 "$LIST")
-  if [[ $COUNT -gt 8 ]]; then FILES="$FILES\n...and $((COUNT-8)) more"; fi
-  dialog --stdout --backtitle "Semplice Digital Music Manager" --title " Possibly Corrupt Files Detected! " --msgbox "\nThese files have an MD5 checksum mismatch:\n\n$FILES\n\nCheck your backups to resolve!" 18 80
-fi
-}
-
 function rename_bits {
 # Add bitdepth and sampling rate to file names, if NAMEBITS is set
 for f in *.flac; do

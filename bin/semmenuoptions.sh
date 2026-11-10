@@ -84,7 +84,7 @@ if [[ $1 == "tag" ]]; then
     9 ) source "$CONFDIR/bin/semcuee.sh"; smenuoptions tag;;
     W|w ) source "$CONFDIR/bin/semdir.sh" flaconly; cd "$WORKINGDIR"; smenuoptions tag ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
-    K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions tag;;
+    K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions tag;;
     X|x ) clear; exit 0 ;;
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
@@ -136,7 +136,7 @@ elif [[ $1 == "audio" ]]; then
         smenuoptions audio;;
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions audio;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
-    K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions audio;;
+    K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions audio;;
     X|x ) clear; exit 0 ;;
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
@@ -184,7 +184,7 @@ elif [[ $1 == "super" ]]; then
     3 ) source "$CONFDIR/bin/semcuee.sh"; smenuoptions super;;
     W|w ) source "$CONFDIR/bin/semdir.sh" flaconly; cd "$WORKINGDIR"; smenuoptions super ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
-    K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions super;;
+    K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions super;;
     X|x ) clear; exit 0 ;;
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
@@ -232,7 +232,7 @@ elif [[ $1 == "rip" ]]; then
     3 ) clear; source "$CONFDIR/bin/semsacd.sh"; smenuoptions rip ;;
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions rip ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
-    K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions rip;;
+    K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions rip;;
     X|x ) clear; exit 0 ;;
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
@@ -290,7 +290,7 @@ elif [[ $1 == "misc" ]]; then
     3 ) source "$CONFDIR/bin/semcolour.sh"; smenuoptions misc;;
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions misc ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
-    K|k ) source "$CONFDIR/bin/semclean.sh"; smenuoptions misc;;
+    K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions misc;;
     X|x ) clear; exit 0 ;;
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
