@@ -29,7 +29,8 @@ function offset_confirm {
 # Applies the hyper-accurate adjustment (if on) to whichever offset this rip is using, then shows it
 # with Continue/Cancel. Expects DEVICE_OFFSET and OFFSETSOURCE to be set.
 local hypernote=""
-if [[ $RIPMODE == "fast" ]]; then FASTFLAG="-Z -S 24"; RIPMODETEXT="fast"; else FASTFLAG=""; RIPMODETEXT="safe"; fi   # Fast mode: cdparanoia reads once, without its error checking, asking the drive for 24x speed
+READSPEED=48                                                               # Read speed asked of the drive in fast mode (CD "x" speed); the drive may ignore it
+if [[ $RIPMODE == "fast" ]]; then FASTFLAG="-Z -S $READSPEED"; RIPMODETEXT="fast mode, ${READSPEED}x"; else FASTFLAG=""; RIPMODETEXT="safe mode"; fi   # Fast mode: cdparanoia reads once, without its error checking, asking the drive for 24x speed
 if [[ $HYPER_ACCURATERIP -eq 1 ]]; then
   DEVICE_OFFSET=$((DEVICE_OFFSET - 30))
   hypernote="\n\nHyper-accurate reads are switched on, so it has been reduced by 30."
@@ -245,12 +246,12 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
     PCT=$(echo "scale=2; $COUNT/$DENOM*100" | bc -l)                                        # Divides current sample number by total sample number to derive percent complete
 
     # Percentages passed to dialog's Guage tool need to be integers, which is what {var%.*} achieves
-    echo ${PCT%.*} | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET, read-retries: $READ_RETRIES, $RIPMODETEXT mode \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
+    echo ${PCT%.*} | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET, read-retries: $READ_RETRIES, $RIPMODETEXT \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
     sleep 1
     tput cup 25 0
   done
   COUNTER=$((COUNTER+1))
-  echo 100 | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET, read-retries: $READ_RETRIES, $RIPMODETEXT mode \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
+  echo 100 | dialog --backtitle "Semplice Audio CD Ripping" --gauge "Using device: $OPTICAL_DEVICE [$DEVICENAME] \nRipping to: $THISRIP_FOLDER \nUsing read offset: $DEVICE_OFFSET, read-retries: $READ_RETRIES, $RIPMODETEXT \n \nReading audio sample: $COUNT/$DENOM" 10 70 0
 
   # Before converting to FLAC, we copy all WAVs to the rip folder, to enable later AccurateRip verification check
   # ------------------------------------------------------------------------------------------------------------
@@ -369,7 +370,7 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
         if [[ $? -eq 0 ]]; then
           for d in "${RIPPED_FOLDERS[@]}"; do [[ -n $d && -d $d ]] && rm -rf "$d"; done   # Remove only the folders this rip created
           rm -f "$CONFDIR/rip"/*.wav 2>/dev/null
-          RIPMODE="safe"; FASTFLAG=""; RIPMODETEXT="safe"                              # For this re-rip only: the configuration is not changed
+          RIPMODE="safe"; FASTFLAG=""; RIPMODETEXT="safe mode"                              # For this re-rip only: the configuration is not changed
           rip_recordings
           if [[ $RIPCANCELLED -eq 0 ]]; then
             convert_to_flac
