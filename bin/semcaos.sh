@@ -30,6 +30,11 @@ COUNTCUE=$(ls *.cue 2>/dev/null | wc -l)
 COUNTFLAC=$(ls *.flac 2>/dev/null | wc -l)
 f=$(find "$(pwd)" -maxdepth 1 -name "*.flac" | sort | head -n 1)
 
+if [[ $COUNTFLAC -eq 0 ]]; then
+  dialog --stdout --backtitle "Semplice FLAC Splitting" --msgbox "There is no FLAC file in the working folder, so there is nothing to split.\n\nClick OK to return to the main program menu." 10 80
+  return
+fi
+
 if [[ $COUNTFLAC -gt 1 ]]; then
   dialog --stdout --backtitle "Semplice FLAC Splitting" --msgbox "There needs to be only a single FLAC file present in the working folder. Semplice cannot proceed \n\nClick OK to return to the main program menu." 10 80
   return
@@ -40,6 +45,16 @@ if [[ -z $CUESHEET ]]; then
   EMBEDDEDCUECOUNT=0
 else
   EMBEDDEDCUECOUNT=1
+fi
+
+if [[ $COUNTCUE -gt 1 ]]; then
+  dialog --stdout --backtitle "Semplice FLAC Splitting" --msgbox "There is more than one .cue file in the working folder. Semplice needs at most one, so it knows which to use.\n\nClick OK to return to the main program menu." 10 80
+  return
+fi
+
+if [[ $COUNTCUE -eq 0 && $EMBEDDEDCUECOUNT -eq 0 ]]; then
+  dialog --stdout --backtitle "Semplice FLAC Splitting" --msgbox "No cuesheet found: the FLAC has none embedded in it, and there is no .cue file in the working folder. A cuesheet is needed to know where each track starts.\n\nClick OK to return to the main program menu." 11 80
+  return
 fi
 
 if [[ $COUNTCUE -eq 1 && $EMBEDDEDCUECOUNT -eq 1 ]]; then
@@ -246,6 +261,7 @@ for g in split/*.flac; do
   fi
 done
 rm -f albumart; rm -f "$CUEFILE"
+SPLITDONE=1                                                            # The split actually happened
 
 if [[ $AUTODELETE_SOURCE_POST_SPLIT == "yes" ]]; then
   rm -f "$f"
@@ -253,5 +269,8 @@ fi
 
 }
 
+SPLITDONE=0
 split_superflac
-dialog --stdout --backtitle "Semplice FLAC Splitting" --msgbox "SuperFLAC work has been completed!" 10 80
+if [[ $SPLITDONE -eq 1 ]]; then                                        # Only claim success if the split actually happened
+  dialog --stdout --backtitle "Semplice FLAC Splitting" --msgbox "SuperFLAC work has been completed!" 10 80
+fi
