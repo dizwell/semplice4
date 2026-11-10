@@ -159,6 +159,15 @@ else
   echo "$VALUES" > "$CONFDIR/tmp/trackrange.txt"                            # Otherwise, the trackrange.txt file will contain a string ("1 4 7 8 13" for example) which we will need to parse to
 fi                                                                          # create start and stop points for multiple rips into separate sub-folders
 
+rip_recordings
+}
+
+function rip_recordings {
+# Rips each recording (range of tracks) chosen above into its own RIP_nn sub-folder. Kept separate from
+# perform_rip so that a failed fast rip can be re-ripped in safe mode without asking about tracks again.
+# The sub-folders made are remembered in RIPPED_FOLDERS, so a re-rip can remove them first.
+RIPPED_FOLDERS=()
+
 # If they haven't cancelled, create the necessary rip folder
 # -----------------------------------------------------------------------------------------
 THISRIP_FOLDER="$RIPROOT/SempliceMusicRip-$($DATEPROG '+%Y-%m-%d')"
@@ -167,7 +176,7 @@ if ! mkdir -p "$THISRIP_FOLDER" 2>/dev/null || ! [[ -w $THISRIP_FOLDER ]]; then
   rip_folder_failed "$THISRIP_FOLDER"; return
 fi
 
-ORIG_DIR=$(pwd)
+if [[ -z $ORIG_DIR ]]; then ORIG_DIR=$(pwd); fi                            # Where we started from: kept as it was if this is a re-rip
 
 # Now we have to parse the user input and turn it into a set of rip ranges. If they've said
 # new recordings start on track numbers 1, 5 and 8, for example, we need to rip 1-4,
@@ -203,6 +212,7 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   if ! mkdir -p "$THISRIP_FOLDER/$THISRECFOLDER" 2>/dev/null || ! cd "$THISRIP_FOLDER/$THISRECFOLDER" 2>/dev/null; then
     rip_folder_failed "$THISRIP_FOLDER/$THISRECFOLDER"; cd "$ORIG_DIR"; return
   fi
+  RIPPED_FOLDERS+=("$THISRIP_FOLDER/$THISRECFOLDER")
 
   # Now we rip...
   # --------------
@@ -317,6 +327,7 @@ rm -f "$CONFDIR/rip"/*.wav 2>/dev/null
 
 # Actual Program Code to do stuff starts here...
 # ==============================================================================================
+unset ORIG_DIR                                                             # Set when the first rip gets going (and kept for any safe re-rip)
 # The rip folder must already exist and be writable: check before anything else happens
 if ! [[ -d $RIPROOT ]]; then
   RIPPROBLEM="does not exist"
@@ -349,6 +360,26 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
       verify_rip
       echo "" >> "$CONFDIR/rip/ripaccuracy.txt"
       echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES $FASTFLAG -O $DEVICE_OFFSET" >> "$CONFDIR/rip/ripaccuracy.txt"
+
+      # A fast rip that didn't fully match AccurateRip (or whose CD isn't in the database, so it can't be
+      # confirmed) can be re-ripped straight away in safe mode, replacing the fast rip's files
+      if [[ $RIPMODE == "fast" && ( $RESULT == "RESULT: NOMATCH" || $RESULT == "RESULT: NOTINDB" || $RESULT == "RESULT: PARTIAL "* ) ]]; then
+        dialog --backtitle "Semplice Audio CD Ripping" --title " Re-rip in safe mode? " --yes-label " Re-rip safely " --no-label " Keep this rip " \
+               --yesno "\nThis fast rip could not be confirmed as accurate.\n\nDo you want to rip the CD again now in safe mode? Safe mode is much slower, but checks every read. The fast rip's files will be replaced." 12 80
+        if [[ $? -eq 0 ]]; then
+          for d in "${RIPPED_FOLDERS[@]}"; do [[ -n $d && -d $d ]] && rm -rf "$d"; done   # Remove only the folders this rip created
+          rm -f "$CONFDIR/rip"/*.wav 2>/dev/null
+          RIPMODE="safe"; FASTFLAG=""; RIPMODETEXT="safe"                              # For this re-rip only: the configuration is not changed
+          rip_recordings
+          if [[ $RIPCANCELLED -eq 0 ]]; then
+            convert_to_flac
+            verify_rip
+            echo "" >> "$CONFDIR/rip/ripaccuracy.txt"
+            echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" >> "$CONFDIR/rip/ripaccuracy.txt"
+          fi
+          source "$CONFDIR/bin/semparse.sh"                                             # Put RIPMODE back to its configured value
+        fi
+      fi
     else
       dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Semplice's AccurateRip checker (semarv) is missing for this computer, so this rip cannot be verified in the AccurateRip database." 8 80
     fi
