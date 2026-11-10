@@ -36,7 +36,8 @@ $SEDPROG -i 's/comment\[/Tag \[:/g' "$CONFDIR/tmp/listmetadata.txt"
 while true; do
   dialog --backtitle "Semplice FLAC Tagging" --title " Metadata used by FLACs in current working folder " --exit-label "OK" \
          --help-button --help-label " Copy to Clipboard " --textbox "$CONFDIR/tmp/listmetadata.txt" 20 90
-  if [[ $? -eq 2 ]]; then
+  BUTTON=$?
+  if [[ $BUTTON -eq 1 || $BUTTON -eq 2 ]]; then                                    # The textbox reports the second button as 1 (some dialog versions use 2, the usual Help code)
     copy_to_clipboard "$CONFDIR/tmp/listmetadata.txt"
     dialog --backtitle "Semplice FLAC Tagging" --title " Copied " --msgbox "\nThe entire metadata listing has been copied to the clipboard." 7 70
   else
