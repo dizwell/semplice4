@@ -23,11 +23,13 @@ declare -A peak_volumes
 
 >volumes.txt
 for f in *.flac; do
-   MAXV=$(ffmpeg -i "$f" -af "volumedetect" -vn -sn -dn -f null /dev/null 2>&1 | grep max_volume | $SEDPROG 's/.*-//; s/ .*//' )
-   
-  # If a file has a max_volume of 0, it doesn't have a '+' or '-' and so returns null from the above grepping/awking. Passing null to bc will error.
-  # Thus we force the value back to 0, which will trigger the loop break next.
-  if [[ -z $MAXV ]]; then MAXV=0; fi
+  # ffmpeg reports e.g. "max_volume: -3.2 dB". Take the number after "max_volume:" and drop any minus sign, so
+  # "-3.2" becomes 3.2 (the headroom available). A full-volume track may be reported as "0.0" or "-0.0": either way it gives 0.
+  MAXV=$(ffmpeg -i "$f" -af "volumedetect" -vn -sn -dn -f null /dev/null 2>&1 | $GREPPROG -a 'max_volume:' | \
+         awk '{ for (i = 1; i < NF; i++) if ($i == "max_volume:") { v = $(i+1); sub(/^[-+]/, "", v); print v; exit } }')
+
+  # If nothing could be read at all, treat the file as having no headroom: that safely prevents any boost
+  if ! is_numeric "$MAXV"; then MAXV=0; fi
   
   if is_numeric "$MAXV"; then
     # If a file is 0.5dB close to 0, it's pointless analysing further, so quit scanning
@@ -81,32 +83,30 @@ if [[ $CANBEBOOSTED -eq 1 ]]; then                                              
   MESSAGE="Performing a volume boost of "$DISPCANDIDATE_BOOST"dB…  "
   BOOSTPERFORMED=1
   for f in *.flac; do
-    # We are about to use ffmpeg to re-encode FLAC files. However, ffmpeg scrambles the
-    # COMMENT tag: the COMMENT tag becomes a tag called 'DESCRIPTION'! This code
-    # preserves the original COMMENT and we'll re-create it after the volume boost is over
-    ORIGCOMMENT=$(metaflac $UTFCHARS --show-tag=Comment "$f" | $SEDPROG 's/.*=//g')
-
     [[ $f == *"-dB-"* ]] && continue                                                            # Only process files which are not already volume-boosted.
+
+    # We are about to use ffmpeg to re-encode FLAC files. However, ffmpeg scrambles the
+    # COMMENT tag: the COMMENT tag becomes a tag called 'DESCRIPTION'! So keep this file's
+    # own COMMENT, and put it back into this file's boosted copy straight afterwards
+    ORIGCOMMENT=$(get_tag COMMENT "$f")
+    BOOSTED="+$CANDIDATE_BOOST-dB-$f"                                                           # e.g. "+3.5-dB-01 - Allegro.flac"
+
     if [ $BITDEPTH -eq 24 ]; then
-      ffmpeg -y -i "$f" -sample_fmt s32 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "+$CANDIDATE_BOOST-dB-$f.flac" 2>/dev/null & spinner $!
+      ffmpeg -y -i "$f" -sample_fmt s32 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & spinner $!
     else
-      ffmpeg -y -i "$f" -sample_fmt s16 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "+$CANDIDATE_BOOST-dB-$f.flac" 2>/dev/null & spinner $!
+      ffmpeg -y -i "$f" -sample_fmt s16 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & spinner $!
+    fi
+
+    metaflac $UTFCHARS --remove-tag=COMMENT --remove-tag=DESCRIPTION "$BOOSTED"                 # Remove ffmpeg's spurious DESCRIPTION (and any COMMENT)...
+    if [[ -n $ORIGCOMMENT ]]; then
+      metaflac $UTFCHARS "--set-tag=COMMENT=$ORIGCOMMENT" "$BOOSTED"                            # ...then restore this file's own COMMENT
     fi
   done
-
-  for f in *-dB-*.flac; do
-    # Write back a COMMENT tag into newly-created files and remove the spurious DESCRIPTION one ffmpeg creates
-    tag=COMMENT;metaflac $UTFCHARS "--set-tag=$tag=$ORIGCOMMENT" "$f"
-    tag=DESCRIPTION;metaflac $UTFCHARS "--remove-tag=$tag" "$f"
-  done;
 fi
 }
 
 function perform_cleanup {
-if [[ $AUTOBOOST -eq 1 && $BOOSTPERFORMED -eq 1 ]]; then             # Only do file deleting if an actual boost has happened, otherwise you'll just delete good FLACs!
-  DELETESOURCE=1
-fi
-
+# Deleting the originals is always asked about, even when AUTOBOOST skips the "boost?" question.
 if [[ $BOOSTPERFORMED -eq 1 ]]; then                                   # Ditto! Don't even offer to delete anything if you haven't actually volume-boosted something
   dialog --backtitle "Semplice FLAC Volume Boosting" --title " Do you want to delete the original FLACs? " --yesno "\nVolume boosting is complete. Do you wish to now delete the original FLACs?" 9 80
   exitStatus=$?
@@ -116,11 +116,8 @@ fi
 
 if [[ $DELETESOURCE -eq 1 && $BOOSTPERFORMED -eq 1 ]]; then
   find . -maxdepth 1 -type f -name "*.flac" ! -name '+*-dB-*' -exec rm -f {} \;  # deletes the source files because they don't include a -dB- prefix.
-  for f in *.flac; do
-    mv "$f" "${f/*-dB-/}"                                             # removes the dB prefix from the new files, leaving them named as the old source ones were
-  done
-  for f in *.flac; do
-    mv "$f" "${f%.*}"                                                 # removes .flac.flac and replaces it with vanilla .flac
+  for f in *-dB-*.flac; do
+    mv "$f" "${f#*-dB-}"                                              # removes the dB prefix from the new files, leaving them named as the old source ones were
   done
 fi
 }
