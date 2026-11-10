@@ -61,7 +61,8 @@ if [[ $COUNTCUE -eq 1 && $EMBEDDEDCUECOUNT -eq 1 ]]; then
   dialog --backtitle "Semplice FLAC Splitting" --title " What splitting mechanism to use? " --yes-label " Use the Embedded Cuesheet " --no-label " Use the External Cuesheet " --yesno "\nThere is both an external cuesheet present in the working folder AND an embedded one, inside the FLAC you're splitting: you can choose to use only one or the other as the basis of the SuperFLAC split. \n\nDo you want to use the embedded cuesheet or the external one as the basis of this split?" 12 80
     exitStatus=$?
     if [[ $exitStatus -eq 0 ]]; then USEEMBEDDED=1; fi
-    if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then USEEMBEDDED=0; fi
+    if [[ $exitStatus -eq 1 ]]; then USEEMBEDDED=0; fi
+    if [[ $exitStatus -eq 255 ]]; then return; fi                      # Esc cancels the split
 elif [[ $COUNTCUE -eq 1 && $EMBEDDEDCUECOUNT -eq 0 ]]; then
   USEEMBEDDED=0
 elif [[ $COUNTCUE -eq 0 && $EMBEDDEDCUECOUNT -eq 1 ]]; then
@@ -263,9 +264,6 @@ done
 rm -f albumart; rm -f "$CUEFILE"
 SPLITDONE=1                                                            # The split actually happened
 
-if [[ $AUTODELETE_SOURCE_POST_SPLIT == "yes" ]]; then
-  rm -f "$f"
-fi
 
 }
 
