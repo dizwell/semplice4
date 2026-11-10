@@ -294,7 +294,7 @@ fi
 
 function semarv_path {
 # Prints the path of the AccurateRip checker (semarv) built for this computer, if there is one.
-# SEMARV is semarv-<macos|linux>-<arm64|x86_64|armv7l>, set by semoscheck.sh
+# SEMARV is semarv-<macos|linux>-<arm64|x86_64>, set by semoscheck.sh
 if [[ -x $SEMARV ]]; then echo "$SEMARV"; fi
 }
 
