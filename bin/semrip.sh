@@ -29,7 +29,7 @@ function offset_confirm {
 # Applies the hyper-accurate adjustment (if on) to whichever offset this rip is using, then shows it
 # with Continue/Cancel. Expects DEVICE_OFFSET and OFFSETSOURCE to be set.
 local hypernote=""
-if [[ $RIPMODE == "fast" ]]; then FASTFLAG="-Z"; RIPMODETEXT="fast"; else FASTFLAG=""; RIPMODETEXT="safe"; fi   # Fast mode: cdparanoia reads once, without its error checking
+if [[ $RIPMODE == "fast" ]]; then FASTFLAG="-Z -S 24"; RIPMODETEXT="fast"; else FASTFLAG=""; RIPMODETEXT="safe"; fi   # Fast mode: cdparanoia reads once, without its error checking, asking the drive for 24x speed
 if [[ $HYPER_ACCURATERIP -eq 1 ]]; then
   DEVICE_OFFSET=$((DEVICE_OFFSET - 30))
   hypernote="\n\nHyper-accurate reads are switched on, so it has been reduced by 30."
