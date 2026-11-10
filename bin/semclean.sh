@@ -127,6 +127,14 @@ for f in *.flac; do
     if ! [ -z "$CTVALUE9" ]; then echo -n "$CUSTOMTAG9=" >> "$TAGFILE"; echo "$CTVALUE9" >> "$TAGFILE"; fi
   fi
 
+  # On macOS, convert every tag (and any cuesheet) into composed Unicode, so older files with
+  # 'decomposed' accented characters are tidied up whenever they are cleaned
+  # ---------------------------------------------------------------------------------
+  if [[ $(uname) == "Darwin" ]]; then
+    to_nfc < "$TAGFILE" > "$TAGFILE.nfc" && mv -f "$TAGFILE.nfc" "$TAGFILE"
+    if [[ -f $CUEFILE ]]; then to_nfc < "$CUEFILE" > "$CUEFILE.nfc" && mv -f "$CUEFILE.nfc" "$CUEFILE"; fi
+  fi
+
   # Now wipe all existing tags then re-load from the just-created text file
   # ---------------------------------------------------------------------------------
   metaflac $UTFCHARS --remove-all "$f"
