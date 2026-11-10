@@ -150,19 +150,6 @@ case $OSFAMILY in
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
 	
-	# Compile Libsixel
-	dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we have to compile the Libsixel and SACD support packages. This can take a **very** long time! Please be even more patient than before..." 12 70
-	tput cup 24 4	
-	git clone https://github.com/saitoha/libsixel.git > /dev/null 2>&1
-	cd libsixel
-	./autogen.sh > "$HOME/Desktop/sixelinstall.log" 2>&1
-	./configure >> "$HOME/Desktop/sixelinstall.log" 2>&1
-	make >> "$HOME/Desktop/sixelinstall.log" 2>&1
-	sudo make install >> "$HOME/Desktop/sixelinstall.log" 2>&1
-	sudo ldconfig > /dev/null 2>&1
-	
-	cd
-	rm -rf libsixel > /dev/null 2>&1
 	
 	
     # Confirmation when concluded
@@ -209,37 +196,6 @@ case $OSFAMILY in
     ) | dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
 	
-	dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNow we have to compile the Libsixel and SACD support packages. This can take a **very** long time! Please be even more patient than before..." 12 70
-    if ! command -v yay &> /dev/null
-	then
-        dialog  --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\nThe 'Yay' utility is required to compile additional necessary Semplice components. It takes a long time to install and there won't be much by way of progress indicators.\\n\\nClick OK to begin the Yay installation process now." 12 70
-        exitStatus=$?
-		if [[ $exitStatus -eq 0 ]]; then INSTALLYAY=1; else INSTALLYAY=0; fi  	
-        if [[ $INSTALLYAY -eq 1 ]]; then
-          cd
-          git clone https://aur.archlinux.org/yay.git >/dev/null 2>&1
-          cd yay
-          if [[ -d "$HOME/Desktop" ]]; then
-		    makepkg -si --noconfirm > "$HOME/Desktop/yayinstall.log" 2>&1
-		  else
-			mkdir "$HOME/Desktop" 2>&1
-			makepkg -si --noconfirm > "$HOME/Desktop/yayinstall.log" 2>&1
-		  fi 	
-		  yay -Y --save --answerclean All --answerdiff None --answerupgrade None --noconfirm >> $HOME/Desktop/yayinstall.log 2>&1
-  		else
-		  dialog  --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nYou have cancelled the installation of Yay, without which this installation cannot complete. Quitting back to the command line." 12 70	 
-		  exit 1
-        fi
-	fi
-	
-	mkdir -p /tmp/gcc-patch
-	echo '#!/bin/sh' > /tmp/gcc-patch/gcc
-	echo '/usr/bin/gcc -Wno-error=implicit-function-declaration "$@"' >> /tmp/gcc-patch/gcc
-	chmod +x /tmp/gcc-patch/gcc
-		
-	dialog  --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --msgbox "\\n\\nNext, we need to compile the libsixel package, without which Semplice cannot display graphics or album artwork..." 12 70	 	
-	PATH="/tmp/gcc-patch:$PATH" yay -Rdd libsixel --noconfirm > "$HOME/Desktop/sixelinstall.log" 2>&1 
-	PATH="/tmp/gcc-patch:$PATH" yay -S libsixel-git --noconfirm >> "$HOME/Desktop/sixelinstall.log" 2>&1
 		
 	
     # Confirmation when concluded
@@ -278,7 +234,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses* libsixel-bin pkg-config wezterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses* pkg-config wezterm)
     total=${#packages[@]}
     count=0
     
@@ -330,7 +286,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* libsixel-bin pkg-config wezterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* pkg-config wezterm)
     total=${#packages[@]}
     count=0
 
@@ -373,7 +329,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses6 libsixel-bin pkg-config wezterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses6 pkg-config wezterm)
     total=${#packages[@]}
     count=0
     
@@ -419,10 +375,9 @@ case $OSFAMILY in
     if [[ $FUSIONON -eq 0 ]]; then
       sudo dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm >/dev/null 2>&1
     fi
-    sudo dnf -y copr enable lchh/libsixel > /dev/null 2>&1
     
      # Define what's required 
-    packages=(bc binutils cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac gcc git ImageMagick kernel-devel lame-devel libsixel libsixel-utils ncurses pkg-config wezterm)
+    packages=(bc binutils cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac gcc git ImageMagick kernel-devel lame-devel ncurses pkg-config wezterm)
     total=${#packages[@]}
     count=0
     
@@ -475,7 +430,7 @@ case $OSFAMILY in
     fi
 
     # Define what's required 
-    packages=(autoconf automake bc binutils cdparanoia cmake coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick kernel-devel lame lame-devel lame-devel libsixel libsixel-utils ncurses pkg-config wezterm xdotool)
+    packages=(autoconf automake bc binutils cdparanoia cmake coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick kernel-devel lame lame-devel lame-devel ncurses pkg-config wezterm xdotool)
     total=${#packages[@]}
     count=0
 
@@ -569,7 +524,7 @@ case $OSFAMILY in
     done
 
     # Define what's required
-    packages=(bc cdparanoia cmake coreutils cuetools curl dialog fd ffmpeg flac gawk git grep gsed icu4c icu ImageMagick libcdio-paranoia md5sha1sum ncurses libsixel wezterm)
+    packages=(bc cdparanoia cmake coreutils cuetools curl dialog fd ffmpeg flac gawk git grep gsed icu4c icu ImageMagick libcdio-paranoia md5sha1sum ncurses wezterm)
     total=${#packages[@]}
     count=0
 
@@ -632,7 +587,8 @@ case "$(uname -m)" in
 esac
 SEMARV="$CONFDIR/exec/semarv-${OS_PLATFORM}-${OS_ARCHITECTURE}"
 SACDEXTRACT="$CONFDIR/exec/sacd_extract-${OS_PLATFORM}-${OS_ARCHITECTURE}"
-chmod +x "$SEMARV" "$SACDEXTRACT" 2>/dev/null
+SIXEL="$CONFDIR/exec/img2sixel-${OS_PLATFORM}-${OS_ARCHITECTURE}"
+chmod +x "$SEMARV" "$SACDEXTRACT" "$SIXEL" 2>/dev/null
 
 echo "SEDPROG=$SEDPROG
 GREPPROG=$GREPPROG
@@ -643,4 +599,5 @@ CONVPROG=$CONVERTER
 OS_PLATFORM=$OS_PLATFORM
 OS_ARCHITECTURE=$OS_ARCHITECTURE
 SEMARV=\"$SEMARV\"
-SACDEXTRACT=\"$SACDEXTRACT\"" > "$CONFDIR/txt/programvariables.txt"
+SACDEXTRACT=\"$SACDEXTRACT\"
+SIXEL=\"$SIXEL\"" > "$CONFDIR/txt/programvariables.txt"

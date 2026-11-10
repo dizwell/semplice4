@@ -10,7 +10,7 @@ tput cup 0 0
 
 function sixel_graphics {
 tput cup 8 56
-img2sixel "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null										        # Display in-terminal as-is
+"$SIXEL" "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null										        # Display in-terminal as-is
 }
 
 # Checks whether the first FLAC has album art and prepares the display copy. The extracted art, its
@@ -55,7 +55,7 @@ tput cup 13 54; echo "                     |_|                  "
 function sixel_logo {
 wordlogo                                                 
 tput cup 14 60; tput setaf $SPINNER; echo -en "♬♪ "; tput setaf $INFOTEXT; echo -en "The Digital Music Manager"; tput setaf $SPINNER; echo -en " ♬♪"
-tput cup 16 $LOGO_POSITION; img2sixel -w $LOGOWIDTH "$LOGO_PATH" 2>/dev/null; printf "%s\n"
+tput cup 16 $LOGO_POSITION; "$SIXEL" -w $LOGOWIDTH "$LOGO_PATH" 2>/dev/null; printf "%s\n"
 }
 
 function audio_data {
