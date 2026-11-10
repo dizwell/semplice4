@@ -122,15 +122,10 @@ for f in *.flac; do
   fi
   
   if [[ $CUSTOMTAGS -eq 1 ]]; then
-    if ! [ -z "$CTVALUE1" ]; then echo -n "$CUSTOMTAG1=" >> "$TAGFILE"; echo "$CTVALUE1" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE2" ]; then echo -n "$CUSTOMTAG2=" >> "$TAGFILE"; echo "$CTVALUE2" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE3" ]; then echo -n "$CUSTOMTAG3=" >> "$TAGFILE"; echo "$CTVALUE3" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE4" ]; then echo -n "$CUSTOMTAG4=" >> "$TAGFILE"; echo "$CTVALUE4" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE5" ]; then echo -n "$CUSTOMTAG5=" >> "$TAGFILE"; echo "$CTVALUE5" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE6" ]; then echo -n "$CUSTOMTAG6=" >> "$TAGFILE"; echo "$CTVALUE6" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE7" ]; then echo -n "$CUSTOMTAG7=" >> "$TAGFILE"; echo "$CTVALUE7" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE8" ]; then echo -n "$CUSTOMTAG8=" >> "$TAGFILE"; echo "$CTVALUE8" >> "$TAGFILE"; fi
-    if ! [ -z "$CTVALUE9" ]; then echo -n "$CUSTOMTAG9=" >> "$TAGFILE"; echo "$CTVALUE9" >> "$TAGFILE"; fi
+    for ((ct=1; ct<=9; ct++)); do                                       # Keep only custom tags that are in use and have a value
+      CTNAME="CUSTOMTAG$ct"; CTVAL="CTVALUE$ct"
+      if [[ -n ${!CTNAME} && ${!CTNAME} != "XqXXqXX" && -n ${!CTVAL} ]]; then echo "${!CTNAME}=${!CTVAL}" >> "$TAGFILE"; fi
+    done
   fi
 
   # On macOS, convert every tag (and any cuesheet) into composed Unicode, so older files with
