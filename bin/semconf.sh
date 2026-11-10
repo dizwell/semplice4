@@ -85,7 +85,7 @@ dialog --backtitle "Semplice Configuration File Editor" --title " Program Config
 readarray -t tagparams < "$CONFDIR/tmp/tagparams" 2>/dev/null
 CONFART="${tagparams[0]}";     if [[ -z $CONFART ]]; then CONFART="yes"; fi
 CONFACCENTS="${tagparams[1]}"; if [[ -z $CONFACCENTS ]]; then CONFACCENTS="no"; fi
-CONFBITS="${tagparams[2]}";    if [[ -z $CONFBITS ]]; then CONFBITS="yes"; fi
+CONFBITS="${tagparams[2]}";    if [[ -z $CONFBITS ]]; then CONFBITS="no"; fi
 CONFDISPLAY="${tagparams[3]}"; if [[ -z $CONFDISPLAY ]]; then CONFDISPLAY="yes"; fi
 CONFEDITOR="${tagparams[4]}";  if [[ -z $CONFEDITOR ]]; then CONFEDITOR="nano"; fi
 CONFCUSTOM="${tagparams[5]}";  if [[ -z $CONFCUSTOM ]]; then CONFCUSTOM="no"; fi
@@ -93,11 +93,11 @@ CONFCUSTOM="${tagparams[5]}";  if [[ -z $CONFCUSTOM ]]; then CONFCUSTOM="no"; fi
 # Check for legal values and replace with defaults if not legal
 # ====================================================================
 if [[ ${CONFART,,} == "yes" || ${CONFART,,} == "no" ]]; then CONFART=${CONFART,,}; else CONFART="yes"; fi
-if [[ ${CONFACCENTS,,} == "yes" || ${CONFACCENTS,,} == "no" ]]; then CONFACCENTS=${CONFACCENTS,,}; else CONFACCENTS="yes"; fi
+if [[ ${CONFACCENTS,,} == "yes" || ${CONFACCENTS,,} == "no" ]]; then CONFACCENTS=${CONFACCENTS,,}; else CONFACCENTS="no"; fi
 if [[ ${CONFBITS,,} == "yes" || ${CONFBITS,,} == "no" ]]; then CONFBITS=${CONFBITS,,}; else CONFBITS="no"; fi
 if [[ ${CONFDISPLAY,,} == "yes" || ${CONFDISPLAY,,} == "no" ]]; then CONFDISPLAY=${CONFDISPLAY,,}; else CONFDISPLAY="yes"; fi
 if [[ ${CONFCUSTOM,,} == "yes" || ${CONFCUSTOM,,} == "no" ]]; then CONFCUSTOM=${CONFCUSTOM,,}; else CONFCUSTOM="no"; fi
-if ! type "$CONFEDITOR"; then CONFEDITOR="nano"; fi
+if ! type "$CONFEDITOR" >/dev/null 2>&1; then CONFEDITOR="nano"; fi
 
 # If CUSTOMTAGS has been set to yes, then prompt for 9 custom tags:
 # ====================================================================
@@ -143,7 +143,7 @@ dialog --backtitle "Semplice Configuration File Editor" --title " Program Config
 readarray -t audioparams < "$CONFDIR/tmp/audioparams" 2>/dev/null
 CONFQUAL="${audioparams[0]}";     if [[ -z $CONFQUAL ]]; then CONFQUAL="4"; fi
 CONFAUDIODEL="${audioparams[1]}"; if [[ -z $CONFAUDIODEL ]]; then CONFAUDIODEL="no"; fi
-CONFBOOST="${audioparams[2]}";    if [[ -z $CONFBOOST ]]; then CONFBITS="no"; fi
+CONFBOOST="${audioparams[2]}";    if [[ -z $CONFBOOST ]]; then CONFBOOST="no"; fi
 CONFMETAVOL="${audioparams[3]}";    if [[ -z $CONFMETAVOL ]]; then CONFMETAVOL="real"; fi
 
 # And finally, miscellaneous program control parameters
@@ -166,7 +166,9 @@ CONFLOGOSIZE="${miscparams[1]}"
 CONFLOGOPOS="${miscparams[2]}"
   if [[ $((CONFLOGOPOS)) != "$CONFLOGOPOS" ]]; then CONFLOGOPOS=0; fi
 CONFWEZTHEME="${miscparams[3]}"
+  if [[ -z $CONFWEZTHEME ]]; then CONFWEZTHEME="Galaxy"; fi
 CONFWEZFNTSZ="${miscparams[4]}"
+  if ! [[ $CONFWEZFNTSZ =~ ^[0-9]+$ ]]; then CONFWEZFNTSZ=12; fi
   if [[ $CONFWEZFNTSZ -gt 32 ]]; then CONFWEZFNTSZ=12; fi
   if [[ $CONFWEZFNTSZ -lt 8 ]]; then CONFWEZFNTSZ=12; fi
 CONFDIATHEME="${miscparams[5]}"
@@ -197,6 +199,16 @@ if [[ -f $HOME/.semplice.lua ]]; then
   $SEDPROG -i "s/^config\.font_size = .*$/config.font_size = $CONFWEZFNTSZ/" "$HOME/.semplice.lua"
 fi
 
+# Keep the colours already chosen (via the colour picker): read each from the existing file, falling back
+# to its default if missing or not a whole number from 0 to 255
+# ====================================================================
+for colourpair in HOTKEY:11 DRAWLINES:2 MAINTEXT:15 LOGO:6 INFOTEXT:11 SPINNER:12 ALERT:1; do
+  colname="${colourpair%%:*}"; coldefault="${colourpair##*:}"
+  colvalue=$($GREPPROG -i -m1 "^$colname=" "$CONFFILE" 2>/dev/null | $SEDPROG -e "s/^[^=]*=//" -e "s/[[:space:]]*$//")
+  if ! [[ $colvalue =~ ^[0-9]+$ && $colvalue -le 255 ]]; then colvalue=$coldefault; fi
+  printf -v "KEEP_$colname" "%s" "$colvalue"
+done
+
 if [[ -f "$CONFDIR/txt/semplice.conf" ]]; then
   cp "$CONFDIR/txt/semplice.conf" "$CONFDIR/txt/semplice.conf-$(date +%F-%T).bkp"
 fi
@@ -206,13 +218,13 @@ echo "# New Semplice Configuration File, created $(date)
 
 # Colour Constants (alter at your peril!)
 # ====================================================================
-HOTKEY=11
-DRAWLINES=2
-MAINTEXT=15    
-LOGO=6    
-INFOTEXT=11    
-SPINNER=12
-ALERT=1
+HOTKEY=$KEEP_HOTKEY
+DRAWLINES=$KEEP_DRAWLINES
+MAINTEXT=$KEEP_MAINTEXT
+LOGO=$KEEP_LOGO
+INFOTEXT=$KEEP_INFOTEXT
+SPINNER=$KEEP_SPINNER
+ALERT=$KEEP_ALERT
 
 # Parameters controlling CD Ripping
 # ====================================================================
