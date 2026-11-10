@@ -113,16 +113,15 @@ fi
 function sacd_install {
 if ! command -v sacd >/dev/null 2>&1; then
   if [[ ! $OSFAMILY == "MACOS" ]]; then
-    # Install build tools and Python dev headers, distro-independent
+    # Install build tools, distro-independent
     if command -v apt >/dev/null 2>&1; then
       sudo apt update >/dev/null 2>&1
-      sudo apt install -y build-essential python3-dev python3-setuptools python3-wheel >/dev/null 2>&1
+      sudo apt install -y build-essential >/dev/null 2>&1
     elif command -v dnf >/dev/null 2>&1; then
       sudo dnf group install -y development-tools >/dev/null 2>&1
       sudo dnf install -y gcc-c++ >/dev/null 2>&1
-      sudo dnf install -y python3-devel python3-setuptools python3-wheel >/dev/null 2>&1
     elif command -v pacman >/dev/null 2>&1; then
-      sudo pacman -Syu --noconfirm base-devel python python-setuptools python-wheel >/dev/null 2>&1
+      sudo pacman -Syu --noconfirm base-devel >/dev/null 2>&1
     fi
 
     dialog --stdout --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --backtitle "Semplice Software Install" --msgbox "\nAbout to install sacd, for SACD conversion purposes. \n\nClick OK to proceed." 10 80
@@ -167,7 +166,7 @@ case $OSFAMILY in
     sudo xbps-install -Sfy dialog > /dev/null 2>&1
 
     # Define what's required    
-    packages=(automake base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd gcc gd-devel git ImageMagick lame-devel libcdio libjpeg-turbo-devel libpng-devel libtool make ncurses nerd-fonts-ttf pkg-config python3-devel python3-setuptools libflac-devel libogg-devel wezterm)
+    packages=(automake base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd gcc gd-devel git ImageMagick lame-devel libcdio libjpeg-turbo-devel libpng-devel libtool make ncurses nerd-fonts-ttf pkg-config libflac-devel libogg-devel wezterm)
     total=${#packages[@]}
     count=0
 
@@ -228,7 +227,7 @@ case $OSFAMILY in
     sudo pacman -S --noconfirm dialog git base-devel go > /dev/null 2>&1
 
     # Define what's required
-    packages=(base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd git imagemagick libcdio libxml2-legacy ncurses python python-setuptools ttf-nerd-fonts-symbols-mono wezterm)
+    packages=(base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd git imagemagick libcdio libxml2-legacy ncurses ttf-nerd-fonts-symbols-mono wezterm)
     total=${#packages[@]}
     count=0
 
@@ -316,7 +315,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses* libsixel-bin pkg-config python3 python3-dev wezterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses* libsixel-bin pkg-config wezterm)
     total=${#packages[@]}
     count=0
     
@@ -370,7 +369,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* libsixel-bin pkg-config python3 python3-dev wezterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* libsixel-bin pkg-config wezterm)
     total=${#packages[@]}
     count=0
 
@@ -415,7 +414,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses6 libsixel-bin pkg-config python3 python3-dev wezterm)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses6 libsixel-bin pkg-config wezterm)
     total=${#packages[@]}
     count=0
     
@@ -466,7 +465,7 @@ case $OSFAMILY in
     sudo dnf -y copr enable lchh/libsixel > /dev/null 2>&1
     
      # Define what's required 
-    packages=(bc binutils cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac gcc git ImageMagick kernel-devel lame-devel libsixel libsixel-utils ncurses pkg-config python python-devel python-setuptools wezterm)
+    packages=(bc binutils cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac gcc git ImageMagick kernel-devel lame-devel libsixel libsixel-utils ncurses pkg-config wezterm)
     total=${#packages[@]}
     count=0
     
@@ -521,7 +520,7 @@ case $OSFAMILY in
     fi
 
     # Define what's required 
-    packages=(autoconf automake bc binutils cdparanoia cmake coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick kernel-devel lame lame-devel lame-devel libsixel libsixel-utils ncurses pkg-config python python-devel wezterm xdotool)
+    packages=(autoconf automake bc binutils cdparanoia cmake coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick kernel-devel lame lame-devel lame-devel libsixel libsixel-utils ncurses pkg-config wezterm xdotool)
     total=${#packages[@]}
     count=0
 
