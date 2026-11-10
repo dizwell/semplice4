@@ -19,6 +19,17 @@ awk '{ sub(/\r$/, ""); sub(/^[ \t]+/, ""); sub(/[ \t]+$/, "")
      END { printf "%s", out }'
 }
 
+# to_nfc: on macOS, converts text read from standard input into 'composed' Unicode (NFC), so
+# an accented letter is stored as one character rather than a letter plus a separate accent mark.
+# Typed text on macOS can arrive decomposed. Elsewhere, or if uconv is missing, text passes through unchanged.
+function to_nfc {
+if [[ $(uname) == "Darwin" ]] && command -v uconv >/dev/null 2>&1; then
+  uconv -x any-nfc
+else
+  cat
+fi
+}
+
 # get_tag NAME FILE: prints the value of tag NAME in FILE as a single line. Only the leading
 # "NAME=" is removed, so values containing '=' survive intact. Repeated tags and multi-line
 # values are joined with single spaces (see flatten_lines). Not for CUESHEET, which must keep

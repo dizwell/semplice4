@@ -58,11 +58,6 @@ VALUES=$( 2>&1 1>&3 dialog --ok-label "Submit" --extra-button --extra-label "  C
 )
 exitStatus=$?
 exec 3>&-
-# On macOS, if there are accented characters, they need to be forced to be 'composed Unicode'
-# rather than 'decomposed'.
-if [[ $(uname -a) == *"Darwin"* ]] && command -v uconv >/dev/null 2>&1; then
-  VALUES=$(echo "$VALUES" | uconv -x any-nfc)
-fi
 }
 
 function evaluate_response {
@@ -72,11 +67,13 @@ elif  [[ $exitStatus -eq 3 ]]; then                                             
   BREAKME=0
   rm -f "$CONFDIR/tmp/tracklists.txt" 2>/dev/null
   display_emptydialog
+  VALUES=$(printf '%s\n' "$VALUES" | to_nfc)                                            # On macOS, force accented characters into composed form
   echo "$VALUES" > "$CONFDIR/tmp/tracklists.txt"
   tag_writes
 else                                                                                    # They submitted proper track metadata
   BREAKME=0
   rm -f "$CONFDIR/tmp/tracklists.txt" 2>/dev/null
+  VALUES=$(printf '%s\n' "$VALUES" | to_nfc)                                            # On macOS, force accented characters into composed form
   echo "$VALUES" > "$CONFDIR/tmp/tracklists.txt"
   tag_writes
 fi

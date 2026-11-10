@@ -699,8 +699,8 @@ case $OSFAMILY in
     tput cup 24 4
     
     if [[ $pkgmanager == "homebrew" ]]; then
-      ln -s /opt/homebrew/bin/cd-paranoia /opt/homebrew/bin/cdparanoia 2>/dev/null
-      ln -s /opt/homebrew/opt/icu4c@78/bin/uconv /opt/homebrew/bin/uconv 2>/dev/null
+      ln -sf "$(brew --prefix)/bin/cd-paranoia" "$(brew --prefix)/bin/cdparanoia" 2>/dev/null
+      ln -sf "$(brew --prefix icu4c)/bin/uconv" "$(brew --prefix)/bin/uconv" 2>/dev/null     # Version-free path: survives Homebrew upgrades of icu4c
     fi
 
     # Confirmation when concluded

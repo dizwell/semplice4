@@ -157,12 +157,10 @@ else                                                                  # They mad
   
   # On macOS, if there are accented characters, they need to be forced to be 'composed Unicode'
   # rather than 'decomposed'.
-  if [[ $(uname -a) == *"Darwin"* ]] && command -v uconv >/dev/null 2>&1; then
-    NEWCOMPOSER=$(echo "$NEWCOMPOSER" | uconv -x any-nfc)
-    NEWCOMPOSITION=$(echo "$NEWCOMPOSITION" | uconv -x any-nfc)
-    NEWPERFORMER=$(echo "$NEWPERFORMER" | uconv -x any-nfc)
-    NEWGENRE=$(echo "$NEWGENRE" | uconv -x any-nfc)
-  fi
+  NEWCOMPOSER=$(printf '%s\n' "$NEWCOMPOSER" | to_nfc)
+  NEWCOMPOSITION=$(printf '%s\n' "$NEWCOMPOSITION" | to_nfc)
+  NEWPERFORMER=$(printf '%s\n' "$NEWPERFORMER" | to_nfc)
+  NEWGENRE=$(printf '%s\n' "$NEWGENRE" | to_nfc)
 
   # Write the separate values out into a text file
   TAGFILE="$CONFDIR/tmp/tagfile.txt"
@@ -208,9 +206,7 @@ if [[ $BREAKME -eq 0 ]]; then
       
       # On macOS, if there are accented characters, they need to be forced to be 'composed Unicode'
       # rather than 'decomposed'.
-      if [[ $(uname -a) == *"Darwin"* ]] && command -v uconv >/dev/null 2>&1; then
-        COMMENTS=$(echo "$COMMENTS" | uconv -x any-nfc)
-      fi      
+      COMMENTS=$(printf '%s\n' "$COMMENTS" | to_nfc)
     fi
   fi
 fi
@@ -335,6 +331,7 @@ exec 3>&-
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then
   BREAKME=1
 else
+  VALUES=$(printf '%s\n' "$VALUES" | to_nfc)                                    # On macOS, force accented characters into composed form
   echo "$VALUES" > "$CONFDIR/tmp/customtags.txt"
 
   for f in *.flac; do
