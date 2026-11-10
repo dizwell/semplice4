@@ -67,11 +67,11 @@ function album_prompt {
 if [[ $READMETA -eq 1 ]]; then
   if [[ $GUESSME -eq 0 ]]; then
     f=$($FDPROG -g "*.flac" | sort | head -n 1)
-    NEWCOMPOSER=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g'); NEWCOMPOSER=${NEWCOMPOSER//[$'\t\r\n']}
-    NEWCOMPOSITION=$(metaflac $UTFCHARS --show-tag=Album "$f" | $SEDPROG 's/.*=//g'); NEWCOMPOSITION=${NEWCOMPOSITION//[$'\t\r\n']}
-    NEWPERFORMER=$(metaflac $UTFCHARS --show-tag=Performer "$f" | $SEDPROG 's/.*=//g'); NEWPERFORMER=${NEWPERFORMER//[$'\t\r\n']}
-    NEWGENRE=$(metaflac $UTFCHARS --show-tag=Genre "$f" | $SEDPROG 's/.*=//g'); NEWGENRE=${NEWGENRE//[$'\t\r\n']}
-    NEWYEAR=$(metaflac $UTFCHARS --show-tag=Date "$f" | $SEDPROG 's/.*=//g'); NEWYEAR=${NEWYEAR//[$'\t\r\n']}    
+    NEWCOMPOSER=$(get_tag Artist "$f")
+    NEWCOMPOSITION=$(get_tag Album "$f")
+    NEWPERFORMER=$(get_tag Performer "$f")
+    NEWGENRE=$(get_tag Genre "$f")
+    NEWYEAR=$(get_tag Date "$f")    
   else
     unset NEWCOMPOSER
     unset NEWCOMPOSITION
@@ -117,11 +117,11 @@ if [[ $READMETA -eq 1 ]]; then
   fi
 elif [[ $SOURCETAG == "text" ]]; then
   if [[ -f $CONFDIR/txt/prior.txt ]]; then
-    NEWCOMPOSER=$(cat "$CONFDIR/txt/prior.txt" | $SEDPROG -n 1p | $SEDPROG 's/.*=//g')
-    NEWCOMPOSITION=$(cat "$CONFDIR/txt/prior.txt" | $SEDPROG -n 3p | $SEDPROG 's/.*=//g')
-    NEWGENRE=$(cat "$CONFDIR/txt/prior.txt" | $SEDPROG -n 4p | $SEDPROG 's/.*=//g')
-    NEWPERFORMER=$(cat "$CONFDIR/txt/prior.txt" | $SEDPROG -n 5p | $SEDPROG 's/.*=//g')
-    NEWYEAR=$(cat "$CONFDIR/txt/prior.txt" | $SEDPROG -n 6p | $SEDPROG 's/.*=//g')
+    NEWCOMPOSER=$($SEDPROG -n 1p "$CONFDIR/txt/prior.txt" | $SEDPROG 's/^[^=]*=//')
+    NEWCOMPOSITION=$($SEDPROG -n 3p "$CONFDIR/txt/prior.txt" | $SEDPROG 's/^[^=]*=//')
+    NEWGENRE=$($SEDPROG -n 4p "$CONFDIR/txt/prior.txt" | $SEDPROG 's/^[^=]*=//')
+    NEWPERFORMER=$($SEDPROG -n 5p "$CONFDIR/txt/prior.txt" | $SEDPROG 's/^[^=]*=//')
+    NEWYEAR=$($SEDPROG -n 6p "$CONFDIR/txt/prior.txt" | $SEDPROG 's/^[^=]*=//')
   fi
 fi
 
@@ -180,7 +180,7 @@ if [[ $BREAKME -eq 0 ]]; then
   tput cvvis
   if [[ $READMETA -eq 1 ]]; then
     f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)
-    METACOMMENT=$(metaflac $UTFCHARS --show-tag=Comment "$f" | $SEDPROG 's/.*=//g')
+    METACOMMENT=$(get_tag Comment "$f")
     if [[ -z $METACOMMENT ]]; then METACOMMENT="No existing metadata found. Supply your own (ctrl+U to clear this message)."; fi
     COMMENTPROMPT="$METACOMMENT"
   elif [[ $READPRIOR -eq 1 ]]; then
@@ -219,7 +219,7 @@ for f in *.flac; do
   metaflac "--set-tag=TRACKNUMBER=$TRACKNO" "$f"
   FIXEDTRACK="${TRACKNO#0}"		# 2-digit numbers with leading zeroes causing problems for printf. This fixes that.
 
-  TRACKTITLE=$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')
+  TRACKTITLE=$(get_tag Title "$f")
   if [[ -z $TRACKTITLE ]]; then
     TRACKTITLE="Track $FIXEDTRACK"
   fi
@@ -313,7 +313,7 @@ g=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)
 for ((i=1; i<=9; i++)); do
   REF="CUSTOMTAG$i"
   CUSTOMTAGNAME="${!REF}"
-  EXISTINGCUSTOMDATA=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAGNAME" "$g" | $SEDPROG 's/.*=//g')   # Get existing data if any, for display purposes
+  EXISTINGCUSTOMDATA=$(get_tag "$CUSTOMTAGNAME" "$g")   # Get existing data if any, for display purposes
   CUSTOMTAGNAME="${CUSTOMTAGNAME//_/ }"
   if ! [ "$CUSTOMTAGNAME" == "XqXXqXX" ]; then
     CUSTOMSTRING+=("$i. $CUSTOMTAGNAME:" "$i" 1 "$EXISTINGCUSTOMDATA" "$i" 22 65 256)

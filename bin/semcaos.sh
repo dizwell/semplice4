@@ -35,7 +35,7 @@ if [[ $COUNTFLAC -gt 1 ]]; then
   return
 fi
 
-CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f"  | $SEDPROG 's/.*=//g')
+CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f"); CUESHEET="${CUESHEET#*=}"
 if [[ -z $CUESHEET ]]; then
   EMBEDDEDCUECOUNT=0
 else
@@ -98,7 +98,7 @@ fi
 # -----------------------------------------------------------------------------------------
 f=$(ls *.flac)      # repeated from above, because the clean filenames business may have changed the names of the FLAC and CUE we're dealing with.
 c=$(ls *.cue)
-CUESHEET=$(metaflac $UTFCHARS --show-tag=Cuesheet "$f" | $SEDPROG 's/.*=//g')      # If it contains a cuesheet, start reading the cuesheet
+CUESHEET=$(metaflac $UTFCHARS --show-tag=Cuesheet "$f"); CUESHEET="${CUESHEET#*=}"      # If it contains a cuesheet, start reading the cuesheet
 if [[ ! -z "$CUESHEET" ]]; then
   cao_split
 else
@@ -129,7 +129,7 @@ if [[ $countflacs -gt 1 ]]; then
   return
 fi
 
-CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f"  | $SEDPROG 's/.*=//g')
+CUESHEET=$(metaflac $UTFCHARS --show-tag=CUESHEET "$f"); CUESHEET="${CUESHEET#*=}"
 if [[ -z $CUESHEET ]]; then
   dialog --stdout --backtitle "Semplice FLAC Splitting" --msgbox "There needs to be a FLAC file present in the working folder, plus a cuesheet. There needs to be only one of each type of file in the working folder. One of these conditions is not being met at present! \n\nClick OK to return to the main program menu." 10 80
   return
@@ -141,25 +141,25 @@ else
   echo "$CUESHEET" > "$CUEFILE"
 
   # Fetch existing metadata into variables
-  COMPOSER=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g')
-  ARTIST=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g')
-  ALBUM=$(metaflac $UTFCHARS --show-tag=Album "$f" | $SEDPROG 's/.*=//g')
-  GENRE=$(metaflac $UTFCHARS --show-tag=Genre "$f" | $SEDPROG 's/.*=//g')
-  DATE=$(metaflac $UTFCHARS --show-tag=Date "$f" | $SEDPROG 's/.*=//g')
-  COMMENT=$(metaflac $UTFCHARS --show-tag=Comment "$f" | $SEDPROG 's/.*=//g')
-  NOTES=$(metaflac $UTFCHARS --show-tag=Notes "$f" | $SEDPROG 's/.*=//g')
-  PERFORMER=$(metaflac $UTFCHARS --show-tag=Performer "$f" | $SEDPROG 's/.*=//g')
+  COMPOSER=$(get_tag Artist "$f")
+  ARTIST=$(get_tag Artist "$f")
+  ALBUM=$(get_tag Album "$f")
+  GENRE=$(get_tag Genre "$f")
+  DATE=$(get_tag Date "$f")
+  COMMENT=$(get_tag Comment "$f")
+  NOTES=$(get_tag Notes "$f")
+  PERFORMER=$(get_tag Performer "$f")
 
   if [[ $CUSTOMTAGS -eq 1 ]]; then
-    CUSTOMTAGVALUE1=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG1" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE2=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG2" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE3=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG3" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE4=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG4" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE5=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG5" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE6=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG6" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE7=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG7" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE8=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG8" "$f" | $SEDPROG 's/.*=//g')
-    CUSTOMTAGVALUE9=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG9" "$f" | $SEDPROG 's/.*=//g')
+    CUSTOMTAGVALUE1=$(get_tag "$CUSTOMTAG1" "$f")
+    CUSTOMTAGVALUE2=$(get_tag "$CUSTOMTAG2" "$f")
+    CUSTOMTAGVALUE3=$(get_tag "$CUSTOMTAG3" "$f")
+    CUSTOMTAGVALUE4=$(get_tag "$CUSTOMTAG4" "$f")
+    CUSTOMTAGVALUE5=$(get_tag "$CUSTOMTAG5" "$f")
+    CUSTOMTAGVALUE6=$(get_tag "$CUSTOMTAG6" "$f")
+    CUSTOMTAGVALUE7=$(get_tag "$CUSTOMTAG7" "$f")
+    CUSTOMTAGVALUE8=$(get_tag "$CUSTOMTAG8" "$f")
+    CUSTOMTAGVALUE9=$(get_tag "$CUSTOMTAG9" "$f")
   fi
 
 fi

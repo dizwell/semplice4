@@ -27,15 +27,15 @@ FIRST_TIME=1
 NUM='^[0-9]+$'
 AXIOM_ERRORS=0
 for f in *.flac; do
-  COMPOSER=$(metaflac $UTFCHARS --show-tag=Composer "$f" | $SEDPROG 's/.*=//g')
-  ARTIST=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g')
-  PERFORMER=$(metaflac $UTFCHARS --show-tag=Performer "$f" | $SEDPROG 's/.*=//g')
-  ALBUM=$(metaflac $UTFCHARS --show-tag=Album "$f" | $SEDPROG 's/.*=//g')
-  GENRE=$(metaflac $UTFCHARS --show-tag=Genre "$f" | $SEDPROG 's/.*=//g')
-  COMMENT=$(metaflac $UTFCHARS --show-tag=Comment "$f" | $SEDPROG 's/.*=//g')
-  TRACKNUMBER=$(metaflac $UTFCHARS --show-tag=TRACKNUMBER "$f" | $SEDPROG 's/.*=//g')
-  YEAR=$(metaflac $UTFCHARS --show-tag=Date "$f" | $SEDPROG 's/.*=//g')
-  TITLE=$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')
+  COMPOSER=$(get_tag Composer "$f")
+  ARTIST=$(get_tag Artist "$f")
+  PERFORMER=$(get_tag Performer "$f")
+  ALBUM=$(get_tag Album "$f")
+  GENRE=$(get_tag Genre "$f")
+  COMMENT=$(get_tag Comment "$f")
+  TRACKNUMBER=$(get_tag TRACKNUMBER "$f")
+  YEAR=$(get_tag Date "$f")
+  TITLE=$(get_tag Title "$f")
 
   if [[ -z $COMPOSER || -z $ARTIST || -z $PERFORMER || -z $ALBUM || -z $GENRE || -z $COMMENT || -z $TRACKNUMBER || -z $TITLE ]]; then
     if [[ -z $COMPOSER ]]; then
@@ -122,7 +122,7 @@ fi
 # with a name matching 'album' name. So 'ALBUM' is required at a minimum to be not null.
 # ------------------------------------------------------------------------------------------
 g=$(find . -name "*.flac" | sort | head -n 1)
-ALBUM=$(metaflac $UTFCHARS --show-tag=Album "$g" | $SEDPROG 's/.*=//g')
+ALBUM=$(get_tag Album "$g")
 BITDEPTH=$(metaflac --list "$g" | $GREPPROG -a bits-per-sample | awk '{print $2}')
 SAMPLERATE=$(metaflac --list "$g" | $GREPPROG sample_rate | awk '{print $2}')
 
@@ -164,35 +164,35 @@ done
 # Get metadata from first FLAC file in folder
 # ------------------------------------------------------------------------------------------
 f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)
-COMPOSER=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g')
-ARTIST=$(metaflac $UTFCHARS --show-tag=Artist "$f" | $SEDPROG 's/.*=//g')
-YEAR=$(metaflac $UTFCHARS --show-tag=Date "$f" | $SEDPROG 's/.*=//g')
-ALBUM=$(metaflac $UTFCHARS --show-tag=Album "$f" | $SEDPROG 's/.*=//g')
-TRACKNUMBER=$(metaflac $UTFCHARS --show-tag=TRACKNUMBER "$f" | $SEDPROG 's/.*=//g')
-TITLE=$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')
-GENRE=$(metaflac $UTFCHARS --show-tag=Genre "$f" | $SEDPROG 's/.*=//g')
-COMMENT=$(metaflac $UTFCHARS --show-tag=Comment "$f" | $SEDPROG 's/.*=//g')
-PERFORMER=$(metaflac $UTFCHARS --show-tag=Performer "$f" | $SEDPROG 's/.*=//g')
-DESCRIPTION=$(metaflac $UTFCHARS --show-tag=Description "$f" | $SEDPROG 's/.*=//g')
-NOTES=$(metaflac $UTFCHARS --show-tag=Notes "$f" | $SEDPROG 's/.*=//g')
+COMPOSER=$(get_tag Artist "$f")
+ARTIST=$(get_tag Artist "$f")
+YEAR=$(get_tag Date "$f")
+ALBUM=$(get_tag Album "$f")
+TRACKNUMBER=$(get_tag TRACKNUMBER "$f")
+TITLE=$(get_tag Title "$f")
+GENRE=$(get_tag Genre "$f")
+COMMENT=$(get_tag Comment "$f")
+PERFORMER=$(get_tag Performer "$f")
+DESCRIPTION=$(get_tag Description "$f")
+NOTES=$(get_tag Notes "$f")
 BITDEPTH=$(metaflac $UTFCHARS --list "$f" | $GREPPROG bits-per-sample | awk '{print $2}')
 SAMPLERATE=$(metaflac $UTFCHARS --list "$f" | $GREPPROG sample_rate | awk '{print $2}')
-RPG_REFERENCE=$(metaflac $UTFCHARS --show-tag=REPLAYGAIN_REFERENCE_LOUDNESS "$f" | $SEDPROG 's/.*=//g')
-RPG_ALBUMPEAK=$(metaflac $UTFCHARS --show-tag=REPLAYGAIN_ALBUM_PEAK "$f" | $SEDPROG 's/.*=//g')
-RPG_ALBUMGAIN=$(metaflac $UTFCHARS --show-tag=REPLAYGAIN_ALBUM_GAIN "$f" | $SEDPROG 's/.*=//g')
+RPG_REFERENCE=$(get_tag REPLAYGAIN_REFERENCE_LOUDNESS "$f")
+RPG_ALBUMPEAK=$(get_tag REPLAYGAIN_ALBUM_PEAK "$f")
+RPG_ALBUMGAIN=$(get_tag REPLAYGAIN_ALBUM_GAIN "$f")
 RPG_TRACKPEAK=$RPG_ALBUMPEAK
 RPG_TRACKGAIN=$RPG_ALBUMGAIN
 
 if [[ $CUSTOMTAGS -eq 1 ]]; then
-  CUSTOMTAGVALUE1=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG1" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE2=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG2" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE3=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG3" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE4=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG4" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE5=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG5" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE6=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG6" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE7=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG7" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE8=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG8" "$f" | $SEDPROG 's/.*=//g')
-  CUSTOMTAGVALUE9=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAG9" "$f" | $SEDPROG 's/.*=//g')
+  CUSTOMTAGVALUE1=$(get_tag "$CUSTOMTAG1" "$f")
+  CUSTOMTAGVALUE2=$(get_tag "$CUSTOMTAG2" "$f")
+  CUSTOMTAGVALUE3=$(get_tag "$CUSTOMTAG3" "$f")
+  CUSTOMTAGVALUE4=$(get_tag "$CUSTOMTAG4" "$f")
+  CUSTOMTAGVALUE5=$(get_tag "$CUSTOMTAG5" "$f")
+  CUSTOMTAGVALUE6=$(get_tag "$CUSTOMTAG6" "$f")
+  CUSTOMTAGVALUE7=$(get_tag "$CUSTOMTAG7" "$f")
+  CUSTOMTAGVALUE8=$(get_tag "$CUSTOMTAG8" "$f")
+  CUSTOMTAGVALUE9=$(get_tag "$CUSTOMTAG9" "$f")
 fi
 
 SAFEALBUMNAME=$(tr '~#%&<>:"/\|?*' '_' <<< "$ALBUM") # Make physical file names NTFS-safe
@@ -210,7 +210,7 @@ fi
 for f in *.flac; do
   if [ "${f}" != "${f//.../…}" ]; then
     # Fetch existing metadata into variables
-    TITLE="$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')"
+    TITLE="$(get_tag Title "$f")"
     TITLE="${TITLE//.../…}"
     TITLE="${TITLE//../…}"
     metaflac $UTFCHARS --remove-tag="Title" "$f"
@@ -221,7 +221,7 @@ done
 
 for f in *.flac; do
   if [ "${f}" != "${f//../…}" ]; then
-    TITLE="$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')"
+    TITLE="$(get_tag Title "$f")"
     TITLE="${TITLE//.../…}"
     TITLE="${TITLE//../…}"
     metaflac $UTFCHARS --remove-tag="Title" "$f"
@@ -257,7 +257,7 @@ echo "PERFORMER \"$COMMENT\"" >> cuesheet.cue
 echo "FILE \"$PLAINFLACNAME\" WAVE" >> cuesheet.cue
 
 for f in *.flac; do
-  TITLE=$(metaflac $UTFCHARS --show-tag=Title "$f" | $SEDPROG 's/.*=//g')
+  TITLE=$(get_tag Title "$f")
 
   if [[ "$TITLE" == *".."* ]]; then
     TITLE="${TITLE//../…}"                                # Metadata two consecutive dots get replaced by proper ellipsis

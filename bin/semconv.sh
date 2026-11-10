@@ -121,9 +121,9 @@ IN=${INPUTFORMAT,,}
 # -----------------------------------------------------------------------------
 if [[ $INPUTFORMAT == "FLAC" ]]; then
   f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)						# The first FLAC found will be the source of truth
-  COMMENT=$(metaflac $UTFCHARS --show-tag=Comment "$f" | $SEDPROG 's/.*=//g')
-  PERFORMER==$(metaflac $UTFCHARS --show-tag=Performer "$f" | $SEDPROG 's/.*=//g')
-  DESCRIPTION=$(metaflac $UTFCHARS --show-tag=Description "$f" | $SEDPROG 's/.*=//g')
+  COMMENT=$(get_tag Comment "$f")
+  PERFORMER=$(get_tag Performer "$f")
+  DESCRIPTION=$(get_tag Description "$f")
 fi
 
 # If comment is null, but DESCRIPTION isn't, then make the COMMENT=DESCRIPTION
