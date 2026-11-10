@@ -21,7 +21,7 @@ if [[ $CUSTOMTAGS -eq 1 ]]; then
   for ((i=1; i<=9; i++)); do
     REF="CUSTOMTAG$i"
     CUSTOMTAGNAME="${!REF}"
-    EXISTINGCUSTOMDATA=$(metaflac $UTFCHARS --show-tag="$CUSTOMTAGNAME" "$g" | $SEDPROG 's/.*=//g')   # Get existing data if any, for display purposes
+    EXISTINGCUSTOMDATA=$(get_tag "$CUSTOMTAGNAME" "$g")   # Get existing data if any, for display purposes
     CUSTOMTAGNAME="${CUSTOMTAGNAME//_/ }"
     if ! [ "$CUSTOMTAGNAME" == "XqXXqXX" ]; then
       CUSTOMSTRING+=("$i. $CUSTOMTAGNAME:" "$i" 1 "$EXISTINGCUSTOMDATA" "$i" 22 65 256)
