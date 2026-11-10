@@ -156,7 +156,7 @@ for f in *.flac; do
   PLAYFRAC=$(printf "%02d\n" $PLAYFRAC)
   PLAYSECS=$(printf "%02d\n" $PLAYSECS)
 
-  DISPLAYLENGTH="$PLAYMINS:$PLAYSECS:$PLAYFRAC"
+  DISPLAYLENGTH="$(printf "%02d" $PLAYMINS):$PLAYSECS:$PLAYFRAC"         # Cuesheet times are mm:ss:ff, minutes zero-padded
   track_lengths+=("$DISPLAYLENGTH")
   echo "$f" >> "/$CONFDIR/tmp/cao-files.txt"
 done
