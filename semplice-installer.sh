@@ -11,7 +11,7 @@
 #  6. Install new fonts
 #
 ####################################################################
-PROGVERSION="4.00" COPYRIGHT="2021-2026"
+PROGVERSION="4.00" COPYRIGHT="2019-2026"
 PRIORVERSION=0; clear; USERNAME=$(whoami); ERRORCOUNT=0  YPOS=6
 
 if [[ $1 == "beta" ]]; then 
@@ -94,7 +94,7 @@ tput setaf $DRAWLINES; echo -e "┌───────────────
 │                                                                                                   │
 └───────────────────────────────────────────────────────────────────────────────────────────────────┘"
 tput cup  1 4; tput setaf $LOGO; echo "♬♪ Semplice: The Digital Music Manager ♬♪"
-tput cup  2 4; tput setaf $LOGO; echo "Copyright © Howard Rogers $COPYRIGHT"
+tput cup  2 4; tput setaf $LOGO; echo "Copyright © H. Rogers $COPYRIGHT"
 tput cup  3 4; tput setaf $LOGO; echo "Version $PROGVERSION"
 }
 
