@@ -13,9 +13,9 @@
 # but you must always rip the entire CD.
 #
 # After a rip, the script will verify the ripped files for
-# consistency with the AccurateRip database, using the
-# trackverify option found in the audiotools package (so long as you're
-# not running on macOS or using hyper-accurate ripping)
+# consistency with the AccurateRip database, using Semplice's own
+# checker, semarv, in the exec folder (on Linux and macOS alike,
+# unless hyper-accurate ripping is in use)
 #
 ####################################################################
 source "$CONFDIR/bin/semtput.sh" 
@@ -276,53 +276,38 @@ if [[ $DELETE_WAV -eq 1 ]]; then
 fi
 }
 
-function verify_flac {
-tput cup 22 4; echo "Now verifying the ripped FLACs...                                                  "
+function semarv_path {
+# Prints the path of the AccurateRip checker (semarv) built for this computer, if there is one
+local bin
+case "$(uname -s)-$(uname -m)" in
+  Darwin-arm64)              bin="semarv-macsilicon" ;;
+  Darwin-x86_64)             bin="semarv-macintel" ;;
+  Linux-aarch64|Linux-armv7l) bin="semarv_arm" ;;
+  Linux-x86_64)              bin="semarv" ;;
+esac
+if [[ -n $bin && -x "$CONFDIR/exec/$bin" ]]; then echo "$CONFDIR/exec/$bin"; fi
+}
+
+function verify_rip {
+# Checks the rip against the AccurateRip database, using Semplice's own checker (semarv) on the
+# WAVs cdparanoia produced. Works on Linux and macOS alike. The full report goes to ripaccuracy.txt.
+tput cup 22 4; echo "Now verifying the rip against the AccurateRip database...                         "
 cd "$CONFDIR/rip"
-$FDPROG -j 4 -d 1 -t f -e "wav" -x ffmpeg -hide_banner -loglevel 0 -i "{}" -sample_fmt s16 -ar 44100 -y "{.}-16.flac"
-trackverify 2>/dev/null -j $(nproc) -R *.flac > ripaccuracy.txt
-
-if [[ -f $CONFDIR/rip/ripaccuracy.txt ]]; then            # Does the file exist
-  if [[ -s $CONFDIR/rip/ripaccuracy.txt ]]; then          # If it does, is it empty: only do other stuff if not (i.e., there are some results from trackverify)
-    DISCHIT=$(cat ripaccuracy.txt | $GREPPROG found | wc -l)
-
-    # Various text messages indicate failure to identify the disk
-    NOMATCH=$(cat ripaccuracy.txt | $GREPPROG "no match in database" | wc -l)
-    NODISC=$(cat ripaccuracy.txt | $GREPPROG "disc not in database" | wc -l)
-
-    if [[ $((NOMATCH+NODISC)) -gt 0 ]]; then
-      DISCMISS=1
-    else
-      DISCMISS=0
-    fi
-
-    if [[ $DISCHIT -gt 1 ]]; then
-      # A lot of palaver to determine the *lowest* confidence rating contained in the accuracy log,
-      # since it can vary per-track (and hence, per line of the log file). Thus, we start by
-      # setting CONFIDENCE to an absurdly high value, iterate through the lines of the log and if
-      # the confidence shown on each line is *lower* than that, CONFIDENCE is set to be that new, lower
-      # value. Keep going and by the end of the log, CONFIDENCE will be the lowest value encountered.
-      CONFIDENCE=999999
-      while read l; do
-      if [[  ${l:0:1} == "[" ]]; then
-        NEWCONFIDENCE=$(echo "$l" | awk -F ":" '{print $2}' | cut -d "(" -f2-); NEWCONFIDENCE=${NEWCONFIDENCE::-1}
-        NEWCONFIDENCE=$(echo $NEWCONFIDENCE | awk '{print $2}')
-        if [[ $NEWCONFIDENCE -lt $CONFIDENCE ]]; then
-          CONFIDENCE=$NEWCONFIDENCE
-        fi
-      fi
-      done <ripaccuracy.txt
-      echo $CONFIDENCE
-      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "This rip appears good (Confidence = $CONFIDENCE)." 8 80
-    elif [[ $DISCMISS -eq 1 ]]; then
-      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "This CD is NOT in the AccurateRip database, so no confidence can be given to the rip (but it's probably OK)." 8 80
-    else
-      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Please review the $CONFDIR/rip/ripaccuracy.txt file to see whether this rip was OK." 8 80
-    fi
-  fi
-fi
+"$SEMARV" track*.wav > ripaccuracy.txt 2>&1
+RESULT=$($GREPPROG -a '^RESULT:' ripaccuracy.txt | tail -1)
+case "$RESULT" in
+  "RESULT: MATCH "*)
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "This rip appears good: every track matches the AccurateRip database (lowest confidence = ${RESULT##* })." 8 80 ;;
+  "RESULT: PARTIAL "*)
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Only ${RESULT##* } tracks match the AccurateRip database. Please review $CONFDIR/rip/ripaccuracy.txt to see which." 8 80 ;;
+  "RESULT: NOMATCH")
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "This CD is in the AccurateRip database, but none of its tracks match. The rip may contain errors, or the drive's read offset may be wrong. See $CONFDIR/rip/ripaccuracy.txt." 9 80 ;;
+  "RESULT: NOTINDB")
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "This CD is NOT in the AccurateRip database, so no confidence can be given to the rip (but it's probably OK)." 8 80 ;;
+  *)
+    dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "The AccurateRip check could not be done: ${RESULT#RESULT: ERROR }" 8 80 ;;
+esac
 rm -f "$CONFDIR/rip"/*.wav 2>/dev/null
-rm -f "$CONFDIR/rip"/*.flac 2>/dev/null
 }
 
 # Actual Program Code to do stuff starts here...
@@ -351,23 +336,20 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
 
   # If hyper-accurate rips are switched on, then there's no point comparing this rip with
   # anything in the AccurateRip database. Only do the comparison if hyper_accurate is off AND
-  # the trackverify utility has been installed and we're not running on macOS
+  # Semplice's AccurateRip checker (semarv) exists for this computer
   # ----------------------------------------------------------------------------------------------
-  if [[ $OSFAMILY != "MACOS" ]]; then
-    if [[ $HYPER_ACCURATERIP -eq 0 ]]; then
-      if command -v trackverify &> /dev/null
-      then
-        verify_flac
-      else
-        dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Since the 'trackverify' program has not been installed, Semplice cannot verify this rip in the AccurateRip database." 8 80
-      fi
+  if [[ $HYPER_ACCURATERIP -eq 0 ]]; then
+    SEMARV=$(semarv_path)
+    if [[ -n $SEMARV ]]; then
+      verify_rip
+      echo "" >> "$CONFDIR/rip/ripaccuracy.txt"
+      echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" >> "$CONFDIR/rip/ripaccuracy.txt"
+    else
+      dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Semplice's AccurateRip checker (semarv) is missing for this computer, so this rip cannot be verified in the AccurateRip database." 8 80
     fi
-    echo "" >> ripaccuracy.txt
-    echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" >> ripaccuracy.txt
-    eject $OPTICAL_DEVICE
-  else
-    drutil eject
   fi
+  rm -f "$CONFDIR/rip"/*.wav 2>/dev/null
+  if [[ $OSFAMILY != "MACOS" ]]; then eject $OPTICAL_DEVICE; fi        # macOS ejects with drutil, below
 fi
 if [[ -n $ORIG_DIR ]]; then cd "$ORIG_DIR"; fi                            # ORIG_DIR is only set once a rip gets going; a cancelled rip never changed folder
 if [[ $OSFAMILY == "MACOS" && $RIPCANCELLED -eq 0 ]]; then drutil eject; fi   # drutil only exists on macOS; a cancelled rip leaves the disc in
