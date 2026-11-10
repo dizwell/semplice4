@@ -30,6 +30,7 @@ f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)
 metaflac $UTFCHARS --export-picture-to="$ALBUMART" "$f" 2>/dev/null     # Suppressing errors in case they haven't added album art or a cuesheet and hence there's nothing to export
 
 for f in *.flac; do
+  rm -f "$CUEFILE" 2>/dev/null                                          # Start each file afresh: a cuesheet must only ever go back into the file it came from
   BITDEPTH=$(metaflac --list "$f" | $GREPPROG -a bits-per-sample | awk '{print $2}')
 
   # Fetch existing metadata into variables.
@@ -55,10 +56,8 @@ for f in *.flac; do
     echo "$CUESHEET" > "$CUEFILE"
   fi
 
-  if [[ -z $COMMENT ]]; then                                            # Some tagging software swaps COMMENT and DESCRIPTION. We want to be consistent users of COMMENT, so swap them back if needed.
-    if [[ ! -z $DESCRIPTION ]]; then
-      tag=COMMENT;metaflac $UTFCHARS "--set-tag=$tag=$DESCRIPTION" "$f"
-    fi
+  if [[ -z $COMMENT && -n $DESCRIPTION ]]; then                         # Some tagging software uses DESCRIPTION instead of COMMENT. We want to be consistent users of COMMENT,
+    COMMENT="$DESCRIPTION"                                              # so carry the text across: it is then written back as COMMENT when the tags are rebuilt below
   fi
 
   if [[ $CUSTOMTAGS -eq 1 ]]; then
