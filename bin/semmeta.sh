@@ -31,7 +31,25 @@ $SEDPROG -i '/  vendor string:/d' "$CONFDIR/tmp/listmetadata.txt"
 $SEDPROG -i 's/comments:/Metadata Tags:/g' "$CONFDIR/tmp/listmetadata.txt"
 $SEDPROG -i 's/comment\[/Tag \[:/g' "$CONFDIR/tmp/listmetadata.txt"
 
-dialog --backtitle "Semplice FLAC Tagging" --title " Metadata used by FLACs in current working folder " --exit-label "OK" --textbox "$CONFDIR/tmp/listmetadata.txt" 20 90
+# Show the listing. The (otherwise unused) Help button is relabelled "Copy to Clipboard": pressing it copies the
+# entire listing, then shows the listing again. OK closes it.
+while true; do
+  dialog --backtitle "Semplice FLAC Tagging" --title " Metadata used by FLACs in current working folder " --exit-label "OK" \
+         --help-button --help-label "Copy to Clipboard" --textbox "$CONFDIR/tmp/listmetadata.txt" 20 90
+  if [[ $? -eq 2 ]]; then
+    copy_to_clipboard "$CONFDIR/tmp/listmetadata.txt"
+    dialog --backtitle "Semplice FLAC Tagging" --title " Copied " --msgbox "\nThe entire metadata listing has been copied to the clipboard." 7 70
+  else
+    break
+  fi
+done
+}
+
+# copy_to_clipboard FILE: puts FILE's contents on the clipboard using the terminal's own clipboard escape
+# sequence (OSC 52), which WezTerm supports on both macOS and Linux: no extra clipboard programs needed.
+function copy_to_clipboard
+{
+printf '\033]52;c;%s\a' "$(base64 < "$1" | tr -d '\n')" > /dev/tty
 }
 
 list_metadata
