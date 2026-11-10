@@ -293,15 +293,9 @@ fi
 }
 
 function semarv_path {
-# Prints the path of the AccurateRip checker (semarv) built for this computer, if there is one
-local bin
-case "$(uname -s)-$(uname -m)" in
-  Darwin-arm64)              bin="semarv-macsilicon" ;;
-  Darwin-x86_64)             bin="semarv-macintel" ;;
-  Linux-aarch64|Linux-armv7l) bin="semarv_arm" ;;
-  Linux-x86_64)              bin="semarv" ;;
-esac
-if [[ -n $bin && -x "$CONFDIR/exec/$bin" ]]; then echo "$CONFDIR/exec/$bin"; fi
+# Prints the path of the AccurateRip checker (semarv) built for this computer, if there is one.
+# SEMARV is semarv-<macos|linux>-<arm64|x86_64|armv7l>, set by semoscheck.sh
+if [[ -x $SEMARV ]]; then echo "$SEMARV"; fi
 }
 
 function verify_rip {
@@ -309,7 +303,7 @@ function verify_rip {
 # WAVs cdparanoia produced. Works on Linux and macOS alike. The full report goes to ripaccuracy.txt.
 tput cup 22 4; echo "Now verifying the rip against the AccurateRip database...                         "
 cd "$CONFDIR/rip"
-"$SEMARV" track*.wav > ripaccuracy.txt 2>&1
+"$ARVPROG" track*.wav > ripaccuracy.txt 2>&1
 RESULT=$($GREPPROG -a '^RESULT:' ripaccuracy.txt | tail -1)
 case "$RESULT" in
   "RESULT: MATCH "*)
@@ -356,8 +350,8 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
   # Semplice's AccurateRip checker (semarv) exists for this computer
   # ----------------------------------------------------------------------------------------------
   if [[ $HYPER_ACCURATERIP -eq 0 ]]; then
-    SEMARV=$(semarv_path)
-    if [[ -n $SEMARV ]]; then
+    ARVPROG=$(semarv_path)
+    if [[ -n $ARVPROG ]]; then
       verify_rip
       echo "" >> "$CONFDIR/rip/ripaccuracy.txt"
       echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES $FASTFLAG -O $DEVICE_OFFSET" >> "$CONFDIR/rip/ripaccuracy.txt"

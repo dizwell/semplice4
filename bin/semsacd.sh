@@ -10,11 +10,8 @@
 #
 ####################################################################
 source "$CONFDIR/bin/semtput.sh" 
-badip=1  CPUARCH=$(uname -m)
-chmod +x "$CONFDIR/exec/sacd_extract"
-chmod +x "$CONFDIR/exec/sacd_extract_arm"
-chmod +x "$CONFDIR/exec/sacd_extract-macintel"
-chmod +x "$CONFDIR/exec/sacd_extract-macsilicon"
+badip=1
+chmod +x "$SACDEXTRACT" 2>/dev/null
 
 if [[ $OSFAMILY == "MACOS" ]]; then
   IFACE=$(route get default 2>/dev/null | awk '/interface:/{print $2}')
@@ -75,21 +72,7 @@ fi
 }
 
 function determine_ripper {
-if [[ $OSFAMILY == "MACOS" && $CPUARCH == "x86_64" ]]; then
-  RIPPER="$CONFDIR/exec/sacd_extract-macintel"
-fi
-
-if [[ $OSFAMILY == "MACOS" && $CPUARCH == "arm64" ]]; then
-  RIPPER="$CONFDIR/exec/sacd_extract-macsilicon"
-fi
-
-if [[ $OSFAMILY != "MACOS" && $CPUARCH == "x86_64" ]]; then
-  RIPPER="$CONFDIR"/exec/sacd_extract
-fi
-
-if [[ $OSFAMILY != "MACOS" && $CPUARCH == "arm64" ]]; then
-  RIPPER="$CONFDIR"/exec/sacd_extract_arm
-fi
+RIPPER="$SACDEXTRACT"                                                          # sacd_extract-<macos|linux>-<arm64|x86_64|armv7l>, set by semoscheck.sh
 }
 
 determine_ripper
