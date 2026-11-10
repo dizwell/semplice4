@@ -80,7 +80,7 @@ metaflac $UTFCHARS --show-tag="$1" "$2" 2>/dev/null | awk -v pre="$1=" '
 function lookup_drive_offset {
 local driveid
 if ! [[ -f "$CONFDIR/txt/cddriveoffsets.csv" ]]; then
-  wget --quiet https://bbritten.com/software/semplice/cddriveoffsets.csv -O "$CONFDIR/txt/cddriveoffsets.csv"
+  wget --quiet https://raw.githubusercontent.com/dizwell/semplice4/main/txt/cddriveoffsets.csv -O "$CONFDIR/txt/cddriveoffsets.csv"
 fi
 driveid=$(cdparanoia -vsQ -d "$1" 2>&1 | awk -F: '/sensed/ {print $2}' | awk '{print $--NF}')
 if [[ -z $driveid ]]; then return; fi

@@ -2,13 +2,13 @@
 Categories=AudioVideo;Audio;Player
 Comment[en_GB]=Semplice FLAC Manager
 Comment=Semplice FLAC Manager
-Exec=/usr/bin/wezterm --config-file /home/xxxxxxxx/.semplice.lua -e semplice2.sh
+Exec=/usr/bin/wezterm --config-file /home/xxxxxxxx/.semplice.lua -e semplice4.sh
 GenericName[en_GB]=Semplice
 GenericName=Semplice
-Icon=/home/xxxxxxxx/.local/share/semplice2/art/sempliceico.png
+Icon=/home/xxxxxxxx/.local/share/semplice4/art/sempliceico.png
 MimeType=
-Name[en_GB]=semplice2
-Name=semplice2
+Name[en_GB]=semplice4
+Name=semplice4
 Path=
 StartupNotify=true
 StartupWMClass=Xterm
