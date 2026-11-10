@@ -4,7 +4,8 @@
 #   Linux: fully static (libxml2 built from source and linked in).
 #           Needs: gcc, cmake, git (Debian: sudo apt install build-essential cmake git)
 #   MacOS: links the libxml2 and libiconv that ship with MacOS, so needs nothing
-#           beyond the Xcode command line tools.
+#           beyond the Xcode command line tools. On a Mac, add x86_64 or arm64
+#           to build for the other processor type (e.g. ./build-sacd_extract.sh x86_64)
 set -e
 
 case "$(uname -s)" in
@@ -17,6 +18,14 @@ case "$(uname -m)" in
   x86_64)        ARCH="x86_64" ;;
   *) echo "Unsupported CPU: $(uname -m)"; exit 1 ;;
 esac
+
+# On a Mac, an optional argument picks the target processor (cross-compiling)
+if [[ $PLATFORM == "macos" && -n $1 ]]; then
+  case "$1" in
+    arm64|x86_64) ARCH="$1" ;;
+    *) echo "Unknown target: $1 (use arm64 or x86_64)"; exit 1 ;;
+  esac
+fi
 
 OUTDIR="$(cd "$(dirname "$0")/.." && pwd)/exec"
 OUTFILE="$OUTDIR/sacd_extract-$PLATFORM-$ARCH"
@@ -42,7 +51,7 @@ else
   SDK=$(xcrun --show-sdk-path)
   XMLINC="-I$SDK/usr/include/libxml2"
   if [[ $ARCH == "arm64" ]]; then MINVER="11.0"; else MINVER="10.13"; fi
-  LINK="-mmacosx-version-min=$MINVER -lxml2 -liconv"
+  LINK="-arch $ARCH -mmacosx-version-min=$MINVER -lxml2 -liconv"
 fi
 
 echo "Building sacd_extract..."
