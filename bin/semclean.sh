@@ -56,8 +56,15 @@ for f in *.flac; do
     echo "$CUESHEET" > "$CUEFILE"
   fi
 
-  if [[ -z $COMMENT && -n $DESCRIPTION ]]; then                         # Some tagging software uses DESCRIPTION instead of COMMENT. We want to be consistent users of COMMENT,
-    COMMENT="$DESCRIPTION"                                              # so carry the text across: it is then written back as COMMENT when the tags are rebuilt below
+  # Some tagging software uses DESCRIPTION instead of (or as well as) COMMENT. We want to be consistent users of COMMENT,
+  # so carry the DESCRIPTION text into COMMENT: on its own if COMMENT is empty, otherwise added after it with a single
+  # space (unless it's identical). It is then written back as COMMENT when the tags are rebuilt below; DESCRIPTION is not kept.
+  if [[ -n $DESCRIPTION && $DESCRIPTION != "$COMMENT" ]]; then
+    if [[ -z $COMMENT ]]; then
+      COMMENT="$DESCRIPTION"
+    else
+      COMMENT="$COMMENT $DESCRIPTION"
+    fi
   fi
 
   if [[ $CUSTOMTAGS -eq 1 ]]; then
