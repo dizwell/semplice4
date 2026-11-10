@@ -141,7 +141,7 @@ for ((i=1; i<=$TRACKTOTAL; i++)); do
 done
 exec 3>&1
 VALUES=$( 2>&1 1>&3 dialog --ok-label "Submit" \
-      --backtitle "Semplice FLAC Tagging" \
+      --backtitle "Semplice Audio CD Ripping" \
       --title " Select the tracks that mark the *start* of new recordings " \
       --checklist "" $FORMHEIGHT 80 $FORMHEIGHT \
       "${ITEMSTRING[@]}"
