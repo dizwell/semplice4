@@ -216,8 +216,7 @@ for g in split/*.flac; do
     tracktitle="$(cueprint -n "$counter" "$CUEFILE"  2>/dev/null | $GREPPROG "title")"
     if [[ -z $tracktitle ]]; then tracktitle="track$counter"; fi
     tracktitle="${tracktitle#*title:}"		# Remove the 'title:' bit from the front of the retrieved text for track title
-    tracktitle="$(echo $tracktitle | $SEDPROG 's/^ *//g')"  # Trim whitespace at front of title
-    tracktitle="$(echo $tracktitle | $SEDPROG 's/ *$//g')"  # Trim whitespace at end of title
+    tracktitle="$(printf '%s\n' "$tracktitle" | $SEDPROG 's/^ *//; s/ *$//')"  # Trim whitespace at front and end of title (quoted, so a '*' in a title is never expanded)
     tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$tracknum" "$g"
     tag=TITLE;metaflac $UTFCHARS "--set-tag=$tag=$tracktitle" "$g"
     tag=COMPOSER;metaflac $UTFCHARS "--set-tag=$tag=$COMPOSER" "$g"
