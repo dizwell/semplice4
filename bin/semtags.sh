@@ -43,7 +43,6 @@ else
   return
 fi
 
-[[ -z $2 ]] && set -- "$1" "meta"
 source "$CONFDIR/txt/programvariables.txt"
 
 dialog --backtitle "Semplice FLAC Tagging" --title " Pick a source for metadata prompts " --yes-label " Reuse previous submission " --no-label " Read existing metadata " --yesno "\n\nDo you want to edit the existing metadata, if there is any? Or would you prefer to re-use the same metadata you supplied the last time Semplice was used?" 10 90
@@ -115,7 +114,8 @@ if [[ $READMETA -eq 1 ]]; then
       *MASS* ) NEWGENRE="Choral";;
     esac
   fi
-elif [[ $SOURCETAG == "text" ]]; then
+elif [[ $READPRIOR -eq 1 ]]; then                                     # 'Reuse previous submission' was chosen: load it from prior.txt
+  unset NEWCOMPOSER NEWCOMPOSITION NEWPERFORMER NEWGENRE NEWYEAR        # Never show values left over in memory from an earlier tagging
   if [[ -f $CONFDIR/txt/prior.txt ]]; then
     NEWCOMPOSER=$($SEDPROG -n 1p "$CONFDIR/txt/prior.txt" | $SEDPROG 's/^[^=]*=//')
     NEWCOMPOSITION=$($SEDPROG -n 3p "$CONFDIR/txt/prior.txt" | $SEDPROG 's/^[^=]*=//')
@@ -307,7 +307,6 @@ done
 rm -f "$TAGFILE" 2>/dev/null
 }
 
-if [[ $2 == "prev" ]]; then SOURCETAG=text; elif  [ $2 == "meta" ]; then SOURCETAG=meta; fi
 if [[ $BREAKME -eq 0 ]]; then album_prompt; fi                       # Prompt for album-wide tags (such as composer, composition etc)
 if [[ $BREAKME -eq 0 ]]; then performers_prompt; fi                  # Prompt for album-wide performing artist (i.e., COMMENT tag) details
 if [[ $BREAKME -eq 0 ]]; then
