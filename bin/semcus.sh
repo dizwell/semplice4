@@ -40,6 +40,7 @@ if [[ $CUSTOMTAGS -eq 1 ]]; then
   if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then
     return
   else
+    VALUES=$(printf '%s\n' "$VALUES" | to_nfc)                                  # On macOS, force accented characters into composed form
     echo "$VALUES" > "$CONFDIR/tmp/customtags.txt"
 
     for f in *.flac; do
