@@ -14,10 +14,11 @@
 PROGVERSION="4.00" COPYRIGHT="2019-2026"
 PRIORVERSION=0; clear; USERNAME=$(whoami); ERRORCOUNT=0  YPOS=6
 
+# Everything is fetched from GitHub: the beta branch (work in progress) or main (releases)
 if [[ $1 == "beta" ]]; then 
-  REMOTESOURCE="https://bbritten.com/software/semplicebeta"
+  REMOTESOURCE="https://raw.githubusercontent.com/dizwell/semplice4/beta"
 else
-  REMOTESOURCE="https://bbritten.com/software/semplice"
+  REMOTESOURCE="https://raw.githubusercontent.com/dizwell/semplice4/main"
 fi
 
 NEWCONF="$HOME/.local/share/semplice4"

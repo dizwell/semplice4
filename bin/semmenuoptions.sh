@@ -278,7 +278,7 @@ elif [[ $1 == "misc" ]]; then
     1 ) source "$CONFDIR/bin/semconf.sh"; smenuoptions misc;;
     2 ) if [[ ! -d "$CONFDIR/tmp" ]]; then mkdir -p "$CONFDIR/tmp"; fi
         if [[ ! -f "$CONFDIR/tmp/license.txt" ]]; then
-          wget -q https://bbritten.com/software/semplice/gpl-v2.0.txt -O "$CONFDIR/tmp/license.txt"
+          wget -q https://raw.githubusercontent.com/dizwell/semplice4/main/gpl-v2.0.txt -O "$CONFDIR/tmp/license.txt"
         fi
         fmt -w 90 < "$CONFDIR/tmp/license.txt" > "$CONFDIR/tmp/licensewrapped.txt"
         sed -i 's/\\n/\n/g' "$CONFDIR/tmp/licensewrapped.txt"  # Sorts out spurious extra blank lines, replacing them with singles
