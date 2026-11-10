@@ -39,6 +39,14 @@ echo "Fetching libsixel source..."
 git clone -q --depth 1 https://github.com/saitoha/libsixel.git
 cd libsixel
 
+# Brand it with Semplice and Giocoso's version label, as Giocoso's rebuild scripts do
+VERSION_STRING="bbritten-4.0.0"
+if ! grep -q "PACKAGE_VERSION='1.8.7-r2'" configure; then
+  echo "ERROR: libsixel package version definition has changed."
+  exit 1
+fi
+sed -i.orig "s/1\.8\.7-r2/$VERSION_STRING/g" configure
+
 if [[ $PLATFORM == "macos" ]]; then
   if [[ $ARCH == "arm64" ]]; then MINVER="11.0"; else MINVER="10.13"; fi
   export CFLAGS="-O2 -arch $ARCH -mmacosx-version-min=$MINVER"
@@ -65,3 +73,4 @@ strip "$OUTFILE"
 echo
 echo "Built: $OUTFILE"
 file "$OUTFILE"
+"$OUTFILE" --version | head -1
