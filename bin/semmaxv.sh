@@ -88,7 +88,13 @@ if [[ $CANBEBOOSTED -eq 1 ]]; then                                              
     # We are about to use ffmpeg to re-encode FLAC files. However, ffmpeg scrambles the
     # COMMENT tag: the COMMENT tag becomes a tag called 'DESCRIPTION'! So keep this file's
     # own COMMENT, and put it back into this file's boosted copy straight afterwards
+    # Notes may be in COMMENT, DESCRIPTION or both (other taggers, or an earlier ffmpeg re-encode, use DESCRIPTION):
+    # carry them all across as COMMENT, merged with a single space as cleaning does
     ORIGCOMMENT=$(get_tag COMMENT "$f")
+    ORIGDESC=$(get_tag DESCRIPTION "$f")
+    if [[ -n $ORIGDESC && $ORIGDESC != "$ORIGCOMMENT" ]]; then
+      if [[ -z $ORIGCOMMENT ]]; then ORIGCOMMENT="$ORIGDESC"; else ORIGCOMMENT="$ORIGCOMMENT $ORIGDESC"; fi
+    fi
     BOOSTED="+$CANDIDATE_BOOST-dB-$f"                                                           # e.g. "+3.5-dB-01 - Allegro.flac"
 
     if [ $BITDEPTH -eq 24 ]; then
