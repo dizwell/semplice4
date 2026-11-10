@@ -89,6 +89,9 @@ if [[ $OS == *"UBUNTU"* || $OS == *"MINT"* || $OS == *"POP!"* || $OS == *"ZORIN"
 if [[ $OS == *"MANJARO ARM"* ]]; then OSFAMILY="MANARM"; fi
 if [[ -z $OSFAMILY ]]; then OSFAMILY="ELSE"; fi
 
+# Raspberry Pi OS calls itself Debian, so spot it by the file only a Pi has (as Giocoso does)
+if [[ -f /etc/rpi-issue ]]; then OSFAMILY="RASPBIAN"; fi
+
 
 function cuetools_install {
 # Needed by RHEL, as cuetools aren't in the standard repositories
@@ -270,7 +273,7 @@ case $OSFAMILY in
     sudo pacman -S --noconfirm dialog git base-devel go > /dev/null 2>&1
 
     # Define what's required
-    packages=(base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd git imagemagick libcdio libxml2-legacy ncurses python python-setup-tools ttf-nerd-fonts-symbols-mono wezterm)
+    packages=(base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd git imagemagick libcdio libxml2-legacy ncurses python python-setuptools ttf-nerd-fonts-symbols-mono wezterm)
     total=${#packages[@]}
     count=0
 
@@ -409,6 +412,9 @@ case $OSFAMILY in
     sudo timedatectl set-ntp true >/dev/null 2>&1
     echo ""
     echo "    Getting the Semplice installer ready. Please bear with us for a few moments..."
+    wget -qO- https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
+    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
+    sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
     sudo apt-get update -qq
     pending=$(apt-get -s upgrade | awk '/^Inst / {count++} END {print count+0}')
     check_updates
@@ -416,7 +422,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* libsixel-bin pkg-config python3 python3-dev)
+    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* libsixel-bin pkg-config python3 python3-dev wezterm)
     total=${#packages[@]}
     count=0
 
