@@ -20,27 +20,13 @@ tput cvvis
 exit 0
 }
 
-function rename_bits {
-# Add bitdepth and sampling rate to file names, if NAMEBITS is set
-for f in *.flac; do
-  BITDEPTH=$(metaflac $UTFCHARS --list "$f" | $GREPPROG bits-per-sample | awk '{print $2}')
-  SAMPLERATE=$(metaflac $UTFCHARS --list "$f" | $GREPPROG sample_rate | awk '{print $2}')
-  OLDFILENAME="${f%.*}"
-  if ! [[ $f == *"-$SAMPLERATE"* ]]; then                                     # Only rename if the file doesn't already have the bit/sample digits in it
-    if [[ $NAMEBITS -eq 1 ]]; then                                            # And only rename if the configuration file says to do so
-      NEWFILENAME="$OLDFILENAME-$BITDEPTH-$SAMPLERATE".flac
-      mv "$f" "$NEWFILENAME"
-    fi
-  fi
-done
-}
 
 if [[ $1 == "clean" ]]; then
   countflac=$(find . -maxdepth 1 -type f -name "*.flac" | wc -l)
   if [[ $countflac -gt 0 ]]; then
     source "$CONFDIR/bin/semclean.sh"                                         # The same cleaning as the K menu option
     warn_corrupt
-    rename_bits
+    add_bits_to_names
     rm -f "$CONFDIR/tmp/cleanart.jpg" "$CONFDIR/tmp/cleancue.txt" "$CONFDIR/tmp/cleantag.txt" 2>/dev/null
     dialog --stdout --backtitle "Semplice Digital Music Manager" --title " Quitting Semplice! " --msgbox "\nAll metadata tags have been cleaned.\n\nThank you for using Semplice!" 10 80
   fi

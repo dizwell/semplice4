@@ -102,17 +102,7 @@ for f in *.flac; do
   LINECOUNT=$((LINECOUNT+1))
 done
 
-for f in *.flac; do                                                                                      # Second loop required, because filename changes caused by the first would invalidate file renaming here
-  OLDFILENAME=${f%.*}
-  BITDEPTH=$(metaflac $UTFCHARS --list "$f" | $GREPPROG -a bits-per-sample | awk '{print $2}')
-  SAMPLERATE=$(metaflac $UTFCHARS --list "$f" | $GREPPROG -a sample_rate | awk '{print $2}')
-  if ! [[ $OLDFILENAME == *"-$SAMPLERATE"* ]]; then                                                    # Only rename if the file doesn't already have the bit/sample digits in it
-    if [[ $NAMEBITS -eq 1 ]]; then                                                                         # And only rename if the configuration file says to do so
-      NEWFILENAME="$OLDFILENAME-$BITDEPTH-$SAMPLERATE".flac
-      mv "$f" "$NEWFILENAME"
-    fi
-  fi
-done
+add_bits_to_names                                                                                        # Separate pass, because the renaming above would otherwise get in the way
 
 if [[ $AUTOMODE -eq 1 ]]; then
   if [[ $BREAKME -eq 0 ]]; then

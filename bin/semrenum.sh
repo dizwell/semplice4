@@ -48,9 +48,7 @@ for f in *.flac; do
   FILETITLE=$(tr '~#%&<>:"/\|?*' '_' <<< "$TRACKTITLE") # Make file names NTFS-safe
   BITSUFFIX=""
   if [[ $NAMEBITS -eq 1 ]]; then                                                 # Keep the bit-depth and sample rate in the name, if the configuration says to (as tagging does)
-    BITDEPTH=$(metaflac $UTFCHARS --list "$f" | $GREPPROG -a bits-per-sample | awk '{print $2}')
-    SAMPLERATE=$(metaflac $UTFCHARS --list "$f" | $GREPPROG -a sample_rate | awk '{print $2}')
-    BITSUFFIX="-$BITDEPTH-$SAMPLERATE"
+    BITSUFFIX=$(bits_suffix "$f")
   fi
   mv -f "$f" "$(printf "%02d" "$TRACKNO") - $FILETITLE$BITSUFFIX.flac" 2>/dev/null
   TRACKNO=$((TRACKNO+1))

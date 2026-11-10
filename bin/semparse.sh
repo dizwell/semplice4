@@ -30,6 +30,30 @@ else
 fi
 }
 
+# bits_suffix FILE: prints the "-<bit depth>-<sample rate>" suffix for FILE (e.g. "-24-96000"),
+# or nothing if FLAC can't report them. grep -a, because metaflac's listing can include binary picture data.
+function bits_suffix {
+local listing depth rate
+listing=$(metaflac --list "$1" 2>/dev/null)
+depth=$($GREPPROG -a -m1 "bits-per-sample" <<< "$listing" | awk '{print $2}')
+rate=$($GREPPROG -a -m1 "sample_rate" <<< "$listing" | awk '{print $2}')
+if [[ -n $depth && -n $rate ]]; then echo "-$depth-$rate"; fi
+}
+
+# add_bits_to_names: if NAMEBITS is set, adds the bits_suffix to every FLAC name in the current
+# folder that doesn't already end with it. Used by track tagging and Quit.
+function add_bits_to_names {
+local f suffix
+if [[ $NAMEBITS -ne 1 ]]; then return; fi
+for f in *.flac; do
+  [[ -f $f ]] || continue
+  suffix=$(bits_suffix "$f")
+  if [[ -n $suffix && ${f%.flac} != *"$suffix" ]]; then
+    mv -- "$f" "${f%.flac}$suffix.flac"
+  fi
+done
+}
+
 # warn_corrupt: semclean.sh lists every FLAC whose audio MD5 does not match its stored checksum;
 # this shows that list, if there is one. Used by K (all menus) and by Quit.
 function warn_corrupt {

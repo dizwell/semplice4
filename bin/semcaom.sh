@@ -123,8 +123,6 @@ fi
 # ------------------------------------------------------------------------------------------
 g=$(find . -name "*.flac" | sort | head -n 1)
 ALBUM=$(get_tag Album "$g")
-BITDEPTH=$(metaflac --list "$g" | $GREPPROG -a bits-per-sample | awk '{print $2}')
-SAMPLERATE=$(metaflac --list "$g" | $GREPPROG sample_rate | awk '{print $2}')
 
 if [[ -z $ALBUM ]]; then
   dialog --stdout --backtitle "Semplice FLAC Merging" --msgbox "The first track in this folder has not been tagged with a composition name. \nSemplice cannot create un-named SuperFLACs. \n\nClick OK to return to the main program menu." 8 80
@@ -175,8 +173,6 @@ COMMENT=$(get_tag Comment "$f")
 PERFORMER=$(get_tag Performer "$f")
 DESCRIPTION=$(get_tag Description "$f")
 NOTES=$(get_tag Notes "$f")
-BITDEPTH=$(metaflac $UTFCHARS --list "$f" | $GREPPROG bits-per-sample | awk '{print $2}')
-SAMPLERATE=$(metaflac $UTFCHARS --list "$f" | $GREPPROG sample_rate | awk '{print $2}')
 RPG_REFERENCE=$(get_tag REPLAYGAIN_REFERENCE_LOUDNESS "$f")
 RPG_ALBUMPEAK=$(get_tag REPLAYGAIN_ALBUM_PEAK "$f")
 RPG_ALBUMGAIN=$(get_tag REPLAYGAIN_ALBUM_GAIN "$f")
@@ -365,9 +361,9 @@ fi
 # ------------------------------------------------------------------------------------------
 mv "$FILENAME" "$SAFEALBUMNAME.flac"
 if [[ $NAMEBITS -eq 1 ]]; then
-  if ! [[ "$SAFEALBUMNAME" == *"-$SAMPLERATE"* ]]; then
-    NEWFLACNAME="$SAFEALBUMNAME-$BITDEPTH-$SAMPLERATE".flac
-    mv "$SAFEALBUMNAME".flac "$NEWFLACNAME"
+  BITSUFFIX=$(bits_suffix "$SAFEALBUMNAME.flac")
+  if [[ -n $BITSUFFIX && $SAFEALBUMNAME != *"$BITSUFFIX" ]]; then
+    mv "$SAFEALBUMNAME.flac" "$SAFEALBUMNAME$BITSUFFIX.flac"
   fi
 fi
 
