@@ -130,7 +130,7 @@ if [[ $download_status -ne 0 ]]; then
 fi
 
 # Self-compiled static executables next: these live in exec, not bin
-components=(sacd_extract-linux-x86_64 sacd_extract-linux-armv7l sacd_extract-macos-x86_64 sacd_extract-macos-arm64 semarv-linux-x86_64 semarv-linux-arm64 semarv-macos-x86_64 semarv-macos-arm64)
+components=(sacd_extract sacd_extract_arm sacd_extract-macintel sacd_extract-macsilicon semarv-linux-x86_64 semarv-linux-arm64 semarv-macos-x86_64 semarv-macos-arm64)
 total=${#components[@]}
 count=0
 (

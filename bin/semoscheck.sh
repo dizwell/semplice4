@@ -730,7 +730,7 @@ else
 fi
 
 # Platform and architecture, used to pick the right self-compiled programs in exec/ (named as Giocoso's:
-# <program>-<macos|linux>-<arm64|x86_64>, plus armv7l for 32-bit ARM Linux)
+# <program>-<macos|linux>-<arm64|x86_64>). sacd_extract keeps its own older names for now.
 # -----------------------------------------------------------------------------
 case "$(uname -s)" in
     Darwin) OS_PLATFORM="macos" ;;
@@ -743,7 +743,6 @@ case "$(uname -m)" in
     armv7l|armv6l) OS_ARCHITECTURE="armv7l" ;;
     *)             OS_ARCHITECTURE="unknown" ;;
 esac
-SACDEXTRACT="$CONFDIR/exec/sacd_extract-${OS_PLATFORM}-${OS_ARCHITECTURE}"
 SEMARV="$CONFDIR/exec/semarv-${OS_PLATFORM}-${OS_ARCHITECTURE}"
 
 echo "SEDPROG=$SEDPROG
@@ -754,5 +753,4 @@ FDPROG=$FDPROG
 CONVPROG=$CONVERTER
 OS_PLATFORM=$OS_PLATFORM
 OS_ARCHITECTURE=$OS_ARCHITECTURE
-SACDEXTRACT=\"$SACDEXTRACT\"
 SEMARV=\"$SEMARV\"" > "$CONFDIR/txt/programvariables.txt"

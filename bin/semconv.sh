@@ -252,11 +252,16 @@ if [[ $INPUTFORMAT == "ISO" ]]; then
       INPUTFORMAT="DONE"
     
     else	# macOS is in use
+      if [[ $(uname -m) == "arm64" ]]; then USEINTEL=0; else USEINTEL=1; fi
       MESSAGE="Splitting the ISO. Please wait…  "
 		for f in *.iso; do
 		  # On macOS, you can only extract to DSF (or an equivalent 1-bit format, which we don't bother with), end of. The conversion to FLAC has to be done afterwards
 		  # This command therefore extracts from ISO to DSF, moves all the DSFs into the source folder and then deletes the "Stereo" subfolder sacd_extract originally writes them to
-		  "$SACDEXTRACT" -2 -s -i "$f" >/dev/null  & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
+		  if [[ $USEINTEL -eq 1 ]]; then
+		    "$CONFDIR"/exec/sacd_extract-macintel -2 -s -i "$f" >/dev/null  & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
+		  elif [[ $USEINTEL -eq 0 ]]; then
+		    "$CONFDIR"/exec/sacd_extract-macsilicon -2 -s -i "$f" >/dev/null  & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
+		  fi
 		done
 		MESSAGE="Converting the output files to $DISPLAYOUT. Please wait…  "
 		if [[ $XHIRES -eq 1 ]]; then
