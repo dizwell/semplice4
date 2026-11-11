@@ -131,6 +131,15 @@ fi
 function perform_replaygain {
 tput civis; tput cup 25 1; printf $LINEDRAW2%.0s {1..101}; MESSAGE="Analysing the folder of FLACs…  "; tput cup 25 4	
 metaflac --add-replay-gain *.flac 2>/dev/null & spinner $!
+
+# Report the result: the album gain is the same in every FLAC, so read it from the first one
+f=$(ls *.flac 2>/dev/null | head -1)
+ALBUMGAIN=$(get_tag REPLAYGAIN_ALBUM_GAIN "$f")
+if [[ -n $ALBUMGAIN ]]; then
+  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Applied " --msgbox "\nMetadata volume boost successfully applied.\n\nThe calculated album gain is: $ALBUMGAIN\n\nClick OK to return to the main program menu." 11 80
+else
+  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nThe ReplayGain metadata could not be added, so no volume boost has been applied.\n\nClick OK to return to the main program menu." 10 80
+fi
 }
 
 # Executable code starts here!
