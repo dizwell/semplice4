@@ -154,15 +154,15 @@ if [[ ${CONFAUTODEL,,} == "yes" || ${CONFAUTODEL,,} == "no" ]]; then CONFAUTODEL
 
 # Now, the Audio processing parameters
 # ====================================================================
-dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters for Audio Processing:" 17 90 10 "Lossy codec quality setting (1-9)" 1 1  "$confqual" 1 65 9 0 "Delete source files after codec conversion" 2 1  "$confaudiodel"  2 65 9 0 "Apply audio boost automatically if appropriate" 3 1  "$confboost" 3 65 9 0 "Apply real or metadata audio boost?" 4 1 "$confmetavol" 4 65 9 0 2>"$CONFDIR/tmp/audioparams"
+dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters for Audio Processing:" 17 90 10 "Lossy codec quality setting (1-9)" 1 1  "$confqual" 1 65 9 0 "Delete source files after codec conversion" 2 1  "$confaudiodel"  2 65 9 0 "Type of volume boost to use (real/metadata)" 3 1 "$confmetavol" 3 65 9 0 "Automatic volume boost where possible" 4 1  "$confboost" 4 65 9 0 2>"$CONFDIR/tmp/audioparams"
 exitStatus=$?
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
 readarray -t audioparams < "$CONFDIR/tmp/audioparams" 2>/dev/null
 CONFQUAL="${audioparams[0]}";     if [[ -z $CONFQUAL ]]; then CONFQUAL="4"; fi
 CONFAUDIODEL="${audioparams[1]}"; if [[ -z $CONFAUDIODEL ]]; then CONFAUDIODEL="no"; fi
-CONFBOOST="${audioparams[2]}";    if [[ -z $CONFBOOST ]]; then CONFBOOST="no"; fi
-CONFMETAVOL="${audioparams[3]}";    if [[ -z $CONFMETAVOL ]]; then CONFMETAVOL="real"; fi
+CONFMETAVOL="${audioparams[2]}";  if [[ -z $CONFMETAVOL ]]; then CONFMETAVOL="real"; fi
+CONFBOOST="${audioparams[3]}";    if [[ -z $CONFBOOST ]]; then CONFBOOST="no"; fi
 
 # And finally, miscellaneous program control parameters
 # ====================================================================
