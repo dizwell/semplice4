@@ -178,16 +178,6 @@ if [[ -f $CONFDIR/txt/semplice.conf ]]; then
     AUDIOIN_DELETION=0
   fi
 
-  if ! [[ -z $AUTOBOOST ]]; then                                                  # Autoboost is yes or no, but defaults to being no.
-    if [[ ${AUTOBOOST^^} == "YES" ]]; then
-      AUTOBOOST=1
-    else
-      AUTOBOOST=0
-    fi
-  else
-    AUTOBOOST=0
-  fi
-
   if ! [[ -z $DISPLAYONEXTRACT ]]; then                                       # Display on extract is yes or no, but defaults to being yes
     if [[ ${DISPLAYONEXTRACT^^} == "NO" ]]; then
       DISPLAYONEXTRACT=0
@@ -302,7 +292,6 @@ AUTODELETE_PERTRACK_FLACS=no
 # ====================================================================
 AUDIO_QUALITY=4
 AUDIOIN_DELETION=no
-AUTOBOOST=no
 
 # Parameters controlling general program behaviour
 # ====================================================================

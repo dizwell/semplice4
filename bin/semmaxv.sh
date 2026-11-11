@@ -63,14 +63,10 @@ elif (( $(echo "scale=4; $CANDIDATE_BOOST > 0.5" | bc -l) )); then
   else
     DISPCANDIDATE_BOOST="+$CANDIDATE_BOOST"
   fi
-  if [[ $AUTOBOOST -eq 0 ]]; then
-    dialog --backtitle "Semplice FLAC Volume Boosting" --title " Non-distorting Volume Boost Possible " --yes-label " Go ahead and boost " --no-label " Quit without boosting " --yesno "\nThe loudest FLAC in this folder is: \n\n  $CANDIDATE_FILE\n\nThat and all other FLACs in this folder can be safely volume-boosted by $DISPCANDIDATE_BOOST dB.\n\nDo you want to apply that volume boost or not?" 13 95
-    exitStatus=$?   # 0 means user hit [yes] button. 1 means user hit [no] button. 255 means user hit [Esc] key.
-    if [[ $exitStatus -eq 0 ]]; then CANBEBOOSTED=1; fi
-    if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then CANBEBOOSTED=0; fi
-  else
-    CANBEBOOSTED=1
-  fi
+  dialog --backtitle "Semplice FLAC Volume Boosting" --title " Non-distorting Volume Boost Possible " --yes-label " Go ahead and boost " --no-label " Quit without boosting " --yesno "\nThe loudest FLAC in this folder is: \n\n  $CANDIDATE_FILE\n\nThat and all other FLACs in this folder can be safely volume-boosted by $DISPCANDIDATE_BOOST dB.\n\nDo you want to apply that volume boost or not?" 13 95
+  exitStatus=$?   # 0 means user hit [yes] button. 1 means user hit [no] button. 255 means user hit [Esc] key.
+  if [[ $exitStatus -eq 0 ]]; then CANBEBOOSTED=1; fi
+  if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then CANBEBOOSTED=0; fi
 fi
 }
 
@@ -112,7 +108,6 @@ fi
 }
 
 function perform_cleanup {
-# Deleting the originals is always asked about, even when AUTOBOOST skips the "boost?" question.
 if [[ $BOOSTPERFORMED -eq 1 ]]; then                                   # Ditto! Don't even offer to delete anything if you haven't actually volume-boosted something
   dialog --backtitle "Semplice FLAC Volume Boosting" --title " Do you want to delete the original FLACs? " --yesno "\nVolume boosting is complete. Do you wish to now delete the original FLACs?" 9 80
   exitStatus=$?
