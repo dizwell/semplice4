@@ -58,11 +58,11 @@ local LIST="$CONFDIR/tmp/corruptflacs.txt" FILE MSG
 if [[ -s $LIST ]]; then
   FILE=$(head -n 1 "$LIST")                      # Only the first damaged file is named
   if [[ $(find . -maxdepth 1 -type f -name "*.flac" | wc -l) -gt 1 ]]; then
-    MSG="Corruption has definitely been detected in this file, but it may be present in other FLACs in this folder. Please restore from backup before re-checking the files"
+    MSG="Corruption has definitely been detected in this file, but it may be present in other FLACs in this folder. Please restore from backup before re-checking the files."
   else
-    MSG="Check your backups to resolve!"
+    MSG="Corruption has definitely been detected in this file. Please restore from backup before re-checking the file."
   fi
-  dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "\nAt least one of the FLACs in this folder have an MD5 checksum mismatch, indicating internal corruption: $FILE.\n\n$MSG" 12 80
+  dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "\nAt least one of the FLACs in this folder has an MD5 checksum mismatch, indicating internal corruption: $FILE.\n\n$MSG" 12 80
 fi
 }
 
