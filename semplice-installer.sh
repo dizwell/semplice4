@@ -25,31 +25,33 @@ while getopts "v:d:" opt; do
 done
 
 # Everything is fetched from GitHub: the beta branch (work in progress) or main (releases)
-# -v must be beta or stable; if it's left out, ask which
+# -v must be beta or stable; if it's left out, choose_release asks which (after "Do you wish to proceed?")
 case "$SEMRELEASE" in
-  beta|stable) ;;
-  "")
-    echo ""
-    echo "    Do you want to install the stable release (s) or the beta (b) of Semplice?"
-    echo ""
-    while true; do
-      read -n 1 -p "    Stable or beta, then? (s/b): " input
-      case "$input" in
-        [sS]) SEMRELEASE="stable"; break ;;
-        [bB]) SEMRELEASE="beta"; break ;;
-        *) echo ""; echo "    Invalid input: only s or b are allowed. Please try again."; echo "" ;;
-      esac
-    done
-    echo ""
-    ;;
+  beta|stable|"") ;;
   *) echo "Unknown release '$SEMRELEASE': use -v beta or -v stable."; exit 1 ;;
 esac
 
-if [[ $SEMRELEASE == "beta" ]]; then 
+function choose_release {
+if [[ -z $SEMRELEASE ]]; then
+  clear; print_header
+  tput cup 6 4; tput setaf $INFOTEXT; echo "Do you want to install the stable release (s) or the beta (b) of Semplice?"
+  while true; do
+    tput cup 8 4; tput setaf $ALERT; read -s -n 1 -p "Stable or beta, then? (s/b): " input
+    case "$input" in
+      [sS]) SEMRELEASE="stable"; break ;;
+      [bB]) SEMRELEASE="beta"; break ;;
+      *) tput cup 10 4; tput setaf $MAINTEXT; echo "Invalid input: only s or b are allowed. Please try again." ;;
+    esac
+  done
+fi
+
+# Everything is fetched from GitHub: the beta branch (work in progress) or main (releases)
+if [[ $SEMRELEASE == "beta" ]]; then
   REMOTESOURCE="https://raw.githubusercontent.com/dizwell/semplice4/beta"
 else
   REMOTESOURCE="https://raw.githubusercontent.com/dizwell/semplice4/main"
 fi
+}
 
 NEWCONF="$HOME/.local/share/semplice4"
 CONFDIR="$NEWCONF"
@@ -379,9 +381,10 @@ fi
 tput clear; print_header
 tput cup 6 4; tput setaf $INFOTEXT; echo -e "Welcome to the Semplice Installer."
 tput cup 8 4; tput setaf $INFOTEXT; echo -e "• It will install numerous new software packages necessary for Semplice to function correctly. It will also create a bunch of new folders within your \$HOME folder.\n\n• Any existing Semplice installation will be backed up, just in case it's needed.\n\n• If you are happy to proceed, tap 'y' when prompted; tapping anything else will cancel the installation without it having touched your system at all." | fold -s -w 76 | sed '2,$s/^/    /'
-tput cup 19 4; tput setaf $ALERT; read -s -n 1 -p "Do you wish to proceed? (y/n): " response
+echo ""; tput setaf $ALERT; read -s -n 1 -p "    Do you wish to proceed? (y/n): " response   # One line below the text, however long it is
 
 if [[ "$response" == [Yy]* ]]; then
+  choose_release
   clear; print_header; tput setaf $MAINTEXT; tput cup 6 0
   tput cup 6 4; echo -e "Checking your network connection is working..."
   if ! ping -c1 -W1 "1.1.1.1" >/dev/null 2>&1; then
