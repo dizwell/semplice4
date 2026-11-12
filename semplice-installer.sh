@@ -25,6 +25,12 @@ while getopts "v:d:" opt; do
 done
 
 # Everything is fetched from GitHub: the beta branch (work in progress) or main (releases)
+# -v must be beta or stable; leaving it out means stable
+case "$SEMRELEASE" in
+  beta|stable|"") ;;
+  *) echo "Unknown release '$SEMRELEASE': use -v beta or -v stable (or leave -v out for stable)."; exit 1 ;;
+esac
+
 if [[ $SEMRELEASE == "beta" ]]; then 
   REMOTESOURCE="https://raw.githubusercontent.com/dizwell/semplice4/beta"
 else
