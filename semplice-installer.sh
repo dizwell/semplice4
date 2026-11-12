@@ -207,10 +207,6 @@ if [[ $OS == "DARWIN" ]]; then
     exit 1
   fi
   chmod +x "$NEWCONF/semplice4.sh"
-  # The main script lives in the program folder (so git pull keeps it current); /usr/local/bin just links to it
-  sudo rm -f "/usr/local/bin/semplice4.sh" "/usr/local/bin/semplice" 2>/dev/null
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/local/bin/semplice4.sh"
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/local/bin/semplice" 
 else
   rm -f "$NEWCONF/semplice4.sh"
   downloaded=0
@@ -227,10 +223,6 @@ else
     exit 1
   fi
   chmod +x "$NEWCONF/semplice4.sh"
-  # The main script lives in the program folder (so git pull keeps it current); /usr/bin just links to it
-  sudo rm -f "/usr/bin/semplice4.sh" "/usr/bin/semplice" 2>/dev/null
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/bin/semplice4.sh"
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/bin/semplice"
 fi
 
 # Only create a desktop launcher if this is NOT macOS.
@@ -251,6 +243,74 @@ if [[ ! $OS == *"DARWIN"* ]]; then
   sed -i "s|xxxxxxxx|$USERNAME|" "$HOME/.local/share/applications/semplice.desktop"
   chmod +x "$HOME/.local/share/applications/semplice.desktop"
   ln -s "$HOME/.local/share/applications/semplice.desktop" "$HOME/Desktop" 2>/dev/null
+
+# And now an app for MacOS, as for Giocoso: it opens Semplice in WezTerm with Semplice's own settings
+else
+  APPNAME="Semplice"
+  APPPATH="/Applications/$APPNAME.app"
+  ICONPNG="$HOME/.local/share/semplice4/art/sempliceico.png"
+  ICONSET="/tmp/semplice.iconset"
+  ICONFILE="/tmp/semplice.icns"
+
+  rm -rf "$APPPATH" >/dev/null 2>&1
+  mkdir -p "$APPPATH/Contents/MacOS" "$APPPATH/Contents/Resources" >/dev/null 2>&1
+
+  cat > "$APPPATH/Contents/MacOS/$APPNAME" <<EOF
+#!/bin/bash
+if [[ -x /opt/homebrew/bin/bash && -x /opt/homebrew/bin/wezterm ]]; then
+  bashPath="/opt/homebrew/bin/bash"
+  weztermPath="/opt/homebrew/bin/wezterm"
+elif [[ -x /usr/local/bin/bash && -x /usr/local/bin/wezterm ]]; then
+  bashPath="/usr/local/bin/bash"
+  weztermPath="/usr/local/bin/wezterm"
+else
+  bashPath="/opt/local/bin/bash"
+  weztermPath="/opt/local/bin/wezterm"
+fi
+
+exec "\$weztermPath" --config-file "\$HOME/.semplice.lua" start -- "\$bashPath" -l -c 'ulimit -u 4000; exec "\$BASH" /usr/local/bin/semplice4.sh'
+EOF
+
+  chmod +x "$APPPATH/Contents/MacOS/$APPNAME"
+
+  cat > "$APPPATH/Contents/Info.plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>CFBundleExecutable</key>
+<string>$APPNAME</string>
+<key>CFBundleIdentifier</key>
+<string>com.bbritten.semplice4</string>
+<key>CFBundleName</key>
+<string>$APPNAME</string>
+<key>CFBundleDisplayName</key>
+<string>$APPNAME</string>
+<key>CFBundlePackageType</key>
+<string>APPL</string>
+<key>CFBundleIconFile</key>
+<string>semplice.icns</string>
+<key>LSArchitecturePriority</key>
+<array>
+  <string>arm64</string>
+  <string>x86_64</string>
+</array>
+</dict>
+</plist>
+EOF
+
+  rm -rf "$ICONSET" >/dev/null 2>&1
+  mkdir -p "$ICONSET" >/dev/null 2>&1
+  for size in 16 32 128 256 512; do
+    sips -z $size $size "$ICONPNG" --out "$ICONSET/icon_${size}x${size}.png" >/dev/null 2>&1
+    sips -z $((size*2)) $((size*2)) "$ICONPNG" --out "$ICONSET/icon_${size}x${size}@2x.png" >/dev/null 2>&1
+  done
+  iconutil -c icns "$ICONSET" -o "$ICONFILE" >/dev/null 2>&1
+  cp "$ICONFILE" "$APPPATH/Contents/Resources/semplice.icns" >/dev/null 2>&1
+
+  rm -rf "$ICONSET" >/dev/null 2>&1
+  rm -f "$ICONFILE" >/dev/null 2>&1
+  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$APPPATH" >/dev/null 2>&1
 fi
 
 # Confirmation when concluded
@@ -315,6 +375,18 @@ if [[ "$response" == [Yy]* ]]; then
   if [[ ! -d "$NEWCONF/txt" ]]; then mkdir -p "$NEWCONF/txt"; fi
   if [[ ! -d "$NEWCONF/tmp" ]]; then mkdir -p "$NEWCONF/tmp"; fi
   if [[ ! -d "$NEWCONF/rip" ]]; then mkdir -p "$NEWCONF/rip"; fi
+
+  # 3a. Ask for the sudo password once, now, and make the command links straight away. They point at the
+  # main script in the program folder, which arrives later; nothing after this needs the password again.
+  # -----------------------------------------------------
+  echo ""
+  sudo -p $'\r    Please supply the sudo password for %u: ' -v || { echo "    Failed to acquire sudo privileges, so quitting..."; exit_program; }
+  if [[ $(uname -s) == "Darwin" ]]; then BINDIR="/usr/local/bin"; else BINDIR="/usr/bin"; fi
+  sudo mkdir -p "$BINDIR"
+  sudo rm -f "$BINDIR/semplice4.sh" "$BINDIR/semplice" 2>/dev/null
+  sudo ln -s "$NEWCONF/semplice4.sh" "$BINDIR/semplice4.sh"
+  sudo ln -s "$NEWCONF/semplice4.sh" "$BINDIR/semplice"
+
   
   # 4. Call semoscheck.sh and get packages installed
   # -----------------------------------------------------
@@ -334,8 +406,12 @@ if [[ "$response" == [Yy]* ]]; then
 
   # 6. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
   # -----------------------------------------------------
-  if [[ ! -d "$HOME/.local/share/fonts" ]]; then 
-    mkdir "$HOME/.local/share/fonts" 2>/dev/null
+  # WezTerm's Semplice settings use the Luxi Mono font, so it must be installed where the system looks for fonts
+  if [[ $(uname -s) == "Darwin" ]]; then
+    mkdir -p "$HOME/Library/Fonts" 2>/dev/null
+    cp "$HOME/.local/share/semplice4/art/"*.ttf "$HOME/Library/Fonts/" 2>/dev/null
+  else
+    mkdir -p "$HOME/.local/share/fonts" 2>/dev/null
     cp "$HOME/.local/share/semplice4/art/"*.ttf "$HOME/.local/share/fonts/" 2>/dev/null
     fc-cache -f 2>/dev/null
     clear
@@ -377,6 +453,11 @@ config.freetype_load_target = "Light"
 config.enable_wayland = false
 config.enable_tab_bar = false
 config.line_height = 1.1
+--config.front_end = "WebGpu"
+local schemes = wezterm.get_builtin_color_schemes()
+if not schemes[config.color_scheme] then
+  config.color_scheme = "Galaxy"
+end
 return config
 EOF
   fi
