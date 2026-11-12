@@ -83,9 +83,9 @@ for f in *.flac; do
   # ---------------------------------------------------------------------------------
   MD5HASH=""                                                            # Reset per file, so one file's hash can never be compared with another's
   if [[ $BITDEPTH -eq 16 ]]; then
-    MD5HASH=$(ffmpeg -i "$f" -c:a pcm_s16le -map 0:a -f md5 - 2>/dev/null | $SEDPROG 's/.*=//g')
+    MD5HASH=$("$FFMPEG" -i "$f" -c:a pcm_s16le -map 0:a -f md5 - 2>/dev/null | $SEDPROG 's/.*=//g')
   elif [[ $BITDEPTH -eq 24 ]]; then
-    MD5HASH=$(ffmpeg -i "$f" -c:a pcm_s24le -map 0:a -f md5 - 2>/dev/null | $SEDPROG 's/.*=//g')
+    MD5HASH=$("$FFMPEG" -i "$f" -c:a pcm_s24le -map 0:a -f md5 - 2>/dev/null | $SEDPROG 's/.*=//g')
   fi
   
   # Read the Flac-computed MD5 Hash, too

@@ -45,11 +45,11 @@ function display_spectrum {
 tput civis
 create_filelist
 MESSAGE="Frequency Analysis in progress... :"
-ffmpeg -nostdin -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/spec-tracklist.txt" -max_muxing_queue_size 900000 "$CONFDIR/tmp/spectrum.flac" & spinner
+"$FFMPEG" -nostdin -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/spec-tracklist.txt" -max_muxing_queue_size 900000 "$CONFDIR/tmp/spectrum.flac" & spinner
 rm -f "$CONFDIR/tmp/spec-tracklist.txt" 2>/dev/null
 
 if [[ -f $CONFDIR/tmp/spectrum.flac ]]; then
-  ffmpeg -nostdin -hide_banner -loglevel 0 -i "$CONFDIR/tmp/spectrum.flac" -lavfi showspectrumpic=s=1024x1024 "$CONFDIR/tmp/spectrum.png"
+  "$FFMPEG" -nostdin -hide_banner -loglevel 0 -i "$CONFDIR/tmp/spectrum.flac" -lavfi showspectrumpic=s=1024x1024 "$CONFDIR/tmp/spectrum.png"
   if [[ $(uname -a) == *"Darwin"* ]]; then
     qlmanage -p "$CONFDIR/tmp/spectrum.png" >/dev/null 2>&1
   else

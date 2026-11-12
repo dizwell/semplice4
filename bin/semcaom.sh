@@ -133,7 +133,7 @@ fi
 # ------------------------------------------------------------------------------------------
 rm -rf "$CONFDIR/tmp/cao-files.txt"
 for f in *.flac; do
-  PLAYLENGTH=$(ffprobe -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$f" 2>/dev/null)
+  PLAYLENGTH=$("$FFPROBE" -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$f" 2>/dev/null)
   track_durations+=("$PLAYLENGTH")
   CUMPLAYLENGTH=$(echo "scale=5; $CUMPLAYLENGTH + $PLAYLENGTH" | bc -l)     # This is the cumulative total of playable seconds
 
@@ -286,7 +286,7 @@ $SEDPROG -i "s/'/'\\\''/g" "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null         
 $SEDPROG -i "s/+^+^+/'/g" "$CONFDIR/tmp/cao-tracklist.txt"                      # Parse triple plusses and replace then with vanilla single quotes
 
 MESSAGE="Merging files…   "
-ffmpeg -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/cao-tracklist.txt" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
+"$FFMPEG" -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/cao-tracklist.txt" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
 rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
 
 # And restore the metadata...

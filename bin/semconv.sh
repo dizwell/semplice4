@@ -165,7 +165,7 @@ case $OUTPUTFORMAT in
 	PRESERVETAG=()
     ;;
     OGG)
-    BITDEPTH="-c:a libvorbis -q:a $AUDIO_QUALITY"   # 8 is better than 0
+    BITDEPTH="-vn -c:a libvorbis -q:a $AUDIO_QUALITY"   # 8 is better than 0. -vn: Ogg files take no cover art, so leave it out
     BITS=""
     XHIRES=0
     HIRES=0
@@ -177,7 +177,7 @@ case $OUTPUTFORMAT in
     WMA)
     QUALNO=$((50+(20 * "$AUDIO_QUALITY")))          # 8 is better than 0
     BITS=""
-    BITDEPTH="-acodec wmav2 -ab $QUALNO"
+    BITDEPTH="-vn -acodec wmav2 -ab $QUALNO"      # -vn: WMA files take no cover art, so leave it out
     BITDEPTH+="k"
     XHIRES=0
     HIRES=0
@@ -240,7 +240,7 @@ if [[ $INPUTFORMAT == "ISO" ]]; then
   else
     LOWPASS=21000
   fi
-  "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x ffmpeg -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+  "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
 fi
 
 if [[ $INPUTFORMAT == "DSF" ]]; then                # Only major difference to any other conversion is addition of a low-pass filter to stop quantisation effects appearing in the output
@@ -252,13 +252,13 @@ if [[ $INPUTFORMAT == "DSF" ]]; then                # Only major difference to a
     LOWPASS=21000
   fi
   MESSAGE="Converting DSF files to $DISPLAYOUT. Please wait…  "
-  "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x ffmpeg -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+  "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
 elif [[ $INPUTFORMAT != "ISO" ]]; then           # ISOs were dealt with above
   MESSAGE="Converting $DISPLAYIN files to $DISPLAYOUT. Please wait…  "
   if [[ ! $IN == "aiff" ]]; then    # AIFFs come with multiple possible extensions, so they need a separate '-e' extension clause
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x ffmpeg -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
   else
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e aiff -e aif -e aifc -x ffmpeg -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+    "$FDPROG" -j "$THREADS" -d 1 -t f -e aiff -e aif -e aifc -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
   fi
 fi
 
