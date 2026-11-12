@@ -57,9 +57,9 @@ function warn_corrupt {
 local LIST="$CONFDIR/tmp/corruptflacs.txt" FILES COUNT
 if [[ -s $LIST ]]; then
   COUNT=$(wc -l < "$LIST" | xargs)
-  FILES=$(head -n 8 "$LIST")
-  if [[ $COUNT -gt 8 ]]; then FILES="$FILES\n...and $((COUNT-8)) more"; fi
-  dialog --stdout --backtitle "Semplice Digital Music Manager" --title " Possibly Corrupt Files Detected! " --msgbox "\nThese files have an MD5 checksum mismatch:\n\n$FILES\n\nCheck your backups to resolve!" 18 80
+  FILES=$(head -n 2 "$LIST")                     # Two names at most, so everything fits in a 12-line box
+  if [[ $COUNT -gt 2 ]]; then FILES="$FILES\n...and $((COUNT-2)) more"; fi
+  dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "These files have an MD5 checksum mismatch:\n\n$FILES\n\nCheck your backups to resolve!" 12 80
 fi
 }
 
