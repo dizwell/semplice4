@@ -140,7 +140,7 @@ case $OSFAMILY in
     sudo xbps-install -Sfy dialog > /dev/null 2>&1
 
     # Define what's required    
-    packages=(automake base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd gcc gd-devel git ImageMagick lame-devel libcdio libjpeg-turbo-devel libpng-devel libtool make ncurses nerd-fonts-ttf pkg-config libflac-devel libogg-devel wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog ffmpeg flac fd ImageMagick libcdio ncurses nerd-fonts-ttf wezterm)
     total=${#packages[@]}
     count=0
 
@@ -182,10 +182,10 @@ case $OSFAMILY in
       check_updates
     fi
 
-    sudo pacman -S --noconfirm dialog git base-devel go > /dev/null 2>&1
+    sudo pacman -S --noconfirm dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(base-devel bc cdparanoia cmake coreutils cuetools curl dialog ffmpeg flac fd git imagemagick libcdio libxml2-legacy ncurses ttf-nerd-fonts-symbols-mono wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog ffmpeg flac fd imagemagick libcdio ncurses ttf-nerd-fonts-symbols-mono wezterm)
     total=${#packages[@]}
     count=0
 
@@ -240,7 +240,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses* pkg-config wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find ffmpeg flac imagemagick libncurses* wezterm)
     total=${#packages[@]}
     count=0
     
@@ -292,7 +292,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl dialog fd-find ffmpeg flac git imagemagick libncurses* pkg-config wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog fd-find ffmpeg flac imagemagick libncurses* wezterm)
     total=${#packages[@]}
     count=0
 
@@ -335,7 +335,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc binutils build-essential cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac git imagemagick libmp3lame-dev libncurses6 pkg-config wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find ffmpeg flac imagemagick libncurses6 wezterm)
     total=${#packages[@]}
     count=0
     
@@ -383,7 +383,7 @@ case $OSFAMILY in
     fi
     
      # Define what's required 
-    packages=(bc binutils cdparanoia cmake coreutils cuetools curl fd-find ffmpeg flac gcc git ImageMagick kernel-devel lame-devel ncurses pkg-config wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find ffmpeg flac ImageMagick ncurses wezterm)
     total=${#packages[@]}
     count=0
     
@@ -436,7 +436,7 @@ case $OSFAMILY in
     fi
 
     # Define what's required 
-    packages=(autoconf automake bc binutils cdparanoia cmake coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick kernel-devel lame lame-devel lame-devel ncurses pkg-config wezterm xdotool)
+    packages=(autoconf automake bc cdparanoia coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep ImageMagick make ncurses wezterm)
     total=${#packages[@]}
     count=0
 
@@ -530,7 +530,7 @@ case $OSFAMILY in
     done
 
     # Define what's required
-    packages=(bc cdparanoia cmake coreutils cuetools curl dialog fd ffmpeg flac gawk git grep gsed icu4c icu ImageMagick libcdio-paranoia md5sha1sum ncurses wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog fd ffmpeg flac gawk grep gsed icu4c icu ImageMagick libcdio-paranoia md5sha1sum ncurses wezterm)
     total=${#packages[@]}
     count=0
 
