@@ -25,10 +25,24 @@ while getopts "v:d:" opt; do
 done
 
 # Everything is fetched from GitHub: the beta branch (work in progress) or main (releases)
-# -v must be beta or stable; leaving it out means stable
+# -v must be beta or stable; if it's left out, ask which
 case "$SEMRELEASE" in
-  beta|stable|"") ;;
-  *) echo "Unknown release '$SEMRELEASE': use -v beta or -v stable (or leave -v out for stable)."; exit 1 ;;
+  beta|stable) ;;
+  "")
+    echo ""
+    echo "    Do you want to install the stable release (s) or the beta (b) of Semplice?"
+    echo ""
+    while true; do
+      read -n 1 -p "    Stable or beta, then? (s/b): " input
+      case "$input" in
+        [sS]) SEMRELEASE="stable"; break ;;
+        [bB]) SEMRELEASE="beta"; break ;;
+        *) echo ""; echo "    Invalid input: only s or b are allowed. Please try again."; echo "" ;;
+      esac
+    done
+    echo ""
+    ;;
+  *) echo "Unknown release '$SEMRELEASE': use -v beta or -v stable."; exit 1 ;;
 esac
 
 if [[ $SEMRELEASE == "beta" ]]; then 
