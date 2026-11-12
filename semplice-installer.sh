@@ -14,8 +14,18 @@
 PROGVERSION="4.00" COPYRIGHT="2019-2026"
 PRIORVERSION=0; clear; USERNAME=$(whoami); ERRORCOUNT=0  YPOS=6
 
+# Determine if the user has invoked the installer with a specific release flavour (-v beta)
+# or distro (-d name) in mind, exactly as Giocoso's installer does
+SEMRELEASE=""    SEMDISTRO=""
+while getopts "v:d:" opt; do
+	case "$opt" in
+	  v)  SEMRELEASE="$OPTARG";;
+	  d)  SEMDISTRO="$OPTARG";;
+	esac
+done
+
 # Everything is fetched from GitHub: the beta branch (work in progress) or main (releases)
-if [[ $1 == "beta" ]]; then 
+if [[ $SEMRELEASE == "beta" ]]; then 
   REMOTESOURCE="https://raw.githubusercontent.com/dizwell/semplice4/beta"
 else
   REMOTESOURCE="https://raw.githubusercontent.com/dizwell/semplice4/main"

@@ -52,18 +52,22 @@ if [[ $pending -gt 0 ]]; then
 fi    
 }
 
-# Start by checking what operating system we're dealing with
+# Start by checking what operating system we're dealing with, unless we've
+# been told explicitly as part of installer invocation (-d)
 # -----------------------------------------------------------------------------
-if [[ -f /etc/os-release ]]; then
+if [[ -z $SEMDISTRO ]]; then
+  if [[ -f /etc/os-release ]]; then
     . /etc/os-release
     OS=$NAME
     THISVER=$VERSION
+  else
+    OS=$(uname -s)
+    THISVER=$(uname -r)
+  fi
+  OS=${OS^^}
 else
-  OS=$(uname -s)
-  THISVER=$(uname -r)
+  OS=${SEMDISTRO^^}
 fi
-
-OS=${OS^^}
 
 if hash nproc 2>/dev/null; then
   THREADS=$(nproc)
