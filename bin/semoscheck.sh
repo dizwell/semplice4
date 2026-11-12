@@ -155,7 +155,7 @@ case $OSFAMILY in
     sudo xbps-install -Sfy dialog > /dev/null 2>&1
 
     # Define what's required    
-    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses nerd-fonts-ttf wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses nerd-fonts-ttf wezterm libpulseaudio alsa-utils)
     total=${#packages[@]}
     count=0
 
@@ -200,7 +200,7 @@ case $OSFAMILY in
     sudo pacman -S --noconfirm dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses ttf-nerd-fonts-symbols-mono wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses ttf-nerd-fonts-symbols-mono wezterm libpulse alsa-utils)
     total=${#packages[@]}
     count=0
 
@@ -255,7 +255,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses* wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses* wezterm libpulse0 alsa-utils)
     total=${#packages[@]}
     count=0
     
@@ -307,7 +307,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog fd-find flac libncurses* wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog fd-find flac libncurses* wezterm libpulse0 alsa-utils)
     total=${#packages[@]}
     count=0
 
@@ -350,7 +350,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses6 wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses6 wezterm libpulse0 alsa-utils)
     total=${#packages[@]}
     count=0
     
@@ -394,7 +394,7 @@ case $OSFAMILY in
     sudo dnf -y install dialog > /dev/null 2>&1
     
      # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find flac ncurses wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find flac ncurses wezterm pulseaudio-libs alsa-utils)
     total=${#packages[@]}
     count=0
     
@@ -444,7 +444,7 @@ case $OSFAMILY in
     fi
 
     # Define what's required 
-    packages=(autoconf automake bc cdparanoia coreutils curl fd-find flac fontconfig gawk gcc git grep make ncurses wezterm)
+    packages=(autoconf automake bc cdparanoia coreutils curl fd-find flac fontconfig gawk gcc git grep make ncurses wezterm pulseaudio-libs alsa-utils)
     total=${#packages[@]}
     count=0
 
