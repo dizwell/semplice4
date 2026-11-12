@@ -62,7 +62,7 @@ if [[ -s $LIST ]]; then
   else
     MSG="Corruption has definitely been detected in this file. Please restore from backup before re-checking the file."
   fi
-  dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "\nAt least one of the FLACs in this folder has an MD5 checksum mismatch, indicating internal corruption: $FILE.\n\n$MSG" 12 80
+  dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "\nAt least one of the FLACs in this folder has an MD5 checksum mismatch, indicating internal corruption:\n\n$FILE\n\n$MSG" 16 80
 fi
 }
 
