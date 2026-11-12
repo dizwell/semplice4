@@ -54,12 +54,15 @@ done
 # warn_corrupt: semclean.sh lists every FLAC whose audio MD5 does not match its stored checksum;
 # this shows that list, if there is one. Used by K (all menus) and by Quit.
 function warn_corrupt {
-local LIST="$CONFDIR/tmp/corruptflacs.txt" FILES COUNT
+local LIST="$CONFDIR/tmp/corruptflacs.txt" FILE MSG
 if [[ -s $LIST ]]; then
-  COUNT=$(wc -l < "$LIST" | xargs)
-  FILES=$(head -n 2 "$LIST")                     # Two names at most, so everything fits in a 12-line box
-  if [[ $COUNT -gt 2 ]]; then FILES="$FILES\n...and $((COUNT-2)) more"; fi
-  dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "These files have an MD5 checksum mismatch:\n\n$FILES\n\nCheck your backups to resolve!" 12 80
+  FILE=$(head -n 1 "$LIST")                      # Only the first damaged file is named
+  if [[ $(find . -maxdepth 1 -type f -name "*.flac" | wc -l) -gt 1 ]]; then
+    MSG="Corruption has definitely been detected in this file, but it may be present in other FLACs in this folder. Please restore from backup before re-checking the files."
+  else
+    MSG="Corruption has definitely been detected in this file. Please restore from backup before re-checking it."
+  fi
+  dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "\n$FILE\n\n$MSG" 12 80
 fi
 }
 
