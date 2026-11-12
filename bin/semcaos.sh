@@ -212,9 +212,9 @@ mkdir split 2>/dev/null
 for x in "${TrackStarts[@]}"
 do
   if [[ $counter -lt 9 ]]; then
-    ffmpeg -hide_banner -loglevel 0 -i "$f" -max_muxing_queue_size 900000 -vn -vsync 0 -ss ${TrackStarts[$counter]} -t ${TrackEnds[$counter]} split/track0$((counter+1)).flac 2>/dev/null
+    "$FFMPEG" -hide_banner -loglevel 0 -i "$f" -max_muxing_queue_size 900000 -vn -ss ${TrackStarts[$counter]} -t ${TrackEnds[$counter]} split/track0$((counter+1)).flac 2>/dev/null
   else
-    ffmpeg -hide_banner -loglevel 0 -i "$f" -max_muxing_queue_size 900000 -vn -vsync 0 -ss ${TrackStarts[$counter]} -t ${TrackEnds[$counter]} split/track$((counter+1)).flac  2>/dev/null
+    "$FFMPEG" -hide_banner -loglevel 0 -i "$f" -max_muxing_queue_size 900000 -vn -ss ${TrackStarts[$counter]} -t ${TrackEnds[$counter]} split/track$((counter+1)).flac  2>/dev/null
   fi
   counter=$((counter+1))
   done & spinner

@@ -155,7 +155,7 @@ case $OSFAMILY in
     sudo xbps-install -Sfy dialog > /dev/null 2>&1
 
     # Define what's required    
-    packages=(bc cdparanoia coreutils cuetools curl dialog ffmpeg flac fd libcdio ncurses nerd-fonts-ttf wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses nerd-fonts-ttf wezterm)
     total=${#packages[@]}
     count=0
 
@@ -200,7 +200,7 @@ case $OSFAMILY in
     sudo pacman -S --noconfirm dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog ffmpeg flac fd libcdio ncurses ttf-nerd-fonts-symbols-mono wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses ttf-nerd-fonts-symbols-mono wezterm)
     total=${#packages[@]}
     count=0
 
@@ -255,7 +255,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find ffmpeg flac libncurses* wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses* wezterm)
     total=${#packages[@]}
     count=0
     
@@ -307,7 +307,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog fd-find ffmpeg flac libncurses* wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog fd-find flac libncurses* wezterm)
     total=${#packages[@]}
     count=0
 
@@ -350,7 +350,7 @@ case $OSFAMILY in
     sudo apt -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find ffmpeg flac libncurses6 wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses6 wezterm)
     total=${#packages[@]}
     count=0
     
@@ -392,13 +392,9 @@ case $OSFAMILY in
     
     echo "    Adding needed repositories. Please be patient..."
     sudo dnf -y install dialog > /dev/null 2>&1
-    FUSIONON=$(sudo dnf repolist | grep "RPM Fusion.*Free" | wc -l)
-    if [[ $FUSIONON -eq 0 ]]; then
-      sudo dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm >/dev/null 2>&1
-    fi
     
      # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find ffmpeg flac ncurses wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl fd-find flac ncurses wezterm)
     total=${#packages[@]}
     count=0
     
@@ -440,18 +436,15 @@ case $OSFAMILY in
 
     echo "    Adding needed repositories. Please be patient..."
     sudo dnf -y install dialog > /dev/null 2>&1
-    FUSIONON=$(sudo dnf repolist | grep epel | wc -l)
-    if [[ $FUSIONON -eq 0 ]]; then
+    EPELON=$(sudo dnf repolist | grep epel | wc -l)
+    if [[ $EPELON -eq 0 ]]; then
       sudo dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E %rhel).noarch.rpm" >/dev/null 2>&1
       sudo dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-next-release-latest-$(rpm -E %rhel).noarch.rpm" >/dev/null 2>&1
-      sudo dnf -y install "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm" >/dev/null 2>&1
-      sudo dnf -y install "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-$(rpm -E %rhel).noarch.rpm" >/dev/null 2>&1
-      sudo dnf config-manager --add-repo=https://negativo17.org/repos/epel-multimedia.repo
       sudo dnf -y config-manager --set-enabled crb >/dev/null 2>&1
     fi
 
     # Define what's required 
-    packages=(autoconf automake bc cdparanoia coreutils curl fd-find ffmpeg-free flac fontconfig gawk gcc git grep make ncurses wezterm)
+    packages=(autoconf automake bc cdparanoia coreutils curl fd-find flac fontconfig gawk gcc git grep make ncurses wezterm)
     total=${#packages[@]}
     count=0
 
@@ -545,7 +538,7 @@ case $OSFAMILY in
     done
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog fd ffmpeg flac gawk grep gsed icu4c icu libcdio-paranoia md5sha1sum ncurses wezterm)
+    packages=(bc cdparanoia coreutils cuetools curl dialog fd flac gawk grep gsed icu4c icu libcdio-paranoia md5sha1sum ncurses wezterm)
     total=${#packages[@]}
     count=0
 
@@ -606,7 +599,9 @@ SEMARV="$CONFDIR/exec/semarv-${OS_PLATFORM}-${OS_ARCHITECTURE}"
 SACDEXTRACT="$CONFDIR/exec/sacd_extract-${OS_PLATFORM}-${OS_ARCHITECTURE}"
 SIXEL="$CONFDIR/exec/img2sixel-${OS_PLATFORM}-${OS_ARCHITECTURE}"
 CONVERTER="$CONFDIR/exec/magick-${OS_PLATFORM}-${OS_ARCHITECTURE}"      # Self-contained ImageMagick 7 (JPG and PNG), the same build as Giocoso's
-chmod +x "$SEMARV" "$SACDEXTRACT" "$SIXEL" "$CONVERTER" 2>/dev/null
+FFMPEG="$CONFDIR/exec/ffmpeg-${OS_PLATFORM}-${OS_ARCHITECTURE}"        # Self-contained ffmpeg and ffprobe, the same builds as Giocoso's
+FFPROBE="$CONFDIR/exec/ffprobe-${OS_PLATFORM}-${OS_ARCHITECTURE}"
+chmod +x "$SEMARV" "$SACDEXTRACT" "$SIXEL" "$CONVERTER" "$FFMPEG" "$FFPROBE" 2>/dev/null
 
 echo "SEDPROG=$SEDPROG
 GREPPROG=$GREPPROG
@@ -614,6 +609,8 @@ DATEPROG=$DATEPROG
 MD5PROG=$MD5PROG
 FDPROG=$FDPROG
 CONVPROG=\"$CONVERTER\"
+FFMPEG=\"$FFMPEG\"
+FFPROBE=\"$FFPROBE\"
 OS_PLATFORM=$OS_PLATFORM
 OS_ARCHITECTURE=$OS_ARCHITECTURE
 SEMARV=\"$SEMARV\"

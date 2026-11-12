@@ -283,7 +283,7 @@ elif [[ $FLAC_QUALITY == "extreme" ]]; then
   RES_TEXT="extreme resolution"
 fi
 tput cup 22 4; echo "Now converting ripped files to $RES_TEXT FLACs...                        "
-$FDPROG -j 4 -d 1 -t f -e "wav" -x ffmpeg -hide_banner -loglevel 0 -i "{}" $BITDEPTH -y "{.}-$BITS.flac"
+$FDPROG -j 4 -d 1 -t f -e "wav" -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" $BITDEPTH -y "{.}-$BITS.flac"
 
 # Now delete the source WAVs, if configured to do so
 # ----------------------------------------------------------------------------------------------
