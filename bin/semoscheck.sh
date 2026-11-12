@@ -151,7 +151,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo xbps-install -Sf -y "$pkg" > /dev/null 2>&1 || true
+      sudo xbps-install -Sf -y "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -196,7 +196,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo pacman -S --noconfirm "$pkg" > /dev/null 2>&1 || true
+      sudo pacman -S --noconfirm "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
       sleep 0.1
     done
     ) | dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -251,7 +251,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo apt -y install "$pkg" > /dev/null 2>&1 || true
+      sudo apt -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -303,7 +303,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo apt -y install "$pkg" > /dev/null 2>&1 || true
+      sudo apt -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -346,7 +346,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo apt -y install "$pkg" > /dev/null 2>&1 || true
+      sudo apt -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -394,7 +394,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo dnf -y install "$pkg" --allowerasing > /dev/null 2>&1 || true
+      sudo dnf -y install "$pkg" --allowerasing >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -447,7 +447,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo dnf -y install "$pkg" --allowerasing > /dev/null 2>&1 || true
+      sudo dnf -y install "$pkg" --allowerasing >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -542,9 +542,9 @@ case $OSFAMILY in
       echo $percent
 
       if [[ $pkgmanager == "homebrew" ]]; then
-        brew install --quiet "$pkg" >/dev/null 2>&1
+        brew install --quiet "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1
       elif [[ $pkgmanager == "macports" ]]; then
-        sudo port -N install "$pkg" > /dev/null 2>&1
+        sudo port -N install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1
       fi
       
       sleep 0.1
