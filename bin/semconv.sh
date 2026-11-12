@@ -177,7 +177,7 @@ case $OUTPUTFORMAT in
     WMA)
     QUALNO=$((50+(20 * "$AUDIO_QUALITY")))          # 8 is better than 0
     BITS=""
-    BITDEPTH="-vn -acodec wmav2 -ab $QUALNO"      # -vn: WMA files take no cover art, so leave it out
+    BITDEPTH="-vn -ar 44100 -acodec wmav2 -ab $QUALNO"   # -vn: WMA files take no cover art. -ar 44100: WMA can't hold more than 48kHz, so high-res sources must be brought down
     BITDEPTH+="k"
     XHIRES=0
     HIRES=0
