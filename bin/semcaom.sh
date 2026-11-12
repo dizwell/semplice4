@@ -84,7 +84,7 @@ for f in *.flac; do
     ((AXIOM_ERRORS++))
   fi
 
-  if ! [[ $TRACKNUMBER -eq 1 ]] && [[ $FIRST_TIME -eq 1 ]]; then
+  if [[ $FIRST_TIME -eq 1 && ! $TRACKNUMBER =~ ^0*1$ ]]; then             # A text match, not -eq: bash reads "08" or "09" as broken octal
     dialog --stdout --backtitle "Semplice SuperFLAC Creation" --title " Axiom 9 Violation! " --msgbox "\nThe TRACKNUMBER tags needs to start at 1. A SuperFLAC cannot be created from tracks which don't match the Axioms of Classical Tagging.\n\nSee: https://bbritten.com/articles/axioms\n\nFile affected: $f" 15 80
     ((AXIOM_ERRORS++))
   fi
