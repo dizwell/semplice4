@@ -53,6 +53,11 @@ else
 fi
 }
 
+# The installer deletes itself when it finishes or is cancelled, whatever it was saved as (sem4inst, gio4inst...),
+# unless it's the copy inside a program's own repository folder
+INSTALLERFILE="$0"
+if git -C "$(dirname "$INSTALLERFILE")" rev-parse --is-inside-work-tree >/dev/null 2>&1; then INSTALLERFILE=""; fi
+
 NEWCONF="$HOME/.local/share/semplice4"
 CONFDIR="$NEWCONF"
 
@@ -65,7 +70,7 @@ SPINNER=12
 ALERT=1
 
 function exit_program {
-rm -f seminst >/dev/null 2>&1
+rm -f "$INSTALLERFILE" >/dev/null 2>&1
 reset
 exit 1
 }
@@ -553,7 +558,7 @@ EOF
   # 9. Finish Up
   # -----------------------------------------------------
   reset
-  rm -f seminst
+  rm -f "$INSTALLERFILE"
   exit 0
 else      # They said not to proceed
   clear
@@ -565,5 +570,5 @@ fi
 # Failsafe cleanup
 # -----------------------------------------------------
 reset
-rm -f seminst
+rm -f "$INSTALLERFILE"
 exit 0
