@@ -207,10 +207,6 @@ if [[ $OS == "DARWIN" ]]; then
     exit 1
   fi
   chmod +x "$NEWCONF/semplice4.sh"
-  # The main script lives in the program folder (so git pull keeps it current); /usr/local/bin just links to it
-  sudo rm -f "/usr/local/bin/semplice4.sh" "/usr/local/bin/semplice" 2>/dev/null
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/local/bin/semplice4.sh"
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/local/bin/semplice" 
 else
   rm -f "$NEWCONF/semplice4.sh"
   downloaded=0
@@ -227,10 +223,6 @@ else
     exit 1
   fi
   chmod +x "$NEWCONF/semplice4.sh"
-  # The main script lives in the program folder (so git pull keeps it current); /usr/bin just links to it
-  sudo rm -f "/usr/bin/semplice4.sh" "/usr/bin/semplice" 2>/dev/null
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/bin/semplice4.sh"
-  sudo ln -s "$NEWCONF/semplice4.sh" "/usr/bin/semplice"
 fi
 
 # Only create a desktop launcher if this is NOT macOS.
@@ -383,6 +375,18 @@ if [[ "$response" == [Yy]* ]]; then
   if [[ ! -d "$NEWCONF/txt" ]]; then mkdir -p "$NEWCONF/txt"; fi
   if [[ ! -d "$NEWCONF/tmp" ]]; then mkdir -p "$NEWCONF/tmp"; fi
   if [[ ! -d "$NEWCONF/rip" ]]; then mkdir -p "$NEWCONF/rip"; fi
+
+  # 3a. Ask for the sudo password once, now, and make the command links straight away. They point at the
+  # main script in the program folder, which arrives later; nothing after this needs the password again.
+  # -----------------------------------------------------
+  echo ""
+  sudo -p $'\r    Please supply the sudo password for %u: ' -v || { echo "    Failed to acquire sudo privileges, so quitting..."; exit_program; }
+  if [[ $(uname -s) == "Darwin" ]]; then BINDIR="/usr/local/bin"; else BINDIR="/usr/bin"; fi
+  sudo mkdir -p "$BINDIR"
+  sudo rm -f "$BINDIR/semplice4.sh" "$BINDIR/semplice" 2>/dev/null
+  sudo ln -s "$NEWCONF/semplice4.sh" "$BINDIR/semplice4.sh"
+  sudo ln -s "$NEWCONF/semplice4.sh" "$BINDIR/semplice"
+
   
   # 4. Call semoscheck.sh and get packages installed
   # -----------------------------------------------------
