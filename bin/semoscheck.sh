@@ -475,26 +475,26 @@ case $OSFAMILY in
     fi
     
      while true; do
-      echo " Do you want to use Homebrew (h) or Macports (m) as your package installer?"
-      echo " Note that whatever you choose here must have already been installed by you, manually."
-      echo " Do not mix package installers: if you've already used one or the other, stick"
-      echo " to that one now. If you have a free choice, choose Macports for older machines"
-      echo " and for the fact that it's *much* faster to complete!"
+      echo "    Do you want to use Homebrew (h) or Macports (m) as your package installer?"
+      echo "    Note that whatever you choose here must have already been installed by you, manually."
+      echo "    Do not mix package installers: if you've already used one or the other, stick"
+      echo "    to that one now. If you have a free choice, choose Macports for older machines"
+      echo "    and for the fact that it's *much* faster to complete!"
       echo ""
-      read -n 1 -p " Homebrew or Macports, then? (h/m): " input
+      read -n 1 -p "    Homebrew or Macports, then? (h/m): " input
       case "$input" in
        [hH])
          if command -v brew >/dev/null 2>&1; then
            pkgmanager=homebrew
            echo ""
-           echo " Using the Homebrew Package Manager. Please hold on..."
+           echo "    Using the Homebrew Package Manager. Please hold on..."
            echo ""
            brew install --quiet dialog >/dev/null 2>&1
            break
          else
            echo ""
-           echo " Unfortunately, it appears that Homebrew has not already been installed on this system."
-           echo " Do that first, manually, before trying to re-run this installer."
+           echo "    Unfortunately, it appears that Homebrew has not already been installed on this system."
+           echo "    Do that first, manually, before trying to re-run this installer."
            echo ""
            exit 1        
          fi  
@@ -503,14 +503,14 @@ case $OSFAMILY in
          if command -v port >/dev/null 2>&1; then
            pkgmanager=macports
            echo ""
-           echo " Using the Macports Package Manager. Please wait..."
+           echo "    Using the Macports Package Manager. Please wait..."
            echo ""
            sudo port -N install dialog > /dev/null 2>&1           
            break
          else
            echo ""
-           echo " Unfortunately, it appears that Macports has not already been installed on this system."
-           echo " Do that first, manually, before trying to re-run this installer."
+           echo "    Unfortunately, it appears that Macports has not already been installed on this system."
+           echo "    Do that first, manually, before trying to re-run this installer."
            echo ""
            exit 1
          fi   
@@ -518,7 +518,7 @@ case $OSFAMILY in
        *)
          clear
          echo ""
-         echo " Invalid input: only h or m are allowed. Please try again."
+         echo "    Invalid input: only h or m are allowed. Please try again."
          echo ""
         ;;
       esac
