@@ -57,27 +57,23 @@ fi
 
 function apply_albumart {
 # If the selected album art is internally CMYK, convert it to sRGB, because CYMK files produce weird output with libsixel
-BADIMG=$(identify "$ARTFILE" 2>/dev/null | grep CMYK | wc -l)
+BADIMG=$("$CONVPROG" identify "$ARTFILE" 2>/dev/null | grep CMYK | wc -l)
 if [[ $BADIMG -eq 1 ]]; then
-  if [[ $CONVPROG == "convert" ]]; then
-    convert "$ARTFILE" -colorspace sRGB "$ARTFILE"
-  elif [[ $CONVPROG == "magick" ]]; then
-    magick "$ARTFILE" -colorspace sRGB "$ARTFILE"
-  fi
+  "$CONVPROG" "$ARTFILE" -colorspace sRGB "$ARTFILE"
 fi
 
-GOODIMG=$(identify "$ARTFILE" 2>/dev/null | grep sRGB | wc -l)
+GOODIMG=$("$CONVPROG" identify "$ARTFILE" 2>/dev/null | grep sRGB | wc -l)
 if [[ $GOODIMG -gt 0 ]]; then
-  IFS=" "; read width height < <(identify -format "%w %h" "$ARTFILE")
+  IFS=" "; read width height < <("$CONVPROG" identify -format "%w %h" "$ARTFILE")
   if [[ $width -gt $height ]]; then BIGDIMENSION=$width; else BIGDIMENSION=$height; fi
   if [[ $BIGDIMENSION -ge 1400 ]]; then
-    if [[ $CONVPROG == "convert" ]]; then convert "$ARTFILE" -quality 100 -resize 1400x1400\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTFILE" -quality 100 -resize 1400x1400\! /tmp/albumart.jpg; fi   # Resize images if larger than 1400x1400, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize 1400x1400\! /tmp/albumart.jpg   # Resize images if larger than 1400x1400, without maintaining aspect ratio
   elif [[ $BIGDIMENSION -ge 900 ]]; then
-    if [[ $CONVPROG == "convert" ]]; then convert "$ARTFILE" -quality 100 -resize 900x900\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTFILE" -quality 100 -resize 900x900\! /tmp/albumart.jpg; fi       # Resize images if larger than 900x900, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize 900x900\! /tmp/albumart.jpg       # Resize images if larger than 900x900, without maintaining aspect ratio
   elif [[ $BIGDIMENSION -ge 500 ]]; then
-    if [[ $CONVPROG == "convert" ]]; then convert "$ARTFILE" -quality 100 -resize 500x500\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTFILE" -quality 100 -resize 500x500\! /tmp/albumart.jpg; fi       # Resize images if larger than 500x500, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize 500x500\! /tmp/albumart.jpg       # Resize images if larger than 500x500, without maintaining aspect ratio
   else
-    if [[ $CONVPROG == "convert" ]]; then convert "$ARTFILE" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg; elif [ $CONVPROG == "magick" ]; then magick "$ARTFILE" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg; fi       # No resizing of small images, but squaring it off, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg       # No resizing of small images, but squaring it off, without maintaining aspect ratio
   fi
   MESSAGE="Applying album art. Please wait... "
   for f in *.flac; do
