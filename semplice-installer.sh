@@ -553,7 +553,7 @@ EOF
     if [[ $CUEPRINTOK -eq 0 || $SACDOK -eq 0 || $SIXELOK -eq 0 || $TRKVEROK -eq 0 ]]; then
       DIALOGTEXT=$DIALOGTEXT"\n\nSee the Semplice documentation for how to potentially resolve these issues manually. You can otherwise close this terminal now."
     else 
-      DIALOGTEXT=$DIALOGTEXT"\n\nSemplice has full functionality: click OK to return the command line."
+      DIALOGTEXT=$DIALOGTEXT"\n\nSemplice has full functionality: click OK to return to the command line."
     fi
   else
     DIALOGTEXT=$DIALOGTEXT"\n\n  ✘ Your basic Semplice installation appears to be wrong."
