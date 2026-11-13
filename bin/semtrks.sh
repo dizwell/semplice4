@@ -79,6 +79,7 @@ function tag_writes {
 LINECOUNT=1
 for f in *.flac; do
   TITLE=$($SEDPROG "${LINECOUNT}q;d" "$CONFDIR/tmp/tracklists.txt")
+  TITLE="${TITLE#"${TITLE%%[![:space:]]*}"}"; TITLE="${TITLE%"${TITLE##*[![:space:]]}"}"   # Trim spaces and tabs from the start and end of the typed title
   TITLE=${TITLE//.../…}	# Replace multiple dots with proper elipses.
   TITLE=${TITLE//../…}
   metaflac $UTFCHARS "--remove-tag=TITLE" "$f"
