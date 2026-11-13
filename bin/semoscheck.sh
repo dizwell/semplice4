@@ -283,11 +283,11 @@ case $OSFAMILY in
     wget -qO- https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
     echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
     sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
-    sudo apt-get update -qq
+    sudo apt-get -o DPkg::Lock::Timeout=300 update -qq
     pending=$(apt-get -s upgrade | awk '/^Inst / {count++} END {print count+0}')
     check_updates
  
-    sudo apt -y install dialog > /dev/null 2>&1
+    sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
         
     # Define what's required 
     packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses* wezterm libpulse0 alsa-utils)
@@ -301,7 +301,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo apt -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || echo "$pkg" >> "$FAILEDPKGS"
+      sudo apt -o DPkg::Lock::Timeout=300 -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || echo "$pkg" >> "$FAILEDPKGS"
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -335,11 +335,11 @@ case $OSFAMILY in
     wget -qO- https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
     echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
     sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
-    sudo apt-get update -qq
+    sudo apt-get -o DPkg::Lock::Timeout=300 update -qq
     pending=$(apt-get -s upgrade | awk '/^Inst / {count++} END {print count+0}')
     check_updates
 
-    sudo apt -y install dialog > /dev/null 2>&1
+    sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
 
     # Define what's required
     packages=(bc cdparanoia coreutils cuetools curl dialog fd-find flac libncurses* wezterm libpulse0 alsa-utils)
@@ -353,7 +353,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo apt -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || echo "$pkg" >> "$FAILEDPKGS"
+      sudo apt -o DPkg::Lock::Timeout=300 -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || echo "$pkg" >> "$FAILEDPKGS"
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -378,11 +378,11 @@ case $OSFAMILY in
     wget -qO- https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
     echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list > /dev/null
     sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
-    sudo apt-get update -qq
+    sudo apt-get -o DPkg::Lock::Timeout=300 update -qq
     pending=$(apt-get -s upgrade | awk '/^Inst / {count++} END {print count+0}')
     check_updates
     
-    sudo apt -y install dialog > /dev/null 2>&1
+    sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
         
      # Define what's required 
     packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses6 wezterm libpulse0 alsa-utils)
@@ -396,7 +396,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo apt -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || echo "$pkg" >> "$FAILEDPKGS"
+      sudo apt -o DPkg::Lock::Timeout=300 -y install "$pkg" >> "$CONFDIR/txt/install-log.txt" 2>&1 || echo "$pkg" >> "$FAILEDPKGS"
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
