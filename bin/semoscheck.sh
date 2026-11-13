@@ -131,6 +131,21 @@ mv "$WEZDIR/WezTerm.app" /Applications/ || return 1
 rm -rf "$WEZDIR" "$WEZDIR.zip"
 }
 
+function dnf_retry {
+# Runs "sudo dnf ARGS", logging to the install log. If Fedora's own background updater (PackageKit, GNOME
+# Software) is busy, dnf fails with an rpm transaction lock error, so wait and try again: 20 tries, 15s apart.
+local LOG="$CONFDIR/txt/install-log.txt" OUT tries=0
+mkdir -p "$CONFDIR/txt" 2>/dev/null
+while true; do
+  OUT=$(sudo dnf "$@" 2>&1); local rc=$?
+  echo "$OUT" >> "$LOG"
+  if [[ $rc -eq 0 ]] || ! grep -q -i -E "transaction lock|another transaction is in progress" <<< "$OUT"; then return $rc; fi
+  tries=$((tries+1)); [[ $tries -ge 20 ]] && return $rc
+  echo "dnf busy (another program is installing software): waiting 15s, attempt $tries of 20" >> "$LOG"
+  sleep 15
+done
+}
+
 # Now define the software tools etc. required for each family
 # -----------------------------------------------------------------------------
 case $OSFAMILY in
@@ -391,7 +406,7 @@ case $OSFAMILY in
     fi
     
     echo "    Adding needed repositories. Please be patient..."
-    sudo dnf -y install dialog > /dev/null 2>&1
+    dnf_retry -y install dialog
     
      # Define what's required 
     packages=(bc cdparanoia coreutils cuetools curl fd-find flac ncurses wezterm pulseaudio-libs alsa-utils)
@@ -405,7 +420,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo dnf -y install "$pkg" --allowerasing >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
+      dnf_retry -y install "$pkg" --allowerasing || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
@@ -435,11 +450,11 @@ case $OSFAMILY in
     fi
 
     echo "    Adding needed repositories. Please be patient..."
-    sudo dnf -y install dialog > /dev/null 2>&1
+    dnf_retry -y install dialog
     EPELON=$(sudo dnf repolist | grep epel | wc -l)
     if [[ $EPELON -eq 0 ]]; then
-      sudo dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E %rhel).noarch.rpm" >/dev/null 2>&1
-      sudo dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-next-release-latest-$(rpm -E %rhel).noarch.rpm" >/dev/null 2>&1
+      dnf_retry -y install "https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E %rhel).noarch.rpm"
+      dnf_retry -y install "https://dl.fedoraproject.org/pub/epel/epel-next-release-latest-$(rpm -E %rhel).noarch.rpm"
       sudo dnf -y config-manager --set-enabled crb >/dev/null 2>&1
     fi
 
@@ -455,7 +470,7 @@ case $OSFAMILY in
       percent=$((count * 100 / total))
       echo $percent
 
-      sudo dnf -y install "$pkg" --allowerasing >> "$CONFDIR/txt/install-log.txt" 2>&1 || true
+      dnf_retry -y install "$pkg" --allowerasing || true
       sleep 0.1
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
