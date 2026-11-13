@@ -46,7 +46,9 @@ if [[ $PLATFORM == "linux" ]]; then
   cmake --build libxml2/build -j4 >/dev/null
   cmake --install libxml2/build >/dev/null
   XMLINC="-I$WORK/xml/include/libxml2"
-  LINK="-static -L$WORK/xml/lib -lxml2 -lpthread -lm"
+  # -u _IO_wfile_doallocate: sacd_extract writes "wide" text, and a fully static glibc otherwise leaves
+  # out the routine that sets up wide output buffers, so the program crashes on its first message
+  LINK="-static -Wl,-u,_IO_wfile_doallocate -L$WORK/xml/lib -lxml2 -lpthread -lm"
 else
   SDK=$(xcrun --show-sdk-path)
   XMLINC="-I$SDK/usr/include/libxml2"
