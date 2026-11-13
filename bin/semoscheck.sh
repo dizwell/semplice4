@@ -444,7 +444,7 @@ case $OSFAMILY in
     fi
 
     # Define what's required 
-    packages=(autoconf automake bc cdparanoia coreutils curl fd-find flac fontconfig gawk gcc git grep make ncurses wezterm pulseaudio-libs alsa-utils)
+    packages=(autoconf automake bc bison cdparanoia coreutils curl fd-find flac flex fontconfig gawk gcc git grep make ncurses wezterm pulseaudio-libs alsa-utils)
     total=${#packages[@]}
     count=0
 
