@@ -76,7 +76,7 @@ BITDEPTH=$(metaflac $UTFCHARS --list "$f" | $GREPPROG -a bits-per-sample | awk '
 SAMPLERATE=$(metaflac $UTFCHARS --list "$f" | $GREPPROG -a sample_rate | awk '{print $2}')
 
 if [[ $CANBEBOOSTED -eq 1 ]]; then                                                                           # Has permission to volume-boost been acquired?
-  MESSAGE="Performing a volume boost of "$DISPCANDIDATE_BOOST"dB…  "
+  MESSAGE="Performing a volume boost of $DISPCANDIDATE_BOOST dB…  "
   BOOSTPERFORMED=1
   for f in *.flac; do
     [[ $f == *"-dB-"* ]] && continue                                                            # Only process files which are not already volume-boosted.
