@@ -226,7 +226,7 @@ for f in "${components[@]}"; do
   echo $percent
   sleep 0.1
 done
-) | dialog --title " Installing Semplice Art Components " --gauge "\\n\\nNow downloading some other Semplice bits and pieces: not long to wait now..." 12 70
+) | dialog --title " Installing Semplice Art Components " --gauge "\\n\\nNow downloading some other Semplice bits and pieces: it will all be over soon..." 12 70
 
 download_status=${PIPESTATUS[0]}
 if [[ $download_status -ne 0 ]]; then
