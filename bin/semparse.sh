@@ -97,6 +97,12 @@ if [[ -f $CONFDIR/txt/semplice.conf ]]; then
     AUDIOIN_DELETION=0
   fi
 
+  if [[ ${ISO_AS_SOURCE^^} == "YES" ]]; then                                       # Treat SACD ISOs as source files: yes/no, defaults to no
+    ISO_AS_SOURCE=1
+  else
+    ISO_AS_SOURCE=0
+  fi
+
   if ! [[ -z $DISPLAYONEXTRACT ]]; then                                       # Display on extract is yes or no, but defaults to being yes
     if [[ ${DISPLAYONEXTRACT^^} == "NO" ]]; then
       DISPLAYONEXTRACT=0
@@ -211,6 +217,7 @@ AUTODELETE_PERTRACK_FLACS=no
 # ====================================================================
 AUDIO_QUALITY=4
 AUDIOIN_DELETION=no
+ISO_AS_SOURCE=no
 
 # Parameters controlling general program behaviour
 # ====================================================================

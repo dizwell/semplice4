@@ -45,6 +45,7 @@ if [[ -f "$CONFFILE" ]]; then
   confautodel=$(cat "$CONFFILE" | $GREPPROG -i AUTODELETE_PERTRACK_FLACS= | awk -F= '{print $2}'); if [[ -z $confautodel ]]; then confautodel='no'; fi
   confqual=$(cat "$CONFFILE" | $GREPPROG -i AUDIO_QUALITY= | awk -F= '{print $2}'); if [[ -z $confqual ]]; then confqual='4'; fi
   confaudiodel=$(cat "$CONFFILE" | $GREPPROG -i AUDIOIN_DELETION= | awk -F= '{print $2}'); if [[ -z $confaudiodel ]]; then confaudiodel='no'; fi
+  confisosrc=$(cat "$CONFFILE" | $GREPPROG -i ISO_AS_SOURCE= | awk -F= '{print $2}'); if [[ -z $confisosrc ]]; then confisosrc='no'; fi
   confwkdir=$(cat "$CONFFILE" | $GREPPROG -i RIP_FOLDER= | awk -F= '{print $2}'); if [[ -z $confwkdir ]]; then confwkdir='$HOME/Music'; fi
   confmetavol=$(cat "$CONFFILE" | $GREPPROG -i METAVOL= | awk -F= '{print $2}'); if [[ -z $confmetavol ]]; then confmetavol='real'; fi
   confartsize=$(cat "$CONFFILE" | $GREPPROG -i ARTSIZE= | awk -F= '{print $2}'); if [[ -z $confartsize ]]; then confartsize=380; fi
@@ -153,14 +154,15 @@ if [[ ${CONFAUTODEL,,} == "yes" || ${CONFAUTODEL,,} == "no" ]]; then CONFAUTODEL
 
 # Now, the Audio processing parameters
 # ====================================================================
-dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters for Audio Processing:" 17 90 10 "Lossy codec quality setting (1-9)" 1 1  "$confqual" 1 65 9 0 "Delete source files after codec conversion" 2 1  "$confaudiodel"  2 65 9 0 "Type of volume boost to use (real/metadata)" 3 1 "$confmetavol" 3 65 9 0 2>"$CONFDIR/tmp/audioparams"
+dialog --backtitle "Semplice Configuration File Editor" --title " Program Configuration " --form "Parameters for Audio Processing:" 17 90 10 "Lossy codec quality setting (1-9)" 1 1  "$confqual" 1 65 9 0 "Delete source files after codec conversion" 2 1  "$confaudiodel"  2 65 9 0 "Treat SACD ISOs as source files" 3 1  "$confisosrc"  3 65 9 0 "Type of volume boost to use (real/metadata)" 4 1 "$confmetavol" 4 65 9 0 2>"$CONFDIR/tmp/audioparams"
 exitStatus=$?
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; fi   # Cancel or Esc: abandon the whole edit, nothing saved
 
 readarray -t audioparams < "$CONFDIR/tmp/audioparams" 2>/dev/null
 CONFQUAL="${audioparams[0]}";     if [[ -z $CONFQUAL ]]; then CONFQUAL="4"; fi
 CONFAUDIODEL="${audioparams[1]}"; if [[ -z $CONFAUDIODEL ]]; then CONFAUDIODEL="no"; fi
-CONFMETAVOL="${audioparams[2]}";  if [[ -z $CONFMETAVOL ]]; then CONFMETAVOL="real"; fi
+CONFISOSRC="${audioparams[2]}";   if [[ -z $CONFISOSRC ]]; then CONFISOSRC="no"; fi
+CONFMETAVOL="${audioparams[3]}";  if [[ -z $CONFMETAVOL ]]; then CONFMETAVOL="real"; fi
 
 # And finally, miscellaneous program control parameters
 # ====================================================================
@@ -209,6 +211,7 @@ if ! [[ $CONFARTSIZE =~ $NUM ]] ; then CONFARTSIZE=380; fi
 if [[ $CONFARTSIZE -lt 1 ]]; then CONFARTSIZE=380; fi
 
 if [[ ${CONFAUDIODEL,,} == "yes" || ${CONFAUDIODEL,,} == "no" ]]; then CONFAUDIODEL=${CONFAUDIODEL,,}; else CONFAUDIODEL="no"; fi
+if [[ ${CONFISOSRC,,} == "yes" || ${CONFISOSRC,,} == "no" ]]; then CONFISOSRC=${CONFISOSRC,,}; else CONFISOSRC="no"; fi
 if [[ ${CONFMETAVOL,,} == "real" || ${CONFMETAVOL,,} == "metadata" ]]; then CONFMETAVOL=${CONFMETAVOL,,}; else CONFMETAVOL="real"; fi
 
 if [[ -f $HOME/.semplice.lua ]]; then
@@ -280,6 +283,7 @@ AUTODELETE_PERTRACK_FLACS=$CONFAUTODEL
 # ====================================================================
 AUDIO_QUALITY=$CONFQUAL
 AUDIOIN_DELETION=$CONFAUDIODEL
+ISO_AS_SOURCE=$CONFISOSRC
 METAVOL=$CONFMETAVOL
 
 # Parameters controlling general program behaviour

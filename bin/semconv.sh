@@ -228,6 +228,7 @@ if [[ $INPUTFORMAT == "ISO" ]]; then
     return
   fi
   MESSAGE="Splitting the ISO. Please wait…  "
+  shopt -s nullglob; PREDSF=(*.dsf); shopt -u nullglob   # Note any DSFs already here, so only the ones extracted below count as intermediate files
   for f in *.iso; do
     # Extract the ISO to DSFs, move them all into the source folder and delete the "Stereo" subfolder sacd_extract originally writes them to
     "$SACDEXTRACT" -2 -s -i "$f" >/dev/null & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
@@ -262,9 +263,16 @@ elif [[ $INPUTFORMAT != "ISO" ]]; then           # ISOs were dealt with above
   fi
 fi
 
+# The DSFs extracted from an ISO are intermediate files, and intermediate files are always deleted
+if [[ $INPUTFORMAT == "ISO" ]]; then
+  for f in *.dsf; do
+    [[ -f $f && " ${PREDSF[*]} " != *" $f "* ]] && rm -f "$f"
+  done
+fi
+
 if [[ $AUDIOIN_DELETION == "1" ]]; then
-  if [[ $INPUTFORMAT == "ISO" ]]; then			# For ISOs, we delete the intermediate DSFs, not the source ISO.
-     "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x rm -rf {} \;
+  if [[ $INPUTFORMAT == "ISO" ]]; then			# The ISO is a source file only if "Treat SACD ISOs as source files" is also yes
+    if [[ $ISO_AS_SOURCE == "1" ]]; then rm -f *.iso; fi
   elif [[ $INPUTFORMAT == "WMA" || $INPUTFORMAT == "OGG" || $INPUTFORMAT == "MP3" ]]; then
     "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x rm -rf {} \;
   elif [[ $INPUTFORMAT == "AIFF" ]]; then
