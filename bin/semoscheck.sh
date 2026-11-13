@@ -56,8 +56,9 @@ fi
 # Start by checking what operating system we're dealing with, unless we've
 # been told explicitly as part of installer invocation (-d)
 # -----------------------------------------------------------------------------
-# A distro named with -d at install time is saved in programvariables.txt: use it again at every start
-if [[ -z $SEMDISTRO && -f "$CONFDIR/txt/programvariables.txt" ]]; then
+# At install time the distro comes from -d if given, otherwise it is detected. Either way the result is saved
+# in programvariables.txt, and every later start of the program uses that saved value instead of detecting again.
+if [[ $CHECKONLY -eq 1 && -z $SEMDISTRO && -f "$CONFDIR/txt/programvariables.txt" ]]; then
   SEMDISTRO=$(sed -n 's/^SEMDISTRO="\(.*\)"$/\1/p' "$CONFDIR/txt/programvariables.txt")
 fi
 
@@ -683,4 +684,4 @@ OS_ARCHITECTURE=$OS_ARCHITECTURE
 SEMARV=\"$SEMARV\"
 SACDEXTRACT=\"$SACDEXTRACT\"
 SIXEL=\"$SIXEL\"
-SEMDISTRO=\"$SEMDISTRO\"" > "$CONFDIR/txt/programvariables.txt"
+SEMDISTRO=\"$OS\"" > "$CONFDIR/txt/programvariables.txt"
