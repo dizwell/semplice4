@@ -354,7 +354,7 @@ $SEDPROG -i 's/.\///g' "/$CONFDIR/tmp/cao-files.txt"     # Bit of trimming to re
 
 if [[ $MERGEOK -eq 0 ]]; then                                                  # The merge failed: keep the tracks and remove the faulty SuperFLAC
   rm -f "$MERGEDFILE"
-  dialog --backtitle "Semplice FLAC Merging" --title " SuperFLAC Creation Failure! " --msgbox "\nThe per-track FLACS could not be merged properly: there may be internal corruption preventing this, for example. The superFLAC could therefore not be created.\n\nThe per-track FLACs have, however, been retained." 12 80
+  dialog --backtitle "Semplice FLAC Merging" --title " SuperFLAC Creation Failure! " --msgbox "\nThe per-track FLACs could not be merged properly: there may be internal corruption preventing this, for example. The SuperFLAC could therefore not be created.\n\nThe per-track FLACs have, however, been retained." 12 80
 else
   if [[ $AUTODELETE -eq 0 ]]; then
     dialog --backtitle "Semplice FLAC Merging" --title " Do you want to delete the per-track FLACs listed here? " --extra-button --extra-label "No" --ok-label "Yes" --textbox "$CONFDIR/tmp/cao-files.txt" 16 90
