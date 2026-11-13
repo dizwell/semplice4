@@ -56,6 +56,11 @@ fi
 # Start by checking what operating system we're dealing with, unless we've
 # been told explicitly as part of installer invocation (-d)
 # -----------------------------------------------------------------------------
+# A distro named with -d at install time is saved in programvariables.txt: use it again at every start
+if [[ -z $SEMDISTRO && -f "$CONFDIR/txt/programvariables.txt" ]]; then
+  SEMDISTRO=$(sed -n 's/^SEMDISTRO="\(.*\)"$/\1/p' "$CONFDIR/txt/programvariables.txt")
+fi
+
 if [[ -z $SEMDISTRO ]]; then
   if [[ -f /etc/os-release ]]; then
     . /etc/os-release
@@ -677,4 +682,5 @@ OS_PLATFORM=$OS_PLATFORM
 OS_ARCHITECTURE=$OS_ARCHITECTURE
 SEMARV=\"$SEMARV\"
 SACDEXTRACT=\"$SACDEXTRACT\"
-SIXEL=\"$SIXEL\"" > "$CONFDIR/txt/programvariables.txt"
+SIXEL=\"$SIXEL\"
+SEMDISTRO=\"$SEMDISTRO\"" > "$CONFDIR/txt/programvariables.txt"
