@@ -118,6 +118,11 @@ fi
 function convert_music {
 IN=${INPUTFORMAT,,}
 
+# Start every conversion clean: Semplice runs in one shell, so values left by an earlier conversion
+# (another format's settings, the high-res flags, an earlier album's comment) would otherwise be used here
+BITDEPTH="" BITS="" HIRES=0 XHIRES=0 OUT="" DISPLAYOUT="" LOWPASS="" COMMENT="" DESCRIPTION=""
+PRESERVETAG=()
+
 # If input format is FLAC, preserve existing tags (at least, the ones which
 # ffmpeg will go on to mangle if given a chance
 # -----------------------------------------------------------------------------
