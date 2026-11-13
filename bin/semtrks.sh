@@ -63,13 +63,9 @@ exec 3>&-
 function evaluate_response {
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then                                 # They pressed ESC or Cancel: do nothing
   BREAKME=1
-elif  [[ $exitStatus -eq 3 ]]; then                                                     # They cleared the form: re-display completely blank
-  BREAKME=0
-  rm -f "$CONFDIR/tmp/tracklists.txt" 2>/dev/null
-  display_emptydialog
-  VALUES=$(printf '%s\n' "$VALUES" | to_nfc)                                            # On macOS, force accented characters into composed form
-  echo "$VALUES" > "$CONFDIR/tmp/tracklists.txt"
-  tag_writes
+elif  [[ $exitStatus -eq 3 ]]; then                                                     # They cleared the form: re-display completely blank,
+  display_emptydialog                                                                   # then deal with that form's answer in exactly the same way
+  evaluate_response
 else                                                                                    # They submitted proper track metadata
   BREAKME=0
   rm -f "$CONFDIR/tmp/tracklists.txt" 2>/dev/null
