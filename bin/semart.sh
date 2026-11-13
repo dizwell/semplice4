@@ -59,21 +59,21 @@ function apply_albumart {
 # If the selected album art is internally CMYK, convert it to sRGB, because CYMK files produce weird output with libsixel
 BADIMG=$("$CONVPROG" identify "$ARTFILE" 2>/dev/null | grep CMYK | wc -l)
 if [[ $BADIMG -eq 1 ]]; then
-  "$CONVPROG" "$ARTFILE" -colorspace sRGB "$ARTFILE"
+  "$CONVPROG" "$ARTFILE" -colorspace sRGB "$ARTFILE" 2>/dev/null
 fi
 
 GOODIMG=$("$CONVPROG" identify "$ARTFILE" 2>/dev/null | grep sRGB | wc -l)
 if [[ $GOODIMG -gt 0 ]]; then
-  IFS=" "; read width height < <("$CONVPROG" identify -format "%w %h" "$ARTFILE")
+  IFS=" "; read width height < <("$CONVPROG" identify -format "%w %h" "$ARTFILE" 2>/dev/null)
   if [[ $width -gt $height ]]; then BIGDIMENSION=$width; else BIGDIMENSION=$height; fi
   if [[ $BIGDIMENSION -ge 1400 ]]; then
-    "$CONVPROG" "$ARTFILE" -quality 100 -resize 1400x1400\! /tmp/albumart.jpg   # Resize images if larger than 1400x1400, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize 1400x1400\! /tmp/albumart.jpg 2>/dev/null   # Resize images if larger than 1400x1400, without maintaining aspect ratio
   elif [[ $BIGDIMENSION -ge 900 ]]; then
-    "$CONVPROG" "$ARTFILE" -quality 100 -resize 900x900\! /tmp/albumart.jpg       # Resize images if larger than 900x900, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize 900x900\! /tmp/albumart.jpg 2>/dev/null       # Resize images if larger than 900x900, without maintaining aspect ratio
   elif [[ $BIGDIMENSION -ge 500 ]]; then
-    "$CONVPROG" "$ARTFILE" -quality 100 -resize 500x500\! /tmp/albumart.jpg       # Resize images if larger than 500x500, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize 500x500\! /tmp/albumart.jpg 2>/dev/null       # Resize images if larger than 500x500, without maintaining aspect ratio
   else
-    "$CONVPROG" "$ARTFILE" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg       # No resizing of small images, but squaring it off, without maintaining aspect ratio
+    "$CONVPROG" "$ARTFILE" -quality 100 -resize ${BIGDIMENSION}x${BIGDIMENSION}\! /tmp/albumart.jpg 2>/dev/null       # No resizing of small images, but squaring it off, without maintaining aspect ratio
   fi
   MESSAGE="Applying album art. Please wait... "
   for f in *.flac; do

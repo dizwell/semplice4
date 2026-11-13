@@ -30,7 +30,7 @@ if [[ $(metaflac --list --block-type=PICTURE "$f" 2>/dev/null | wc -l) -eq 0 ]];
 else
   metaflac --export-picture-to="$CONFDIR/art/albumart.jpg" "$f" 2>/dev/null
   ARTEMBEDDED=1
-  "$CONVPROG" "$CONFDIR/art/albumart.jpg" -resize "${ARTSIZE}x${ARTSIZE}!" "$CONFDIR/art/displayalbumart.jpg"
+  "$CONVPROG" "$CONFDIR/art/albumart.jpg" -resize "${ARTSIZE}x${ARTSIZE}!" "$CONFDIR/art/displayalbumart.jpg" 2>/dev/null
 fi
 FILEDEPTH=$(metaflac --show-bps "$f" 2>/dev/null)
 FILESAMPLE=$(metaflac --show-sample-rate "$f" 2>/dev/null)
