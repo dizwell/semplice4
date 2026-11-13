@@ -276,7 +276,9 @@ done
 # avoids a lot of parsing hassles.
 # ------------------------------------------------------------------------------------------
 rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
+TRACKSAMPLES=0                                                                  # Total length of all the tracks, in samples, to check the merge against
 for f in *.flac; do
+  TRACKSAMPLES=$((TRACKSAMPLES + $(metaflac --show-total-samples "$f" 2>/dev/null || echo 0)))
   filename=$(basename "$f")
   albumdir=$(dirname "$(pwd)"/"$f")
   echo "file +^+^+$(pwd)/$filename+^+^+" >> "$CONFDIR/tmp/cao-tracklist.txt"
@@ -288,6 +290,12 @@ $SEDPROG -i "s/+^+^+/'/g" "$CONFDIR/tmp/cao-tracklist.txt"                      
 MESSAGE="Merging files…   "
 "$FFMPEG" -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/cao-tracklist.txt" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
 rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
+
+# The merge worked only if the SuperFLAC is exactly as long as all the tracks put together
+MERGEOK=0
+MERGEDSAMPLES=$(metaflac --show-total-samples "$FILENAME" 2>/dev/null)
+if [[ -s $FILENAME && $TRACKSAMPLES -gt 0 && $MERGEDSAMPLES == "$TRACKSAMPLES" ]]; then MERGEOK=1; fi
+MERGEDFILE="$FILENAME"                                                          # Unescaped name, for removing a failed merge
 
 # And restore the metadata...
 # ------------------------------------------------------------------------------------------
@@ -344,7 +352,10 @@ rm -rf "/$CONFDIR/tmp/cao-files.txt"
 find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' | sort > "/$CONFDIR/tmp/cao-files.txt"
 $SEDPROG -i 's/.\///g' "/$CONFDIR/tmp/cao-files.txt"     # Bit of trimming to remove leading periods and slashes.
 
-if [ $(ls *superflac* | wc -l) -ge 1 ]; then			# If, for any reason, a superflac is not generated, then don't delete the source files!
+if [[ $MERGEOK -eq 0 ]]; then                                                  # The merge failed: keep the tracks and remove the faulty SuperFLAC
+  rm -f "$MERGEDFILE"
+  dialog --backtitle "Semplice FLAC Merging" --title " SuperFLAC Not Created " --msgbox "\nThe per-track FLACs could not be merged properly, so the incomplete SuperFLAC has been removed.\n\nThe per-track FLACs have been kept." 14 80
+else
   if [[ $AUTODELETE -eq 0 ]]; then
     dialog --backtitle "Semplice FLAC Merging" --title " Do you want to delete the per-track FLACs listed here? " --extra-button --extra-label "No" --ok-label "Yes" --textbox "$CONFDIR/tmp/cao-files.txt" 16 90
     exitStatus=$?
@@ -359,11 +370,13 @@ fi
 
 # Now rename the superflac to not be called a SuperFLAC! And tidy up.
 # ------------------------------------------------------------------------------------------
-mv "$FILENAME" "$SAFEALBUMNAME.flac"
-if [[ $NAMEBITS -eq 1 ]]; then
-  BITSUFFIX=$(bits_suffix "$SAFEALBUMNAME.flac")
-  if [[ -n $BITSUFFIX && $SAFEALBUMNAME != *"$BITSUFFIX" ]]; then
-    mv "$SAFEALBUMNAME.flac" "$SAFEALBUMNAME$BITSUFFIX.flac"
+if [[ $MERGEOK -eq 1 ]]; then
+  mv "$MERGEDFILE" "$SAFEALBUMNAME.flac"
+  if [[ $NAMEBITS -eq 1 ]]; then
+    BITSUFFIX=$(bits_suffix "$SAFEALBUMNAME.flac")
+    if [[ -n $BITSUFFIX && $SAFEALBUMNAME != *"$BITSUFFIX" ]]; then
+      mv "$SAFEALBUMNAME.flac" "$SAFEALBUMNAME$BITSUFFIX.flac"
+    fi
   fi
 fi
 
