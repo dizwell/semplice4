@@ -246,10 +246,10 @@ if [[ $COUNTART -gt 0 ]]; then
     ARTWORK="${ARTPNG[0]}"
   fi
 
-  # If the selected album art is internally CMYK, convert it to sRGB, because CYMK files produce weird output with libsixel
-  BADIMG=$("$CONVPROG" identify "$ARTWORK" 2>/dev/null | grep CMYK | wc -l)
-  if [[ $BADIMG -ne 0 ]]; then
-    "$CONVPROG" "$ARTWORK" -colorspace sRGB "$ARTWORK" 2>/dev/null
+  # If the selected album art is not sRGB (CMYK, which displays strangely with libsixel, or greyscale, which
+  # would otherwise be skipped), convert it to sRGB. TrueColor stops ImageMagick storing a grey picture as Gray again.
+  if [[ $("$CONVPROG" identify -format "%[colorspace]" "$ARTWORK[0]" 2>/dev/null) != "sRGB" ]]; then
+    "$CONVPROG" "$ARTWORK" -colorspace sRGB -type TrueColor "$ARTWORK" 2>/dev/null
   fi
 
   GOODIMG=$("$CONVPROG" identify "$ARTWORK" 2>/dev/null | grep sRGB | wc -l)
