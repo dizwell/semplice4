@@ -231,21 +231,20 @@ done
 }
 
 function auto_albumart {
-COUNTART=0
-COUNTJPG=$(ls *.jpg 2>/dev/null | wc -l); COUNTPNG=$(ls *.png 2>/dev/null | wc -l); COUNTJPEG=$(ls *.jpeg 2>/dev/null | wc -l);  COUNTART=$((COUNTJPG+COUNTPNG+COUNTJPEG))
+# Find album art whatever the case of its extension (.jpg, .JPG, .Jpg, .PnG...). JPG wins over JPEG, which wins over PNG.
+shopt -s nullglob nocaseglob
+ARTJPG=(*.jpg); ARTJPEG=(*.jpeg); ARTPNG=(*.png)
+shopt -u nullglob nocaseglob
+COUNTART=$(( ${#ARTJPG[@]} + ${#ARTJPEG[@]} + ${#ARTPNG[@]} ))
 if [[ $COUNTART -gt 0 ]]; then
-  # We have some album art present. Check it's good, resize it if so, then tag the FLACs with it. Use JPGs in preference to PNGs
-  # There are several scenarios:
-
-  if [[ $COUNTJPG -gt 0 && $COUNTPNG -eq 0 && $COUNTJPEG -eq 0 ]]; then ARTXTENSION="jpg"; fi      # Only a JPG        - JPG wins
-  if [[ $COUNTJPG -eq 0 && $COUNTPNG -gt 0 && $COUNTJPEG -eq 0 ]]; then ARTXTENSION="png"; fi      # Only a PNG        - PNG wins
-  if [[ $COUNTJPG -eq 0 && $COUNTPNG -eq 0 && $COUNTJPEG -gt 0 ]]; then ARTXTENSION="jpeg"; fi     # Only a JPEG       - JPEG wins
-  if [[ $COUNTJPG -gt 0 && $COUNTPNG -gt 0 && $COUNTJPEG -eq 0 ]]; then ARTXTENSION="jpg"; fi      # A PNG and a JPG   - JPG wins
-  if [[ $COUNTJPG -eq 0 && $COUNTPNG -gt 0 && $COUNTJPEG -gt 0 ]]; then ARTXTENSION="jpeg"; fi     # A PNG and a JPEG  - JPEG wins
-  if [[ $COUNTJPG -gt 0 && $COUNTPNG -eq 0 && $COUNTJPEG -gt 0 ]]; then ARTXTENSION="jpg"; fi      # A JPG and a JPEG  - JPG wins
-  if [[ $COUNTJPG -gt 0 && $COUNTPNG -eq 0 && $COUNTJPEG -gt 0 ]]; then ARTXTENSION="jpg"; fi      # One of everything - JPG wins
-  if [[ $COUNTJPG -gt 0 && $COUNTPNG -gt 0 && $COUNTJPEG -gt 0 ]]; then ARTXTENSION="jpg"; fi      # One of everything - JPG wins
-  ARTWORK=$(ls *.$ARTXTENSION | head -1)
+  # We have some album art present. Check it's good, resize it if so, then tag the FLACs with it.
+  if [[ ${#ARTJPG[@]} -gt 0 ]]; then
+    ARTWORK="${ARTJPG[0]}"
+  elif [[ ${#ARTJPEG[@]} -gt 0 ]]; then
+    ARTWORK="${ARTJPEG[0]}"
+  else
+    ARTWORK="${ARTPNG[0]}"
+  fi
 
   # If the selected album art is internally CMYK, convert it to sRGB, because CYMK files produce weird output with libsixel
   BADIMG=$("$CONVPROG" identify "$ARTWORK" 2>/dev/null | grep CMYK | wc -l)
