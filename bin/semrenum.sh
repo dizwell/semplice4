@@ -18,13 +18,10 @@ fi
 
 USRNUM=$(dialog --backtitle "Semplice FLAC Tagging" --title " Renumbering tracks " --inputbox "\n\nEnter a starting track number, between 1 and 99:" 12 90 3>&1 1>&2 2>&3 3>&-)
 exitStatus=$?
-if [[ $exitStatus -eq 1 ]]; then
-  RENUM_START=1
-else
-  RENUM_START=$USRNUM
-fi
+if [[ $exitStatus -ne 0 ]]; then return; fi                                        # Cancel or Esc: leave everything as it is
+RENUM_START=$USRNUM
 
-if [[ -z $RENUM_START ]]; then RENUM_START=1; fi                                 # If they cancel, set to 0
+if [[ -z $RENUM_START ]]; then RENUM_START=1; fi                                 # OK with an empty box: start from 1
 if [[ $RENUM_START == *"+"* ]]; then RENUM_START="${RENUM_START//+}"; fi         # If they supply a "+", strip it
 if [[ $RENUM_START == *"-"* ]]; then RENUM_START="${RENUM_START//-}"; fi         # If they supply a "-", strip it
 
