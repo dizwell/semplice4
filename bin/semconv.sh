@@ -316,7 +316,7 @@ fi
 
 if [[ ${#NOTCONVERTED[@]} -gt 0 ]]; then                                  # Name only the first failed file, as the corrupt-file warning does
   KEPTMSG="\nAt least one source file did not convert properly, so it has not been deleted:\n\n${NOTCONVERTED[0]}"
-  if [[ ${#NOTCONVERTED[@]} -gt 1 ]]; then KEPTMSG+="\n\nAny other files that failed have also been kept."; fi
+  if [[ ${#NOTCONVERTED[@]} -gt 1 ]]; then KEPTMSG+="\n\nAny other files that failed have also been retained on disk."; fi
   dialog --stdout --backtitle "Semplice Audio Conversion" --title " Some Files Were Not Converted " --msgbox "$KEPTMSG" 14 80
 fi
 
