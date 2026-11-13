@@ -52,10 +52,10 @@ if (( $(echo "scale=4; $CANDIDATE_BOOST > 8.0" | bc -l) )); then CANDIDATE_BOOST
 
 if [[ -z $CANDIDATE_BOOST ]]; then
   BOOSTPERFORMED=0; CANBEBOOSTED=0
-  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "\\nNo files can be volume boosted." 11 80
+  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "\\nNo files can be volume boosted." 14 80
 elif (( $(echo "scale=4; $CANDIDATE_BOOST <= 0.5" | bc -l) )); then
   BOOSTPERFORMED=0; CANBEBOOSTED=0
-  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "\\nNo significant volume boost can be applied to this set of files." 11 80
+  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "\\nNo significant volume boost can be applied to this set of files." 14 80
 elif (( $(echo "scale=4; $CANDIDATE_BOOST > 0.5" | bc -l) )); then
   CANDIDATE_BOOST=$(echo "scale=4; $CANDIDATE_BOOST-0.5" | bc)                           # Knocking off ½dB from the adjustment, just to be certain we don't propose to distort
   if (( $(echo "scale=4; $CANDIDATE_BOOST < 1" | bc -l) )); then
@@ -63,7 +63,7 @@ elif (( $(echo "scale=4; $CANDIDATE_BOOST > 0.5" | bc -l) )); then
   else
     DISPCANDIDATE_BOOST="+$CANDIDATE_BOOST"
   fi
-  dialog --backtitle "Semplice FLAC Volume Boosting" --title " Non-distorting Volume Boost Possible " --yes-label " Go ahead and boost " --no-label " Quit without boosting " --yesno "\nThe loudest FLAC in this folder is: \n\n  $CANDIDATE_FILE\n\nThat and all other FLACs in this folder can be safely volume-boosted by $DISPCANDIDATE_BOOST dB.\n\nDo you want to apply that volume boost or not?" 13 95
+  dialog --backtitle "Semplice FLAC Volume Boosting" --title " Non-distorting Volume Boost Possible " --yes-label " Go ahead and boost " --no-label " Quit without boosting " --yesno "\nThe loudest FLAC in this folder is: \n\n  $CANDIDATE_FILE\n\nThat and all other FLACs in this folder can be safely volume-boosted by $DISPCANDIDATE_BOOST dB.\n\nDo you want to apply that volume boost or not?" 14 80
   exitStatus=$?   # 0 means user hit [yes] button. 1 means user hit [no] button. 255 means user hit [Esc] key.
   if [[ $exitStatus -eq 0 ]]; then CANBEBOOSTED=1; fi
   if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then CANBEBOOSTED=0; fi
@@ -109,7 +109,7 @@ fi
 
 function perform_cleanup {
 if [[ $BOOSTPERFORMED -eq 1 ]]; then                                   # Ditto! Don't even offer to delete anything if you haven't actually volume-boosted something
-  dialog --backtitle "Semplice FLAC Volume Boosting" --title " Do you want to delete the original FLACs? " --yesno "\nVolume boosting is complete. Do you wish to now delete the original FLACs?" 9 80
+  dialog --backtitle "Semplice FLAC Volume Boosting" --title " Do you want to delete the original FLACs? " --yesno "\nVolume boosting is complete. Do you wish to now delete the original FLACs?" 14 80
   exitStatus=$?
   if [[ $exitStatus -eq 0 ]]; then DELETESOURCE=1; fi
   if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then DELETESOURCE=0; fi
@@ -131,9 +131,9 @@ metaflac --add-replay-gain *.flac 2>/dev/null & spinner $!
 f=$(ls *.flac 2>/dev/null | head -1)
 ALBUMGAIN=$(get_tag REPLAYGAIN_ALBUM_GAIN "$f")
 if [[ -n $ALBUMGAIN ]]; then
-  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Applied " --msgbox "\nMetadata volume boost successfully applied.\n\nThe calculated album gain is: $ALBUMGAIN\n\nClick OK to return to the main program menu." 11 80
+  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Applied " --msgbox "\nMetadata volume boost successfully applied.\n\nThe calculated album gain is: $ALBUMGAIN\n\nClick OK to return to the main program menu." 14 80
 else
-  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nThe ReplayGain metadata could not be added, so no volume boost has been applied.\n\nClick OK to return to the main program menu." 10 80
+  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nThe ReplayGain metadata could not be added, so no volume boost has been applied.\n\nClick OK to return to the main program menu." 14 80
 fi
 }
 
@@ -153,7 +153,7 @@ dialog \
     --default-button "$DEFAULT" \
     --yes-label " Real (Physical)" \
     --no-label " Metadata (ReplayGain) " \
-    --yesno "\nThe currently configured default volume boosting mechanism is '$METAVOL' $XTRATXT.\n\nDo you wish to use this option now, or adopt the alternative method instead?\n\nYou can also press ESC to cancel without volume boosting at all." 14 90
+    --yesno "\nThe currently configured default volume boosting mechanism is '$METAVOL' $XTRATXT.\n\nDo you wish to use this option now, or adopt the alternative method instead?\n\nYou can also press ESC to cancel without volume boosting at all." 14 80
 case $? in
     0) BOOSTTYPE="real" ;;
     1) BOOSTTYPE="metadata" ;;
@@ -168,14 +168,14 @@ if [[ $BOOSTTYPE == "real" ]]; then
   fi
   perform_cleanup
   if [[ $BOOSTPERFORMED -eq 1 ]]; then
-    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "All FLACs have been volume-boosted: \n\nClick OK to return to the main program menu." 8 80
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "All FLACs have been volume-boosted: \n\nClick OK to return to the main program menu." 14 80
   else
-    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "No files have been modified: \n\nClick OK to return to the main program menu." 8 80
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "No files have been modified: \n\nClick OK to return to the main program menu." 14 80
   fi
   rm -f volumes.txt >/dev/null
 elif [[ $BOOSTTYPE == "metadata" ]]; then							#We will add REPLAYGAIN metadata instead of doing a physical volume boost
   perform_replaygain
 else
-  dialog --backtitle "Semplice Volume Boosting" --title " Volume Boosting Cancelled " --msgbox "\nYou pressed ESC, so no volume boosting has been performed.\n\nClick OK to return to the main menu." 8 80
+  dialog --backtitle "Semplice Volume Boosting" --title " Volume Boosting Cancelled " --msgbox "\nYou pressed ESC, so no volume boosting has been performed.\n\nClick OK to return to the main menu." 14 80
   return	
 fi
