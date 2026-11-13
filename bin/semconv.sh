@@ -268,27 +268,57 @@ elif [[ $INPUTFORMAT != "ISO" ]]; then           # ISOs were dealt with above
   fi
 fi
 
-# The DSFs extracted from an ISO are intermediate files, and intermediate files are always deleted
+# The DSFs extracted from an ISO are intermediate files, and intermediate files are always deleted.
+# Before they go, note whether every one of them produced a non-empty output: only then may the ISO itself be deleted
+ISOOUTPUTSOK=1
 if [[ $INPUTFORMAT == "ISO" ]]; then
+  EXTRACTED=0
   for f in *.dsf; do
-    [[ -f $f && " ${PREDSF[*]} " != *" $f "* ]] && rm -f "$f"
+    [[ -f $f && " ${PREDSF[*]} " != *" $f "* ]] || continue
+    EXTRACTED=$((EXTRACTED+1))
+    [[ -s "${f%.*}$BITS.$OUT" ]] || ISOOUTPUTSOK=0
+    rm -f "$f"
   done
+  if [[ $EXTRACTED -eq 0 ]]; then ISOOUTPUTSOK=0; fi                    # Nothing came out of the ISO at all
 fi
 
+# If asked, delete the source files: but each one only if its own output exists and isn't empty.
+# Any source whose conversion failed is kept, and listed at the end.
+NOTCONVERTED=()
 if [[ $AUDIOIN_DELETION == "1" ]]; then
   if [[ $INPUTFORMAT == "ISO" ]]; then			# The ISO is a source file only if "Treat SACD ISOs as source files" is also yes
-    if [[ $ISO_AS_SOURCE == "1" ]]; then rm -f *.iso; fi
-  elif [[ $INPUTFORMAT == "WMA" || $INPUTFORMAT == "OGG" || $INPUTFORMAT == "MP3" ]]; then
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x rm -rf {} \;
-  elif [[ $INPUTFORMAT == "AIFF" ]]; then
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e aif -e aiff -e aifc -x rm -rf {} \;
-  elif [[ $BITS != "-16" && $BITS != "-24" ]]; then
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x rm -rf {} \;             # if asked, delete the input files
-  elif [[ $BITS = "-24" ]]; then
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -E "*-24.*" -x rm -rf {} \; # flacs that were converted to 24-bit flacs, only delete the non-24-bit ones.
-  elif [[ $BITS = "-16" ]]; then
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -E "*-16.*" -x rm -rf {} \; # flacs that were converted to 16-bit flacs, only delete the non-16-bit ones.
+    if [[ $ISO_AS_SOURCE == "1" ]]; then
+      if [[ $ISOOUTPUTSOK -eq 1 ]]; then
+        rm -f *.iso
+      else
+        for f in *.iso; do [[ -f $f ]] && NOTCONVERTED+=("$f"); done
+      fi
+    fi
+  else
+    if [[ $INPUTFORMAT == "AIFF" ]]; then EXTS=(aif aiff aifc); else EXTS=("$IN"); fi
+    shopt -s nullglob nocaseglob
+    for e in "${EXTS[@]}"; do
+      for f in *."$e"; do
+        [[ -f $f ]] || continue
+        if [[ $BITS == "-16" && $f == *-16.* ]]; then continue; fi        # Converting FLACs to 16-bit FLACs: the -16 files are the new ones
+        if [[ $BITS == "-24" && $f == *-24.* ]]; then continue; fi        # Likewise for 24-bit
+        if [[ ${f%.*}$BITS.$OUT == "$f" ]]; then continue; fi               # Same format in and out (e.g. MP3 to MP3): the source is the output, so keep it
+        if [[ -s "${f%.*}$BITS.$OUT" ]]; then
+          rm -f "$f"
+        else
+          NOTCONVERTED+=("$f")
+        fi
+      done
+    done
+    shopt -u nullglob nocaseglob
   fi
+fi
+
+if [[ ${#NOTCONVERTED[@]} -gt 0 ]]; then
+  KEPTLIST=""
+  for ((k=0; k<${#NOTCONVERTED[@]} && k<6; k++)); do KEPTLIST+="\n  ${NOTCONVERTED[k]}"; done
+  if [[ ${#NOTCONVERTED[@]} -gt 6 ]]; then KEPTLIST+="\n  ...and $(( ${#NOTCONVERTED[@]} - 6 )) more"; fi
+  dialog --stdout --backtitle "Semplice Audio Conversion" --title " Some Files Were Not Converted " --msgbox "\nThese source files did not convert properly, so they have not been deleted:\n$KEPTLIST" 16 80
 fi
 
 # Make sure we put comments back, for all FLAC outputs (standard, hi-res and super hi-res). The first source
