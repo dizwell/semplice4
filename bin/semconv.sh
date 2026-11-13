@@ -314,11 +314,10 @@ if [[ $AUDIOIN_DELETION == "1" ]]; then
   fi
 fi
 
-if [[ ${#NOTCONVERTED[@]} -gt 0 ]]; then
-  KEPTLIST=""
-  for ((k=0; k<${#NOTCONVERTED[@]} && k<6; k++)); do KEPTLIST+="\n  ${NOTCONVERTED[k]}"; done
-  if [[ ${#NOTCONVERTED[@]} -gt 6 ]]; then KEPTLIST+="\n  ...and $(( ${#NOTCONVERTED[@]} - 6 )) more"; fi
-  dialog --stdout --backtitle "Semplice Audio Conversion" --title " Some Files Were Not Converted " --msgbox "\nThese source files did not convert properly, so they have not been deleted:\n$KEPTLIST" 16 80
+if [[ ${#NOTCONVERTED[@]} -gt 0 ]]; then                                  # Name only the first failed file, as the corrupt-file warning does
+  KEPTMSG="\nAt least one source file did not convert properly, so it has not been deleted:\n\n${NOTCONVERTED[0]}"
+  if [[ ${#NOTCONVERTED[@]} -gt 1 ]]; then KEPTMSG+="\n\nAny other files that failed have also been kept."; fi
+  dialog --stdout --backtitle "Semplice Audio Conversion" --title " Some Files Were Not Converted " --msgbox "$KEPTMSG" 14 80
 fi
 
 # Make sure we put comments back, for all FLAC outputs (standard, hi-res and super hi-res). The first source
