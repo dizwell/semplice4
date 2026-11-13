@@ -145,6 +145,7 @@ fi
 function downloads {
 # Fetch Semplice components: BIN files first
 components=(semart.sh semcaom.sh semcaos.sh semclean.sh semcolour.sh semconf.sh semconv.sh semcuee.sh semcus.sh semdevpick.sh semdir.sh semfunctions.sh semmaxv.sh semmeta.sh semparse.sh semquit.sh semrenum.sh semrip.sh semsacd.sh semspec.sh semspin.sh semtags.sh semtput.sh semtrks.sh semxart.sh semoscheck.sh semmenudraw.sh semmenuoptions.sh)
+BINCOMPONENTS=("${components[@]}")                                  # Remembered for the final installation check
 total=${#components[@]}
 count=0
 
@@ -507,9 +508,10 @@ EOF
     
   # 8. Assess state of installation and advise accordingly
   # -----------------------------------------------------
-  COUNTBIN=$(ls "$CONFDIR"/bin/*.sh 2>/dev/null | wc -l)
+  BINMISSING=0                                                       # Every script in the bin components list must be present
+  for c in "${BINCOMPONENTS[@]}"; do [[ -f $CONFDIR/bin/$c ]] || BINMISSING=1; done
   COUNTEXC=$(( $(ls /usr/local/bin/semplice4.sh 2>/dev/null | wc -l) + $(ls /usr/bin/semplice4.sh 2>/dev/null | wc -l) ))
-  if [[ $COUNTBIN -eq 27 ]]; then COUNTBINOK=1; else COUNTBINOK=0; fi
+  if [[ $BINMISSING -eq 0 ]]; then COUNTBINOK=1; else COUNTBINOK=0; fi
   if [[ $COUNTEXC -eq 1 ]]; then COUNTXECOK=1; else COUNTXECOK=0; fi
   if [[ $COUNTBINOK -eq 1 && $COUNTXECOK -eq 1 ]]; then BASICINSTALLOK=1; else BASICINSTALLOK=0; fi
   
