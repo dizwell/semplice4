@@ -36,7 +36,17 @@ if [[ $RENUM_START -lt 1 || $RENUM_START -gt 99 ]]; then RENUM_START=1; fi      
 
 TRACKNO=$RENUM_START
 
+# First pass: give every FLAC a unique temporary name, in its current order. New names are built from
+# the titles, so two tracks with the same title (or none) could otherwise land on a file not yet renamed.
+TMPNUM=0
 for f in *.flac; do
+  TMPNUM=$((TMPNUM+1))
+  mv -n "$f" "$(printf "semrenum-tmp-%03d" "$TMPNUM").flac.renum" 2>/dev/null
+done
+
+# Second pass: every final name carries a different track number, so nothing can be overwritten
+for f in semrenum-tmp-*.flac.renum; do
+  [[ -f $f ]] || continue
   tag=TRACKNUMBER;metaflac $UTFCHARS "--remove-tag=$tag" "$f"
   tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$TRACKNO" "$f"
 
@@ -50,6 +60,6 @@ for f in *.flac; do
   if [[ $NAMEBITS -eq 1 ]]; then                                                 # Keep the bit-depth and sample rate in the name, if the configuration says to (as tagging does)
     BITSUFFIX=$(bits_suffix "$f")
   fi
-  mv -f "$f" "$(printf "%02d" "$TRACKNO") - $FILETITLE$BITSUFFIX.flac" 2>/dev/null
+  mv -n "$f" "$(printf "%02d" "$TRACKNO") - $FILETITLE$BITSUFFIX.flac" 2>/dev/null
   TRACKNO=$((TRACKNO+1))
 done
