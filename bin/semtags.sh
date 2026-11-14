@@ -59,26 +59,8 @@ elif [[ $exitStatus -eq 255 ]]; then
   BREAKME=1
 fi
 
-function album_prompt {
-# If the metadata option has been taken, read metadata from first FLAC in folder and use that as prompts.
-# If the prior submission option has been taken, read that prior submission and use that to prompt.
-
-if [[ $READMETA -eq 1 ]]; then
-  if [[ $GUESSME -eq 0 ]]; then
-    f=$($FDPROG -g "*.flac" | sort | head -n 1)
-    NEWCOMPOSER=$(get_tag Artist "$f")
-    NEWCOMPOSITION=$(get_tag Album "$f")
-    NEWPERFORMER=$(get_tag Performer "$f")
-    NEWGENRE=$(get_tag Genre "$f")
-    NEWYEAR=$(get_tag Date "$f")    
-  else
-    unset NEWCOMPOSER
-    unset NEWCOMPOSITION
-    unset NEWPERFORMER
-    unset NEWGENRE
-    unset NEWYEAR
-  fi
-
+function guess_from_folder {
+# Fill any blank recording-wide values by guessing from the folder name
   if [[ -z $NEWCOMPOSITION ]]; then  NEWCOMPOSITION=$(basename "$(pwd)"); fi
 
   # Guess the recording year and distinguished artist from the folder name,
@@ -114,6 +96,23 @@ if [[ $READMETA -eq 1 ]]; then
       *MASS* ) NEWGENRE="Choral";;
     esac
   fi
+}
+
+function album_prompt {
+# If the metadata option has been taken, read metadata from first FLAC in folder and use that as prompts.
+# If the prior submission option has been taken, read that prior submission and use that to prompt.
+
+if [[ $GUESSME -eq 1 ]]; then                                          # Auto-guess: start blank and guess everything from the folder name,
+  unset NEWCOMPOSER NEWCOMPOSITION NEWPERFORMER NEWGENRE NEWYEAR        # whichever source of prompts was chosen
+  guess_from_folder
+elif [[ $READMETA -eq 1 ]]; then
+  f=$($FDPROG -g "*.flac" | sort | head -n 1)
+  NEWCOMPOSER=$(get_tag Artist "$f")
+  NEWCOMPOSITION=$(get_tag Album "$f")
+  NEWPERFORMER=$(get_tag Performer "$f")
+  NEWGENRE=$(get_tag Genre "$f")
+  NEWYEAR=$(get_tag Date "$f")
+  guess_from_folder                                                     # Fill in anything the existing metadata lacks
 elif [[ $READPRIOR -eq 1 ]]; then                                     # 'Reuse previous submission' was chosen: load it from prior.txt
   unset NEWCOMPOSER NEWCOMPOSITION NEWPERFORMER NEWGENRE NEWYEAR        # Never show values left over in memory from an earlier tagging
   if [[ -f $CONFDIR/txt/prior.txt ]]; then
