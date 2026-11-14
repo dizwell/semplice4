@@ -185,19 +185,13 @@ if [[ -z $ORIG_DIR ]]; then ORIG_DIR=$(pwd); fi                            # Whe
 # -----------------------------------------------------------------------------------------
 STARTARRAY=($(cat $CONFDIR/tmp/trackrange.txt))                            # Create an array of start-stop track ranges
 COUNTOFRECORDS=${#STARTARRAY[@]}                                           # Count total number of elements in array, so we know how many times to loop
-FOLDERCOUNT=$(find "$THISRIP_FOLDER"/* -maxdepth 0 -type d 2>/dev/null | wc -l)
-
-if [[ $FOLDERCOUNT -gt 0 ]]; then
-  FOLDERNUMS=("$THISRIP_FOLDER"/*)                                         # Fill an array with the names of sub-folders, now we know they exist
-  FOLDERNUMS="${FOLDERNUMS[-1]##*/}"                                       # obtain the folder with the largest number
-  FOLDERNUMS=${FOLDERNUMS: -2}                                             # return its last two digits
-  if [[ ${FOLDERNUMS:0:1} -eq 0 ]]; then                                     # convert 07 for example into plain '7'; 2 digit numbers are left alone
-    FOLDERNUMS=${FOLDERNUMS:1:1}
-  fi
-  COUNTER=$((FOLDERNUMS+1));                                               # Start counting from one more than the last folder found
-else
-  COUNTER=1                                                                # Since there are no sub-folders, just start counting at 1
-fi
+COUNTER=1                                                                  # Start one above the highest existing RIP_nn folder (or at 1 if there are none).
+for d in "$THISRIP_FOLDER"/RIP_[0-9]*; do                                  # Only folders named RIP_ plus digits count: stray files are ignored
+  [[ -d $d ]] || continue
+  n=${d##*/RIP_}
+  [[ $n =~ ^[0-9]+$ ]] || continue
+  if (( 10#$n >= COUNTER )); then COUNTER=$((10#$n + 1)); fi
+done
 
 # Now we iterate through the rip ranges, creating appropriate sub-folders to house each of them
 # -----------------------------------------------------------------------------------------
@@ -356,7 +350,6 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
   rm -f "$CONFDIR/rip"/*.wav 2>/dev/null                                 # Clear any WAVs an interrupted rip left behind, so the AccurateRip check sees only this disc
   perform_rip
   if [[ $RIPCANCELLED -eq 1 ]]; then tput cvvis; return; fi               # The rip folder could not be used: back to the Ripping menu
-  convert_to_flac
 
   # If hyper-accurate rips are switched on, then there's no point comparing this rip with
   # anything in the AccurateRip database. Only do the comparison if hyper_accurate is off AND
@@ -380,7 +373,6 @@ if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
           RIPMODE="safe"; FASTFLAG=""; RIPMODETEXT="safe mode"                              # For this re-rip only: the configuration is not changed
           rip_recordings
           if [[ $RIPCANCELLED -eq 0 ]]; then
-            convert_to_flac
             verify_rip
             echo "" >> "$CONFDIR/rip/ripaccuracy.txt"
             echo "Ripping done with command: cdparanoia -B -e -d $OPTICAL_DEVICE --never-skip=$READ_RETRIES -O $DEVICE_OFFSET" >> "$CONFDIR/rip/ripaccuracy.txt"
