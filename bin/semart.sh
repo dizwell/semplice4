@@ -45,13 +45,12 @@ fi
 function file_prompt {
 ARTFILE=$(dialog --backtitle "Semplice FLAC Tagging"  --stdout --title " Pick a JPG or PNG album art file " --fselect "$CURDIR" 12 90)
 exitStatus=$?
-if [[ $exitStatus -eq 255 ]]; then smenuoptions tag; fi
-if [[ $exitStatus -eq 1 ]]; then
+if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then                         # Cancel or Esc: no art chosen
   GOODART=0
 elif [[ "${ARTFILE^^}" == *"JPG"* || "${ARTFILE^^}" == *"JPEG"* || "${ARTFILE^^}" == *"PNG"* ]]; then
   GOODART=1
 else
-  dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "Embedded album art needs to be supplied in JPG or PNG format only!" 8 80
+  dialog --stdout --backtitle "Semplice FLAC Tagging" --msgbox "Embedded album art needs to be supplied in JPG or PNG format only!" 8 80
 fi
 }
 
