@@ -359,7 +359,6 @@ else
   if [[ $AUTODELETE -eq 0 ]]; then
     dialog --backtitle "Semplice FLAC Merging" --title " Do you want to delete the per-track FLACs listed here? " --extra-button --extra-label "No" --ok-label "Yes" --textbox "$CONFDIR/tmp/cao-files.txt" 16 90
     exitStatus=$?
-    if [[ $exitStatus -eq 255 || $exitStatus -eq 3 ]]; then break; fi     # Don't do anything if they hit ESC to cancel, or answer 'No'
     if [[ $exitStatus -eq 0 ]]; then                                          # True if they've taken the 'Yes' option
       find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' -exec rm -- '{}' +
     fi
