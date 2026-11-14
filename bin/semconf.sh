@@ -46,7 +46,7 @@ if [[ -f "$CONFFILE" ]]; then
   confqual=$(cat "$CONFFILE" | $GREPPROG -i AUDIO_QUALITY= | awk -F= '{print $2}'); if [[ -z $confqual ]]; then confqual='4'; fi
   confaudiodel=$(cat "$CONFFILE" | $GREPPROG -i AUDIOIN_DELETION= | awk -F= '{print $2}'); if [[ -z $confaudiodel ]]; then confaudiodel='no'; fi
   confisosrc=$(cat "$CONFFILE" | $GREPPROG -i ISO_AS_SOURCE= | awk -F= '{print $2}'); if [[ -z $confisosrc ]]; then confisosrc='no'; fi
-  confwkdir=$(cat "$CONFFILE" | $GREPPROG -i RIP_FOLDER= | awk -F= '{print $2}'); if [[ -z $confwkdir ]]; then confwkdir='$HOME/Music'; fi
+  confwkdir=$(cat "$CONFFILE" | $GREPPROG -i RIP_FOLDER= | awk -F= '{print $2}'); confwkdir=${confwkdir//\"/}; confwkdir=${confwkdir//\'/}; if [[ -z $confwkdir ]]; then confwkdir='$HOME/Music'; fi   # Shown without quotes
   confmetavol=$(cat "$CONFFILE" | $GREPPROG -i METAVOL= | awk -F= '{print $2}'); if [[ -z $confmetavol ]]; then confmetavol='real'; fi
   confartsize=$(cat "$CONFFILE" | $GREPPROG -i ARTSIZE= | awk -F= '{print $2}'); if [[ -z $confartsize ]]; then confartsize=380; fi
   conflogosize=$(cat "$CONFFILE" | $GREPPROG -i LOGOSIZE= | awk -F= '{print $2}'); if [[ -z $conflogosize ]]; then conflogosize=110; elif [[ $conflogosize == *"x"* ]]; then conflogosize=$(echo "$conflogosize" | awk -Fx '{print $1}'); fi
@@ -70,7 +70,7 @@ CONFHYPER="${ripparams[2]}"; if [[ -z $CONFHYPER ]]; then CONFHYPER="no"; fi
 CONFRETRIES="${ripparams[3]}"; if [[ -z $CONFRETRIES ]]; then CONFRETRIES=40; fi
 CONFFLAC="${ripparams[4]}"; if [[ -z $CONFFLAC ]]; then CONFFLAC="standard"; fi
 CONFDELETE="${ripparams[5]}"; if [[ -z $CONFDELETE ]]; then CONFDELETE="yes"; fi
-CONFWKDIR="${ripparams[6]}"; if [[ -z $CONFWKDIR ]]; then CONFWKDIR='$HOME/Music'; fi
+CONFWKDIR="${ripparams[6]}"; CONFWKDIR=${CONFWKDIR//\"/}; CONFWKDIR=${CONFWKDIR//\'/}; if [[ -z $CONFWKDIR ]]; then CONFWKDIR='$HOME/Music'; fi
 CONFRIPMODE="${ripparams[7]}"
 if [[ ${CONFRIPMODE,,} == "safe" || ${CONFRIPMODE,,} == "fast" ]]; then CONFRIPMODE=${CONFRIPMODE,,}; else CONFRIPMODE="fast"; fi   # Anything but 'safe' means fast (the default)
 
@@ -254,7 +254,7 @@ HYPER_ACCURATERIP=$CONFHYPER
 READ_RETRIES=$CONFRETRIES
 FLAC_QUALITY=$CONFFLAC
 DELETE_WAV=$CONFDELETE
-RIP_FOLDER=$CONFWKDIR
+RIP_FOLDER=\"$CONFWKDIR\"
 RIPMODE=$CONFRIPMODE
 
 # Parameters controlling FLAC tagging
