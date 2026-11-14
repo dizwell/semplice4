@@ -353,6 +353,7 @@ else
 fi
 
 if [[ $NODEVICE -eq 0 && $RIPCANCELLED -eq 0 ]]; then
+  rm -f "$CONFDIR/rip"/*.wav 2>/dev/null                                 # Clear any WAVs an interrupted rip left behind, so the AccurateRip check sees only this disc
   perform_rip
   if [[ $RIPCANCELLED -eq 1 ]]; then tput cvvis; return; fi               # The rip folder could not be used: back to the Ripping menu
   convert_to_flac
