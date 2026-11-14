@@ -85,7 +85,7 @@ if [[ $1 == "tag" ]]; then
     W|w ) source "$CONFDIR/bin/semdir.sh" flaconly; cd "$WORKINGDIR"; smenuoptions tag ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions tag;;
-    X|x ) clear; exit 0 ;;
+    X|x ) exit_program ;;                      # Same tidy exit as Ctrl+C (no tag cleaning)
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
     S|s ) MENUNAV=1; smenuoptions super;;
@@ -137,7 +137,7 @@ elif [[ $1 == "audio" ]]; then
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions audio;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions audio;;
-    X|x ) clear; exit 0 ;;
+    X|x ) exit_program ;;                      # Same tidy exit as Ctrl+C (no tag cleaning)
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
     S|s ) MENUNAV=1; smenuoptions super;;
@@ -185,7 +185,7 @@ elif [[ $1 == "super" ]]; then
     W|w ) source "$CONFDIR/bin/semdir.sh" flaconly; cd "$WORKINGDIR"; smenuoptions super ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions super;;
-    X|x ) clear; exit 0 ;;
+    X|x ) exit_program ;;                      # Same tidy exit as Ctrl+C (no tag cleaning)
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
     S|s ) MENUNAV=1; smenuoptions super;;
@@ -233,7 +233,7 @@ elif [[ $1 == "rip" ]]; then
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions rip ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions rip;;
-    X|x ) clear; exit 0 ;;
+    X|x ) exit_program ;;                      # Same tidy exit as Ctrl+C (no tag cleaning)
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
     S|s ) MENUNAV=1; smenuoptions super;;
@@ -291,7 +291,7 @@ elif [[ $1 == "misc" ]]; then
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions misc ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions misc;;
-    X|x ) clear; exit 0 ;;
+    X|x ) exit_program ;;                      # Same tidy exit as Ctrl+C (no tag cleaning)
     R|r ) MENUNAV=1; smenuoptions rip;;
     T|t ) MENUNAV=1; smenuoptions tag;;
     S|s ) MENUNAV=1; smenuoptions super;;
@@ -320,7 +320,7 @@ elif [[ $1 == "quit" ]]; then
   tput cup 8 4; tput setaf $MAINTEXT; echo -e "1) Quit with Post-Processing"
   tput cup 9 4; echo "2) Quit with no file processing"
   
-  until [[ $option == "W" ]]; do
+  while true; do                                   # Only the listed keys do anything here
   tput cup 25 4; tput setaf $MAINTEXT; echo -n "Type a menu item: "; tput setaf $SPINNER;
   tput cup 25 24; tput cvvis; read -n 1 -s -r option
   if [[ $option == $escape_char ]]; then
@@ -335,7 +335,7 @@ elif [[ $1 == "quit" ]]; then
     S|s ) MENUNAV=1; smenuoptions super;;
     A|a ) MENUNAV=1; smenuoptions audio;;
     M|m ) MENUNAV=1; smenuoptions misc;;
-    X|x ) clear; exit 0 ;;
+    X|x ) exit_program ;;                      # Same tidy exit as Ctrl+C (no tag cleaning)
     Q|q ) MENUNAV=1; smenuoptions quit;;
     '[D') MENUNAV=1; smenuoptions misc;;
     '[C') MENUNAV=1; smenuoptions tag;;
