@@ -9,7 +9,7 @@
 # the caller whether to warn about it (semquit.sh does).
 #
 ####################################################################
-TRACKCOUNT=$(ls *.flac 2>/dev/null | wc -l)  NOPROCESS=0
+TRACKCOUNT=$(ls *.flac | wc -l)  NOPROCESS=0
 source "$CONFDIR/bin/semspin.sh"
 
 ALBUMART=$CONFDIR/tmp/cleanart.jpg                                      # Initialise temporary work files
@@ -24,11 +24,11 @@ rm -f "$CORRUPTLIST" 2>/dev/null
 
 function clean_tags
 {
-COUNTFLAC=$(ls *.flac 2>/dev/null | wc -l)
+COUNTFLAC=$(ls *.flac | wc -l)
 if [ $COUNTFLAC -eq 0 ]; then return; fi
 
 # Extract album art from the first Flac found
-f=$(find "$(pwd)" -maxdepth 1 -name "*.flac" | sort | head -n 1)        # This folder only, never a sub-folder
+f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)
 metaflac $UTFCHARS --export-picture-to="$ALBUMART" "$f" 2>/dev/null     # Suppressing errors in case they haven't added album art or a cuesheet and hence there's nothing to export
 
 for f in *.flac; do
@@ -144,8 +144,7 @@ for f in *.flac; do
 
   # Now wipe all existing tags then re-load from the just-created text file
   # ---------------------------------------------------------------------------------
-  metaflac $UTFCHARS --remove-all-tags "$f"                              # Tags and pictures only: the seek table and padding stay
-  metaflac --remove --block-type=PICTURE "$f" 2>/dev/null
+  metaflac $UTFCHARS --remove-all "$f"
 
   if [[ -f $TAGFILE ]]; then
     metaflac $UTFCHARS --import-tags-from="$TAGFILE" "$f"
