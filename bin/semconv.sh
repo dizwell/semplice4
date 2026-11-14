@@ -24,7 +24,7 @@ function type_count {
 if [[ -n $NEWDIR && $NEWDIR != */ ]]; then NEWDIR="$NEWDIR/"; fi         # Make sure the folder path ends in a slash, so the next line looks inside it
 for f in "$NEWDIR"*; do
   [ -f "$f" ] || continue
-  case ${f,,} in                                                         # Any case: .FLAC, .Mp3 and so on all count
+  case $f in
     *.flac) FLACCOUNT=$((FLACCOUNT+1)) ;;
     *.iso)  ISOCOUNT=$((ISOCOUNT+1)) ;;
     *.ape)  APECOUNT=$((APECOUNT+1)) ;;
@@ -234,13 +234,10 @@ if [[ $INPUTFORMAT == "ISO" ]]; then
   fi
   MESSAGE="Splitting the ISO. Please wait…  "
   shopt -s nullglob; PREDSF=(*.dsf); shopt -u nullglob   # Note any DSFs already here, so only the ones extracted below count as intermediate files
-  shopt -s nocaseglob
   for f in *.iso; do
-    [[ -f $f ]] || continue
     # Extract the ISO to DSFs, move them all into the source folder and delete the "Stereo" subfolder sacd_extract originally writes them to
     "$SACDEXTRACT" -2 -s -i "$f" >/dev/null & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
   done
-  shopt -u nocaseglob
   MESSAGE="Converting the output files to $DISPLAYOUT. Please wait…  "
   if [[ $XHIRES -eq 1 ]]; then
     LOWPASS=87000
@@ -292,9 +289,9 @@ if [[ $AUDIOIN_DELETION == "1" ]]; then
   if [[ $INPUTFORMAT == "ISO" ]]; then			# The ISO is a source file only if "Treat SACD ISOs as source files" is also yes
     if [[ $ISO_AS_SOURCE == "1" ]]; then
       if [[ $ISOOUTPUTSOK -eq 1 ]]; then
-        shopt -s nocaseglob; rm -f *.iso; shopt -u nocaseglob
+        rm -f *.iso
       else
-        shopt -s nocaseglob; for f in *.iso; do [[ -f $f ]] && NOTCONVERTED+=("$f"); done; shopt -u nocaseglob
+        for f in *.iso; do [[ -f $f ]] && NOTCONVERTED+=("$f"); done
       fi
     fi
   else

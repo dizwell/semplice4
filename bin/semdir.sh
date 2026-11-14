@@ -24,7 +24,6 @@ while [[ $FILECOUNT -eq 0 ]]; do
     FLACCOUNT=$(ls "$NEWDIR"*.flac 2>/dev/null | wc -l)
     FILECOUNT=$FLACCOUNT
   else
-    shopt -s nocaseglob                                                    # Conversion handles any case of extension (.FLAC, .Mp3...), so count them all
     FLACCOUNT=$(ls "$NEWDIR"*.flac 2>/dev/null | wc -l)
     ISOCOUNT=$(ls "$NEWDIR"*.iso 2>/dev/null | wc -l)
     APECOUNT=$(ls "$NEWDIR"*.ape 2>/dev/null | wc -l)
@@ -36,7 +35,6 @@ while [[ $FILECOUNT -eq 0 ]]; do
     DSFCOUNT=$(ls "$NEWDIR"*.dsf 2>/dev/null | wc -l)
     AIFCOUNT=$(ls "$NEWDIR"*.{aif,aiff,aifc} 2>/dev/null | wc -l)
     FILECOUNT=$((FLACCOUNT+ISOCOUNT+APECOUNT+ALACCOUNT+MP3COUNT+OGGCOUNT+WMACOUNT+WAVCOUNT+DSFCOUNT+AIFCOUNT))
-    shopt -u nocaseglob
   fi
 
   if [[ $FILECOUNT -eq 0 ]]; then
