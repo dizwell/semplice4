@@ -281,8 +281,8 @@ elif [[ $1 == "misc" ]]; then
           wget -q https://raw.githubusercontent.com/dizwell/semplice4/main/gpl-v2.0.txt -O "$CONFDIR/tmp/license.txt"
         fi
         fmt -w 90 < "$CONFDIR/tmp/license.txt" > "$CONFDIR/tmp/licensewrapped.txt"
-        sed -i 's/\\n/\n/g' "$CONFDIR/tmp/licensewrapped.txt"  # Sorts out spurious extra blank lines, replacing them with singles
-        sed -i '1s/^/\n/' "$CONFDIR/tmp/licensewrapped.txt"    # Add a blank line to the start of the file for appearance's sake
+        $SEDPROG -i 's/\\n/\n/g' "$CONFDIR/tmp/licensewrapped.txt"  # Sorts out spurious extra blank lines, replacing them with singles
+        $SEDPROG -i '1s/^/\n/' "$CONFDIR/tmp/licensewrapped.txt"    # Add a blank line to the start of the file for appearance's sake
         if [[ -f "$CONFDIR/tmp/licensewrapped.txt" ]]; then
           dialog --backtitle "Semplice GPL v2 Software Licence" --title " Text of the GPLv2 Licence " --ok-label "OK" --extra-button --extra-label "Cancel" --textbox "$CONFDIR/tmp/licensewrapped.txt" 20 95
         fi
