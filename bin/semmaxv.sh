@@ -133,8 +133,26 @@ ALBUMGAIN=$(get_tag REPLAYGAIN_ALBUM_GAIN "$f")
 if [[ -n $ALBUMGAIN ]]; then
   dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Applied " --msgbox "\n\nThe metadata volume boost has been successfully applied, with a calculated Album Gain of $ALBUMGAIN.\n\nClick OK to return to the main menu." 14 80
 else
-  dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nThe ReplayGain metadata could not be added, so no volume boost has been applied.\n\nClick OK to return to the main program menu." 14 80
+  # The usual cause is a damaged FLAC (ReplayGain needs to decode every file): find the first one, if any
+  rm -f "$CONFDIR/tmp/damagedflac.txt"
+  MESSAGE="Checking the FLACs for damage…  "; tput cup 25 4
+  find_damaged_flac & spinner $!
+  DAMAGEDFLAC=$(cat "$CONFDIR/tmp/damagedflac.txt" 2>/dev/null); rm -f "$CONFDIR/tmp/damagedflac.txt"
+  if [[ -n $DAMAGEDFLAC ]]; then
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nAt least one of the FLACs in this folder appears to be damaged or corrupted, so the ReplayGain metadata could not be added:\n\n$DAMAGEDFLAC\n\nNo volume boost has been applied." 14 80
+  else
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nThe ReplayGain metadata could not be added, so no volume boost has been applied.\n\nClick OK to return to the main program menu." 14 80
+  fi
 fi
+}
+
+# Writes the name of the first FLAC in the folder that fails flac's own integrity test, if there is one
+function find_damaged_flac {
+local g
+for g in *.flac; do
+  [[ -f $g ]] || continue
+  if ! flac -t --silent "$g" >/dev/null 2>&1; then echo "$g" > "$CONFDIR/tmp/damagedflac.txt"; break; fi
+done
 }
 
 # Executable code starts here!
