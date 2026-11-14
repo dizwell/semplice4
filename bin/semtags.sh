@@ -38,7 +38,8 @@ f=$(find "$(pwd)" -maxdepth 1 -name "*.flac" | sort | head -n 1)
 if [[ -w $f ]]; then
   :
 else
-  dialog --title "Semplice Album Tags" --msgbox "\\n\\nEither this folder contains no FLACs at all; or it contains FLACs one or more of which is not writeable. We cannot continue at this time.\\n\\nClick OK to return to the main menu." 12 70
+  if [[ -z $f ]]; then NOWRITEMSG="There are no FLACs in this folder, so we cannot continue."; else NOWRITEMSG="There are files in this folder of FLACs that are not writeable, so we cannot continue."; fi
+  dialog --title "Semplice Album Tags" --msgbox "\\n\\n$NOWRITEMSG\\n\\nClick OK to return to the main menu." 12 70
   BREAKME=1
   return
 fi
