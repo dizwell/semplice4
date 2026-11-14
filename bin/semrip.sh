@@ -235,6 +235,7 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
     tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d "$OPTICAL_DEVICE" --never-skip=$READ_RETRIES $FASTFLAG -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &  
   fi
   RIPPID=$!                                                                  # cdparanoia, running in the background
+  disown "$RIPPID" 2>/dev/null                                               # So bash prints no "Killed" notice if it dies
   
   while [[ $(cat /tmp/rip.log | $GREPPROG Done | wc -l) -eq 0 ]]; do
     # If cdparanoia has stopped without finishing (disc ejected, drive error, crash), stop waiting for it.
