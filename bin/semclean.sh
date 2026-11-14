@@ -9,7 +9,7 @@
 # the caller whether to warn about it (semquit.sh does).
 #
 ####################################################################
-TRACKCOUNT=$(ls *.flac | wc -l)  NOPROCESS=0
+TRACKCOUNT=$(ls *.flac 2>/dev/null | wc -l)  NOPROCESS=0
 source "$CONFDIR/bin/semspin.sh"
 
 ALBUMART=$CONFDIR/tmp/cleanart.jpg                                      # Initialise temporary work files
@@ -24,11 +24,11 @@ rm -f "$CORRUPTLIST" 2>/dev/null
 
 function clean_tags
 {
-COUNTFLAC=$(ls *.flac | wc -l)
+COUNTFLAC=$(ls *.flac 2>/dev/null | wc -l)
 if [ $COUNTFLAC -eq 0 ]; then return; fi
 
 # Extract album art from the first Flac found
-f=$(find "$(pwd)" -name "*.flac" | sort | head -n 1)
+f=$(find "$(pwd)" -maxdepth 1 -name "*.flac" | sort | head -n 1)        # This folder only, never a sub-folder
 metaflac $UTFCHARS --export-picture-to="$ALBUMART" "$f" 2>/dev/null     # Suppressing errors in case they haven't added album art or a cuesheet and hence there's nothing to export
 
 for f in *.flac; do
