@@ -234,8 +234,20 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   elif [[ $OSFAMILY == "MACOS" ]]; then 
     tput cup 25 0; cdparanoia -B "$TRACKRANGE" -e -d "$OPTICAL_DEVICE" --never-skip=$READ_RETRIES $FASTFLAG -O "$DEVICE_OFFSET" 1>/tmp/rip.log 2>&1 &  
   fi
+  RIPPID=$!                                                                  # cdparanoia, running in the background
   
   while [[ $(cat /tmp/rip.log | $GREPPROG Done | wc -l) -eq 0 ]]; do
+    # If cdparanoia has stopped without finishing (disc ejected, drive error, crash), stop waiting for it.
+    # A slow rip of a damaged disc is still running, so it is left alone.
+    if ! kill -0 "$RIPPID" 2>/dev/null; then
+      if [[ $(cat /tmp/rip.log | $GREPPROG Done | wc -l) -eq 0 ]]; then
+        RIPCANCELLED=1
+        LASTLINE=$(tr '\r' '\n' < /tmp/rip.log | $GREPPROG -v '^[[:space:]]*$' | tail -1 | cut -c1-70)
+        dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Rip Stopped Unexpectedly " --msgbox "\nThe rip stopped before it had finished. The last thing the ripping program reported was:\n\n$LASTLINE\n\nCheck the disc and the drive, then try again." 14 80
+        cd "$ORIG_DIR"; tput cvvis; return
+      fi
+      break
+    fi
     # Some pretty messy code to get a percentage complete for 'progress bar' purposes.
     # The logic here is that "cdparanoia -sQ" quickly tells you a total number of FRAMES on the CD
     # You multiply that number by 1176 to derive a total number of SAMPLES on the CD.
