@@ -240,9 +240,10 @@ done
 # Now create the cuesheet...
 # ------------------------------------------------------------------------------------------
 echo "REM durations:" ${track_durations[@]/#/#}> cuesheet.cue
-echo "TITLE \"$ALBUM\"" >> cuesheet.cue
-echo "ARTIST \"$ARTIST\"" >> cuesheet.cue
-echo "PERFORMER \"$COMMENT\"" >> cuesheet.cue
+# A double quote inside a cuesheet value would end it early, so in the cuesheet (only) they become single quotes
+echo "TITLE \"${ALBUM//\"/\'}\"" >> cuesheet.cue
+echo "ARTIST \"${ARTIST//\"/\'}\"" >> cuesheet.cue
+echo "PERFORMER \"${COMMENT//\"/\'}\"" >> cuesheet.cue
 echo "FILE \"$PLAINFLACNAME\" WAVE" >> cuesheet.cue
 
 for f in *.flac; do
@@ -263,7 +264,7 @@ for f in *.flac; do
   fi
 
   echo "  TRACK $(printf "%02d" $COUNTER) AUDIO" >> cuesheet.cue
-  echo "    TITLE \"$TITLE\"" >> cuesheet.cue
+  echo "    TITLE \"${TITLE//\"/\'}\"" >> cuesheet.cue
   echo "    INDEX 01 $INDEXMARK" >> cuesheet.cue
   COUNTER=$((COUNTER+1))
 done
