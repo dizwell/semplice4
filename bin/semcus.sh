@@ -74,7 +74,7 @@ if [[ $1 != "define" ]]; then
     if [[ -w $f ]]; then
       customtags_form
     else
-      if [[ -z $f ]]; then NOWRITEMSG="There are no FLACs in this folder, so we cannot continue."; else NOWRITEMSG="There are files in this folder of FLACs that are not writeable, so we cannot continue."; fi
+      if [[ -z $f ]]; then NOWRITEMSG="There are no FLACs in this folder, so Semplice cannot continue."; else NOWRITEMSG="There are files in this folder of FLACs that are not writeable, so Semplice cannot continue."; fi
       dialog --title "Semplice Custom Tags" --msgbox "\\n\\n$NOWRITEMSG\\n\\nClick OK to return to the main menu." 12 70
       BREAKME=1
     fi
