@@ -180,8 +180,7 @@ if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; f
 readarray -t miscparams < "$CONFDIR/tmp/miscparams" 2>/dev/null
 CONFARTSIZE="${miscparams[0]}";  if [[ -z $CONFARTSIZE ]]; then CONFARTSIZE="380"; fi
 CONFLOGOSIZE="${miscparams[1]}"
-  if [[ $((CONFLOGOSIZE)) != "$CONFLOGOSIZE" ]]; then CONFLOGOSIZE=110; fi
-  if [[ $CONFLOGOSIZE -lt 0 ]]; then CONFLOGOSIZE=110; fi
+  if [[ $CONFLOGOSIZE =~ ^[0-9]+$ ]]; then CONFLOGOSIZE=$((10#$CONFLOGOSIZE)); else CONFLOGOSIZE=110; fi   # Digits only, read as decimal (0120 is 120)
   CONFLOGOSIZE=$CONFLOGOSIZE"x"$CONFLOGOSIZE
 CONFLOGOPOS="${miscparams[2]}"
   if [[ $((CONFLOGOPOS)) != "$CONFLOGOPOS" ]]; then CONFLOGOPOS=0; fi
