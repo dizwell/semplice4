@@ -17,8 +17,14 @@ fi
 for i in $(lsblk -dn -o NAME,TYPE | $GREPPROG 'rom' | awk '{print $1}'); do
   DEVID="/dev/$i"
   DEVDESC=$(cdparanoia -vsQ -d $DEVID 2>&1 | awk -F: '/sensed/ {print $2}'); DEVDESC=$(echo "$DEVDESC" | xargs); DEVDESC=${DEVDESC// /_}
+  if [[ -z $DEVDESC ]]; then DEVDESC="Unknown_drive"; fi                 # A blank description would knock the list out of step
   DEVLIST="$DEVLIST $DEVID $DEVDESC off"
 done
+
+if [[ -z $DEVLIST ]]; then                                                 # No optical drive at all: say so, rather than show an empty picker
+  dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Optical drive " --msgbox "\nNo optical drive could be found on this computer.\n\nCheck that the drive is connected and switched on, then try again." 14 80
+  return
+fi
 
 device_name=$(dialog --backtitle "Semplice Audio CD Ripping" --radiolist "Pick the optical device you want to use:" 15 90 0 $DEVLIST 3>&1 1>&2 2>&3 3>&- )
 exitStatus=$?
