@@ -60,7 +60,8 @@ if [[ $1 == "tag" ]]; then
          AUTOMODE=1; source "$CONFDIR/bin/semtrks.sh"
          smenuoptions tag
        else
-         dialog --title "Semplice Album Tags" --msgbox "\\n\\nThere are files in this folder of FLACs that are not writeable, so we cannot continue.\\n\\nClick OK to return to the main menu." 12 70
+         if [[ -z $f ]]; then NOWRITEMSG="There are no FLACs in this folder, so we cannot continue."; else NOWRITEMSG="There are files in this folder of FLACs that are not writeable, so we cannot continue."; fi
+         dialog --title "Semplice Album Tags" --msgbox "\\n\\n$NOWRITEMSG\\n\\nClick OK to return to the main menu." 12 70
          smenuoptions tag
        fi
        ;;
@@ -70,7 +71,8 @@ if [[ $1 == "tag" ]]; then
          AUTOMODE=1; source "$CONFDIR/bin/semtrks.sh"
          smenuoptions tag
        else
-         dialog --title "Semplice Album Tags" --msgbox "\\n\\nThere are files in this folder of FLACs that are not writeable, so we cannot continue.\\n\\nClick OK to return to the main menu." 12 70
+         if [[ -z $f ]]; then NOWRITEMSG="There are no FLACs in this folder, so we cannot continue."; else NOWRITEMSG="There are files in this folder of FLACs that are not writeable, so we cannot continue."; fi
+         dialog --title "Semplice Album Tags" --msgbox "\\n\\n$NOWRITEMSG\\n\\nClick OK to return to the main menu." 12 70
          smenuoptions tag
        fi
        ;;

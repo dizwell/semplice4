@@ -11,7 +11,8 @@ f=$(find "$(pwd)" -maxdepth 1 -name "*.flac" | sort | head -n 1)
 if [[ -w $f ]]; then
   :
 else
-  dialog --title " Semplice Track Renumbering " --msgbox "\\n\\nThere are files in this folder of FLACs that are not writeable, so we cannot continue.\\n\\nClick OK to return to the main menu." 12 70
+  if [[ -z $f ]]; then NOWRITEMSG="There are no FLACs in this folder, so we cannot continue."; else NOWRITEMSG="There are files in this folder of FLACs that are not writeable, so we cannot continue."; fi
+  dialog --title " Semplice Track Renumbering " --msgbox "\\n\\n$NOWRITEMSG\\n\\nClick OK to return to the main menu." 12 70
   BREAKME=1
   return
 fi
