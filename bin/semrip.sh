@@ -243,8 +243,7 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
     if ! kill -0 "$RIPPID" 2>/dev/null; then
       if [[ $(cat /tmp/rip.log | $GREPPROG Done | wc -l) -eq 0 ]]; then
         RIPCANCELLED=1
-        LASTLINE=$(tr '\r' '\n' < /tmp/rip.log | $GREPPROG -v '^[[:space:]]*$' | tail -1 | cut -c1-70)
-        dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Rip Stopped Unexpectedly " --msgbox "\nThe rip stopped before it had finished. The last thing the ripping program reported was:\n\n$LASTLINE\n\nCheck the disc and the drive, then try again." 14 80
+        dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Rip Stopped Unexpectedly " --msgbox "\nAn unexpected error has occurred during the rip of this CD and only a partial rip was achieved. Files from that partial rip are still present in your Music Rips folder and need manual deletion.\n\nPlease check the drive and the disc before trying again later." 13 80
         cd "$ORIG_DIR"; tput cvvis; return
       fi
       break
