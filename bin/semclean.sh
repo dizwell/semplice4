@@ -160,5 +160,7 @@ for f in *.flac; do
 done
 }
 
-MESSAGE="Cleaning tags. Please wait…  "
-clean_tags & spinner $!
+if [[ $TRACKCOUNT -gt 0 ]]; then                                        # No FLACs here: nothing to clean, so say nothing
+  MESSAGE="Cleaning tags. Please wait…  "
+  clean_tags & spinner $!
+fi
