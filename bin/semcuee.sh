@@ -23,7 +23,7 @@ fi
 if ! [[ -z $CUESHEET ]]; then
   echo "$CUESHEET" > "$CONFDIR/tmp/tmp_cuesheet.txt"
   tput cvvis
-  wezterm start --always-new-process -- "$EDITOR" "$CONFDIR/tmp/tmp_cuesheet.txt" 2>/dev/null    # Separate window; waits until it is closed
+  "${WEZTERM_EXECUTABLE:-wezterm}" start --always-new-process -- "$EDITOR" "$CONFDIR/tmp/tmp_cuesheet.txt" 2>/dev/null    # Separate window; waits until it is closed
 else
   dialog --stdout --backtitle "Semplice FLAC Tagging" --title " Error! " --msgbox "\nThere is no embedded cuesheet to edit here!" 8 80
 fi
