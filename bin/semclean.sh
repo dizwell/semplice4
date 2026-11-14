@@ -144,7 +144,8 @@ for f in *.flac; do
 
   # Now wipe all existing tags then re-load from the just-created text file
   # ---------------------------------------------------------------------------------
-  metaflac $UTFCHARS --remove-all "$f"
+  metaflac $UTFCHARS --remove-all-tags "$f"                              # Tags and pictures only: the seek table and padding stay
+  metaflac --remove --block-type=PICTURE "$f" 2>/dev/null
 
   if [[ -f $TAGFILE ]]; then
     metaflac $UTFCHARS --import-tags-from="$TAGFILE" "$f"
@@ -156,6 +157,12 @@ for f in *.flac; do
 
   if [[ -f $ALBUMART ]]; then
     metaflac $UTFCHARS --import-picture-from="$ALBUMART" "$f"
+  fi
+
+  # Some streamers can't seek in a FLAC without a seek table, so give any FLAC that lacks one a
+  # 100-point table (1% resolution). An existing seek table is left exactly as it is.
+  if ! metaflac --list --block-type=SEEKTABLE "$f" 2>/dev/null | $GREPPROG -q SEEKTABLE; then
+    metaflac --add-seekpoint=100x "$f" 2>/dev/null
   fi
 done
 }
