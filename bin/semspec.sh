@@ -27,7 +27,7 @@ if [[ $FREESPACE -lt 15 ]]; then NOSPACE=1; else NOSPACE=0; fi
 }
 
 function check_writeok {
-if [[ -w /tmp ]]; then WRITEOK=1; else WRITEOK=0; fi
+if [[ -w $CONFDIR/tmp ]]; then WRITEOK=1; else WRITEOK=0; fi
 }
 
 function create_filelist {
@@ -68,9 +68,9 @@ if [[ $NOSPACE -eq 0 && $WRITEOK -eq 1 && FLACCOUNT -ne 0 ]]; then
   display_spectrum
 else
   if [[ $NOSPACE -eq 1 ]]; then
-    dialog --stdout --backtitle "Semplice Frequency Analysis" --title " Insufficient Free Space " --msgbox "\nSemplice needs at least 15GB of free space in the /tmp folder to perform a spectrum analysis, but only $FREESPACE GB appear to be available. No frequency analysis can therefore be performed.\n\nPress OK to go back to the main menu." 12 80
+    dialog --stdout --backtitle "Semplice Frequency Analysis" --title " Insufficient Free Space " --msgbox "\nSemplice needs at least 15GB of free space in its working folder ($CONFDIR/tmp) to perform a spectrum analysis, but only $FREESPACE GB appear to be available. No frequency analysis can therefore be performed.\n\nPress OK to go back to the main menu." 12 80
   elif [[ $WRITEOK -eq  0 ]]; then
-    dialog --stdout --backtitle "Semplice Frequency Analysis" --title " No write privileges " --msgbox "\nTo perform a spectrum analysis, Semplice needs to be able to write to the /tmp folder, but that permission does not seem to be available. No frequency analysis can therefore be performed.\n\nPress OK to go back to the main menu." 12 80
+    dialog --stdout --backtitle "Semplice Frequency Analysis" --title " No write privileges " --msgbox "\nTo perform a spectrum analysis, Semplice needs to be able to write to its working folder ($CONFDIR/tmp), but that permission does not seem to be available. No frequency analysis can therefore be performed.\n\nPress OK to go back to the main menu." 12 80
   elif [[ $FLACCOUNT -eq 0 ]]; then
     dialog --stdout --backtitle "Semplice Spectrum Analysis" --title " No FLACs to analyse " --msgbox "\nNo FLAC files detected in current working directory, so no spectrum analysis is possible. \n\nPress OK to go back to the main menu." 12 80   
   fi
