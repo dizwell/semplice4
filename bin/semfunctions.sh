@@ -73,7 +73,7 @@ function warn_nomd5 {
 local LIST="$CONFDIR/tmp/nomd5flacs.txt" FILE
 if [[ -s $LIST ]]; then
   FILE=$(head -n 1 "$LIST")
-  if dialog --stdout --backtitle "Semplice Tag Cleaning" --title " FLACs Without Checksums Detected! " --yesno "\nAt least one of the FLACs in this folder has no internal checksum, which is an error:\n\n$FILE\n\nWould you like to add the missing checksums now? The music, tags and artwork are kept." 14 80; then
+  if dialog --stdout --backtitle "Semplice Tag Cleaning" --title " FLACs Without Checksums Detected! " --yesno "\nAt least one of the FLACs in this folder has no internal checksum, which is regarded as an error:\n\n$FILE\n\nWould you like to add the missing checksums now? Any tags and artwork will be preserved and absolutely no alteration to the music stream data will be made." 14 80; then
     MESSAGE="Adding checksums. Please wait…  "
     add_checksums & spinner $!
   fi
