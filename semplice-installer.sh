@@ -76,6 +76,16 @@ reset
 exit 1
 }
 
+# Download one file, trying up to five times; it only counts if it arrives and isn't empty
+function fetch_file {
+  for attempt in {1..5}; do
+    if wget -q --tries=1 "$1" -O "$2" && [[ -s "$2" ]]; then return 0; fi
+    rm -f "$2"
+    sleep 1
+  done
+  return 1
+}
+
 trap exit_program TERM      # Trap to quit nicely if the terminal is closed by clicking 'X' icon in window titlebar
 trap exit_program SIGHUP    # Same thing, different signal
 trap exit_program INT       # Trap to prevent Ctrl+C from working
@@ -283,7 +293,7 @@ OS=${OS^^}
 
 if [[ ! $OS == *"DARWIN"* ]]; then
   if [[ ! -d "$HOME/.local/share/applications" ]]; then mkdir -p "$HOME/.local/share/applications/"; fi
-  wget -q "$REMOTESOURCE/semplice.desktop" -O "$HOME/.local/share/applications/semplice.desktop"
+  fetch_file "$REMOTESOURCE/semplice.desktop" "$HOME/.local/share/applications/semplice.desktop"
   sed -i "s|xxxxxxxx|$USERNAME|" "$HOME/.local/share/applications/semplice.desktop"
   chmod +x "$HOME/.local/share/applications/semplice.desktop"
   ln -s "$HOME/.local/share/applications/semplice.desktop" "$HOME/Desktop" 2>/dev/null
@@ -435,18 +445,21 @@ if [[ "$response" == [Yy]* ]]; then
   # 4. Call semoscheck.sh and get packages installed
   # -----------------------------------------------------
   YPOS=$((YPOS+1)); tput cup $YPOS 1;
-  wget -q "$REMOTESOURCE/bin/semoscheck.sh" -O "$NEWCONF/bin/semoscheck.sh"
+  if ! fetch_file "$REMOTESOURCE/bin/semoscheck.sh" "$NEWCONF/bin/semoscheck.sh" || [[ $(head -c2 "$NEWCONF/bin/semoscheck.sh") != '#!' ]]; then
+    dialog --title " Download Failed " --msgbox "A Semplice component could not be downloaded after five attempts.\n\nInstallation aborted." 10 70
+    exit 1
+  fi
   source "$NEWCONF/bin/semoscheck.sh" install        # Triggers a check of software dependencies and *fixes* them
   downloads
   chown -R $USERNAME:$USERNAME "$NEWCONF" 2>/dev/null
   
   # 5. Download the various Dialog configuration files
   # -----------------------------------------------------
-  wget -q "$REMOTESOURCE/txt/standard.conf" -O "$NEWCONF/txt/standard.conf"
-  wget -q "$REMOTESOURCE/txt/red.conf" -O "$NEWCONF/txt/red.conf"
-  wget -q "$REMOTESOURCE/txt/green.conf" -O "$NEWCONF/txt/green.conf"
-  wget -q "$REMOTESOURCE/txt/yellow.conf" -O "$NEWCONF/txt/yellow.conf"
-  wget -q "$REMOTESOURCE/txt/magenta.conf" -O "$NEWCONF/txt/magenta.conf"
+  fetch_file "$REMOTESOURCE/txt/standard.conf" "$NEWCONF/txt/standard.conf"
+  fetch_file "$REMOTESOURCE/txt/red.conf" "$NEWCONF/txt/red.conf"
+  fetch_file "$REMOTESOURCE/txt/green.conf" "$NEWCONF/txt/green.conf"
+  fetch_file "$REMOTESOURCE/txt/yellow.conf" "$NEWCONF/txt/yellow.conf"
+  fetch_file "$REMOTESOURCE/txt/magenta.conf" "$NEWCONF/txt/magenta.conf"
 
   # 6. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
   # -----------------------------------------------------
