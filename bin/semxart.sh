@@ -18,11 +18,11 @@ if ! [[ -z $f ]]; then
       IFS=" "; read width height < <("$CONVPROG" identify -format "%w %h" "$CURDIR/albumart.jpg" 2>/dev/null)           # If we are required to display the image, then if it's bigger than 500x500, halve its dimensions.
       if [[ $width -gt $height ]]; then BIGDIMENSION=$width; else BIGDIMENSION=$height; fi
       if [[ $BIGDIMENSION -ge 500 ]]; then
-        "$CONVPROG" "$CURDIR/albumart.jpg" -resize 50% "$CONFDIR/tmp/albumart_half.jpg" 2>/dev/null
+        "$CONVPROG" "$CURDIR/albumart.jpg" -resize 50% "$CURDIR/albumart_half.jpg" 2>/dev/null
         if [[ $(uname -a) == *"Darwin"* ]]; then
-          qlmanage -p "$CONFDIR/tmp/albumart_half.jpg" >/dev/null 2>&1
+          qlmanage -p "$CURDIR/albumart_half.jpg" >/dev/null 2>&1
         else
-          xdg-open "$CONFDIR/tmp/albumart_half.jpg" >/dev/null 2>&1
+          xdg-open "$CURDIR/albumart_half.jpg" >/dev/null 2>&1
         fi
       else
         if [[ $(uname -a) == *"Darwin"* ]]; then
