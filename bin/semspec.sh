@@ -53,10 +53,10 @@ if [[ -f $CONFDIR/tmp/spectrum.flac ]]; then
   if [[ $(uname -a) == *"Darwin"* ]]; then
     qlmanage -p "$CONFDIR/tmp/spectrum.png" >/dev/null 2>&1
   else
-    display -immutable "$CONFDIR/tmp/spectrum.png" >/dev/null 2>&1
+    xdg-open "$CONFDIR/tmp/spectrum.png" >/dev/null 2>&1                 # Opens in the desktop's usual image viewer
   fi
 fi
-rm -rf "$CONFDIR/tmp/spectrum.png" "$CONFDIR/tmp/spectrum.flac" 2>/dev/null
+rm -rf "$CONFDIR/tmp/spectrum.flac" 2>/dev/null                    # The picture is kept until the next analysis: on Linux the viewer opens it after we return
 tput cvvis
 }
 
