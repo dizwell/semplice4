@@ -316,7 +316,7 @@ metaflac $UTFCHARS --set-tag="Performer=$PERFORMER" "$f"
 metaflac $UTFCHARS --set-tag="Date=$YEAR" "$f"
 metaflac $UTFCHARS --set-tag="Notes=$NOTES" "$f"
 
-if [[ -n $RPG_ALBUMGAIN && ${METAVOL^^} == "METADATA" ]]; then
+if [[ -n $RPG_ALBUMGAIN ]]; then                               # Track 1's ReplayGain tags carry over whenever it has them, whatever the default boost method
   metaflac $UTFCHARS --set-tag="REPLAYGAIN_REFERENCE_LOUDNESS=$RPG_REFERENCE" "$f"
   metaflac $UTFCHARS --set-tag="REPLAYGAIN_ALBUM_PEAK=$RPG_ALBUMPEAK" "$f"
   metaflac $UTFCHARS --set-tag="REPLAYGAIN_ALBUM_GAIN=$RPG_ALBUMGAIN" "$f"
