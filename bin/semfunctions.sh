@@ -64,6 +64,45 @@ if [[ -s $LIST ]]; then
   fi
   dialog --stdout --backtitle "Semplice Tag Cleaning" --title " Possibly Corrupt Files Detected! " --msgbox "\nAt least one of the FLACs in this folder has an MD5 checksum mismatch, indicating internal corruption:\n\n$FILE\n\n$MSG" 14 80
 fi
+warn_nomd5                                         # Then any FLACs that have no checksum at all
+}
+
+# warn_nomd5: semclean.sh lists every FLAC whose stored checksum is all zeros (never recorded). Says so,
+# naming the first, and offers to add the checksums by re-encoding those files in place.
+function warn_nomd5 {
+local LIST="$CONFDIR/tmp/nomd5flacs.txt" FILE
+if [[ -s $LIST ]]; then
+  FILE=$(head -n 1 "$LIST")
+  if dialog --stdout --backtitle "Semplice Tag Cleaning" --title " FLACs Without Checksums Detected! " --yesno "\nAt least one of the FLACs in this folder has no internal checksum, which is an error:\n\n$FILE\n\nWould you like to add the missing checksums now? The music, tags and artwork are kept." 14 80; then
+    MESSAGE="Adding checksums. Please wait…  "
+    add_checksums & spinner $!
+  fi
+fi
+}
+
+# add_checksums: re-encodes each FLAC listed in nomd5flacs.txt to FLAC, which records a fresh checksum, then
+# copies its tags and artwork across. A file is replaced only if the new one has a checksum and the same length.
+function add_checksums {
+local f TMP
+while IFS= read -r f; do
+  [[ -f $f ]] || continue
+  TMP="${f%.flac}.md5fix.tmp"
+  rm -f "$TMP"
+  if flac --silent -f -8 "$f" -o "$TMP" 2>/dev/null \
+     && [[ $(metaflac --show-md5sum "$TMP") != "00000000000000000000000000000000" ]] \
+     && [[ $(metaflac --show-total-samples "$TMP") == "$(metaflac --show-total-samples "$f")" ]]; then
+    metaflac $UTFCHARS --remove-all-tags "$TMP"
+    metaflac $UTFCHARS --export-tags-to=- "$f" | metaflac $UTFCHARS --import-tags-from=- "$TMP"
+    metaflac --remove --block-type=PICTURE "$TMP" 2>/dev/null
+    if metaflac --export-picture-to="$CONFDIR/tmp/md5fixart" "$f" 2>/dev/null; then
+      metaflac --import-picture-from="$CONFDIR/tmp/md5fixart" "$TMP"
+      rm -f "$CONFDIR/tmp/md5fixart"
+    fi
+    mv -f "$TMP" "$f"
+  else
+    rm -f "$TMP"
+  fi
+done < "$CONFDIR/tmp/nomd5flacs.txt"
 }
 
 # get_tag NAME FILE: prints the value of tag NAME in FILE as a single line. Only the leading

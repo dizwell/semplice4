@@ -16,6 +16,8 @@ ALBUMART=$CONFDIR/tmp/cleanart.jpg                                      # Initia
 CUEFILE=$CONFDIR/tmp/cleancue.txt
 TAGFILE=$CONFDIR/tmp/cleantag.txt
 CORRUPTLIST=$CONFDIR/tmp/corruptflacs.txt
+NOMD5LIST=$CONFDIR/tmp/nomd5flacs.txt
+rm -f "$NOMD5LIST" 2>/dev/null
 rm -f "$ALBUMART" 2>/dev/null
 rm -f "$CUEFILE" 2>/dev/null
 rm -f "$CORRUPTLIST" 2>/dev/null
@@ -96,7 +98,11 @@ for f in *.flac; do
   # ---------------------------------------------------------------------------------
   # Only compare when a hash was actually computed (16- and 24-bit files). Every mismatch is
   # recorded, not just the last one.
-  if [[ -n $MD5HASH && $MD5HASH != "$FLACHASH" ]]; then
+  # A stored checksum of all zeros means none was ever recorded (some rippers, e.g. Sound Juicer, did this):
+  # that is listed separately, as an error that can be repaired, not as corruption.
+  if [[ $FLACHASH == "00000000000000000000000000000000" ]]; then
+    echo "$f" >> "$NOMD5LIST"
+  elif [[ -n $MD5HASH && $MD5HASH != "$FLACHASH" ]]; then
     echo "$f" >> "$CORRUPTLIST"
   fi
 
