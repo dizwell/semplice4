@@ -65,8 +65,11 @@ if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
   IFS='.'
   ip=($ip)
   IFS=$OIFS
-  [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+  [[ 10#${ip[0]} -le 255 && 10#${ip[1]} -le 255 && 10#${ip[2]} -le 255 && 10#${ip[3]} -le 255 ]]   # 10#: read 008 as 8, not as octal
   badip=$?
+  if [[ $badip -eq 0 ]]; then                                             # Drop any leading zeros, so ping and the ripper see a normal address
+    SACDIP="$((10#${ip[0]})).$((10#${ip[1]})).$((10#${ip[2]})).$((10#${ip[3]}))"
+  fi
 fi
 }
 
