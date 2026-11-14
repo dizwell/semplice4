@@ -113,13 +113,13 @@ for f in *.flac; do
   echo "DATE=$YEAR" >> "$TAGFILE"
   echo "TAGDATE=$(date +%s)" >> "$TAGFILE"
   
-  if [[ $METAVOL == "metadata" ]]; then
-    echo "REPLAYGAIN_REFERENCE_LOUDNESS=$RPG_REFERENCE" >> "$TAGFILE"
-    echo "REPLAYGAIN_TRACK_PEAK=$RPG_TRACKPEAK" >> "$TAGFILE"
-    echo "REPLAYGAIN_TRACK_GAIN=$RPG_TRACKGAIN" >> "$TAGFILE"
-    echo "REPLAYGAIN_ALBUM_PEAK=$RPG_ALBUMPEAK" >> "$TAGFILE"
-    echo "REPLAYGAIN_ALBUM_GAIN=$RPG_ALBUMGAIN" >> "$TAGFILE"
-  fi
+  # Keep any ReplayGain (metadata volume boost) tags the file already has, whatever the default boost method;
+  # write back only those with a value, so files without a boost stay clean
+  if [[ -n $RPG_REFERENCE ]]; then echo "REPLAYGAIN_REFERENCE_LOUDNESS=$RPG_REFERENCE" >> "$TAGFILE"; fi
+  if [[ -n $RPG_TRACKPEAK ]]; then echo "REPLAYGAIN_TRACK_PEAK=$RPG_TRACKPEAK" >> "$TAGFILE"; fi
+  if [[ -n $RPG_TRACKGAIN ]]; then echo "REPLAYGAIN_TRACK_GAIN=$RPG_TRACKGAIN" >> "$TAGFILE"; fi
+  if [[ -n $RPG_ALBUMPEAK ]]; then echo "REPLAYGAIN_ALBUM_PEAK=$RPG_ALBUMPEAK" >> "$TAGFILE"; fi
+  if [[ -n $RPG_ALBUMGAIN ]]; then echo "REPLAYGAIN_ALBUM_GAIN=$RPG_ALBUMGAIN" >> "$TAGFILE"; fi
   
   if [[ $CUSTOMTAGS -eq 1 ]]; then
     for ((ct=1; ct<=9; ct++)); do                                       # Keep only custom tags that are in use and have a value
