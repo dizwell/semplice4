@@ -198,7 +198,7 @@ EDITOR=nano
 
 # Parameters controlling custom tagging
 # ====================================================================
-CUSTOM_TAGS=no
+CUSTOMTAGS=no
 CUSTOMTAG1=
 CUSTOMTAG2=
 CUSTOMTAG3=
@@ -218,12 +218,15 @@ AUTODELETE_PERTRACK_FLACS=no
 AUDIO_QUALITY=4
 AUDIOIN_DELETION=no
 ISO_AS_SOURCE=no
+METAVOL=real
 
 # Parameters controlling general program behaviour
 # ====================================================================
 ARTSIZE=380
 LOGOSIZE=110x110
 LOGOPOS=0
+WEZTHEME=\"Galaxy\"
+WEZFNTSZ=12
 DIATHEME=\"standard\"
 " > "$CONFDIR/txt/semplice.conf"
   chmod 775 "$CONFDIR/txt/semplice.conf"
