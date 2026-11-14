@@ -97,7 +97,7 @@ if [[ $GOODIP -eq 1 ]]; then
     tput cup 25 4; echo -e "Invoking the SACD ripper in another terminal session..."
     if ! [[ -d "$RIPDIR"/SACD_ISORIPS ]]; then mkdir "$RIPDIR"/SACD_ISORIPS 2>/dev/null; fi 
     # The ripper runs in its own WezTerm window (all platforms), which stays open until Enter is pressed
-    wezterm start --always-new-process -- bash -c '"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "' "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
+    "${WEZTERM_EXECUTABLE:-wezterm}" start --always-new-process -- bash -c '"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "' "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
   else
     dialog --stdout --backtitle "Semplice SACD Ripping" --title " Networking Error! " --msgbox "\nAn SACD player cannot be contacted at this IP address." 8 80
   fi
