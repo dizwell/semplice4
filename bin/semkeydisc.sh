@@ -143,9 +143,14 @@ while true; do
   case "$KD_RESULT" in
     "RESULT: OFFSETS "*)
       KD_LINE=${KD_RESULT#RESULT: OFFSETS }
-      KD_DISCID=${KD_LINE%% *}; KD_OFFSETS=${KD_LINE#* }
+      KD_DISCID=${KD_LINE%% *}; KD_OFFSETS=""
+      for o in ${KD_LINE#* }; do                                          # Only offsets real drives could have (as the configuration editor allows)
+        if [[ ${o#[+-]} -le 3000 ]]; then KD_OFFSETS="${KD_OFFSETS:+$KD_OFFSETS }$o"; fi
+      done
       touch "$KD_VOTES"
-      if $GREPPROG -q "^$KD_DISCID " "$KD_VOTES"; then                    # One vote per disc, however often it's tried
+      if [[ -z $KD_OFFSETS ]]; then
+        KD_MSG="That disc is in the AccurateRip database, but your copy doesn't match any version stored there, so it can't be used."
+      elif $GREPPROG -q "^$KD_DISCID " "$KD_VOTES"; then                  # One vote per disc, however often it's tried
         KD_MSG="You've already used that disc: please use a different one."
       else
         echo "$KD_DISCID $KD_OFFSETS" >> "$KD_VOTES"
