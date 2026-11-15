@@ -461,6 +461,11 @@ if [[ "$response" == [Yy]* ]]; then
   fetch_file "$REMOTESOURCE/txt/yellow.conf" "$NEWCONF/txt/yellow.conf"
   fetch_file "$REMOTESOURCE/txt/magenta.conf" "$NEWCONF/txt/magenta.conf"
 
+  # Drive read offsets: every install or upgrade starts with a fresh copy of AccurateRip's list.
+  # If AccurateRip can't be reached now, Semplice fetches it the first time it needs an offset.
+  rm -f "$NEWCONF/txt/cddriveoffsets.csv"
+  ( CONFDIR="$NEWCONF"; source "$NEWCONF/bin/semfunctions.sh"; refresh_drive_offsets ) >/dev/null 2>&1
+
   # 6. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
   # -----------------------------------------------------
   # WezTerm's Semplice settings use the Luxi Mono font, so it must be installed where the system looks for fonts
