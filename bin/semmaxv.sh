@@ -94,9 +94,19 @@ if [[ $CANBEBOOSTED -eq 1 ]]; then                                              
     BOOSTED="+$CANDIDATE_BOOST-dB-$f"                                                           # e.g. "+3.5-dB-01 - Allegro.flac"
 
     if [ $BITDEPTH -eq 24 ]; then
-      "$FFMPEG" -y -i "$f" -sample_fmt s32 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & spinner $!
+      "$FFMPEG" -y -i "$f" -sample_fmt s32 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
     else
-      "$FFMPEG" -y -i "$f" -sample_fmt s16 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & spinner $!
+      "$FFMPEG" -y -i "$f" -sample_fmt s16 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
+    fi
+    wait $FFPID; FFSTATUS=$?
+    BOOSTEDFILES+=("$BOOSTED")
+
+    # The boosted copy only counts if ffmpeg succeeded, the copy exists, and it holds exactly as many samples
+    # as the original (as when making a SuperFLAC). Otherwise stop: nothing is boosted and no original is touched.
+    if [[ $FFSTATUS -ne 0 || ! -s "$BOOSTED" ]] || \
+       [[ $(metaflac --show-total-samples "$BOOSTED" 2>/dev/null) != "$(metaflac --show-total-samples "$f" 2>/dev/null)" ]]; then
+      BOOSTFAILED="$f"
+      break
     fi
 
     metaflac $UTFCHARS --remove-tag=COMMENT --remove-tag=DESCRIPTION "$BOOSTED"                 # Remove ffmpeg's spurious DESCRIPTION (and any COMMENT)...
@@ -104,6 +114,12 @@ if [[ $CANBEBOOSTED -eq 1 ]]; then                                              
       metaflac $UTFCHARS "--set-tag=COMMENT=$ORIGCOMMENT" "$BOOSTED"                            # ...then restore this file's own COMMENT
     fi
   done
+
+  if [[ -n $BOOSTFAILED ]]; then
+    for g in "${BOOSTEDFILES[@]}"; do rm -f "$g"; done                                           # Remove every boosted copy made this time
+    BOOSTPERFORMED=0
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Volume Boost Failed! " --msgbox "\nThe volume boost could not be applied to this FLAC:\n\n$BOOSTFAILED\n\nNo volume boost has been applied: all the original FLACs have been kept, and no boosted copies have been left behind." 14 80
+  fi
 fi
 }
 
@@ -183,7 +199,20 @@ case $? in
   255) BOOSTTYPE="cancel";;
 esac
 
+# Every run starts clean: nothing left over from an earlier boost in this session may count
+BOOSTPERFORMED=0; CANBEBOOSTED=0; DELETESOURCE=0; BOOSTFAILED=""; BOOSTEDFILES=()
+
 if [[ $BOOSTTYPE == "real" ]]; then
+  # A damaged FLAC would be re-encoded with the damaged part skipped, so check every FLAC first
+  rm -f "$CONFDIR/tmp/damagedflac.txt"
+  tput civis; tput cup 25 1; printf $LINEDRAW2%.0s {1..101}; MESSAGE="Checking the FLACs for damage…  "; tput cup 25 4
+  find_damaged_flac & spinner $!
+  DAMAGEDFLAC=$(cat "$CONFDIR/tmp/damagedflac.txt" 2>/dev/null); rm -f "$CONFDIR/tmp/damagedflac.txt"
+  if [[ -n $DAMAGEDFLAC ]]; then
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Volume Boost Failed! " --msgbox "\nAt least one of the FLACs in this folder appears to be damaged or corrupted, so it cannot be volume-boosted:\n\n$DAMAGEDFLAC\n\nNo volume boost has been applied." 14 80
+    return
+  fi
+
   perform_volumeanalysis
 
   if [[ $CANBEBOOSTED -eq 1 ]]; then
@@ -192,7 +221,7 @@ if [[ $BOOSTTYPE == "real" ]]; then
   perform_cleanup
   if [[ $BOOSTPERFORMED -eq 1 ]]; then
     dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "All FLACs have been volume-boosted: \n\nClick OK to return to the main program menu." 14 80
-  else
+  elif [[ -z $BOOSTFAILED ]]; then                                     # A failure has already said so
     dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --msgbox "No files have been modified: \n\nClick OK to return to the main program menu." 14 80
   fi
   rm -f volumes.txt >/dev/null
