@@ -22,7 +22,7 @@ for i in $(lsblk -dn -o NAME,TYPE | $GREPPROG 'rom' | awk '{print $1}'); do
 done
 
 if [[ -z $DEVLIST ]]; then                                                 # No optical drive at all: say so, rather than show an empty picker
-  dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Optical drive " --msgbox "\nNo optical drive could be found on this computer.\n\nCheck that the drive is connected and switched on, then try again." 14 80
+  dialog --stdout --backtitle "Semplice Audio CD Ripping" --title " Error in finding an optical drive! " --msgbox "\nNo optical drive could be found on this computer.\n\nCheck that the drive is connected and switched on, then try again." 14 80
   return
 fi
 
