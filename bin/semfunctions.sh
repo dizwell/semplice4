@@ -114,7 +114,7 @@ metaflac $UTFCHARS --show-tag="$1" "$2" 2>/dev/null | awk -v pre="$1=" '
   { if (tolower(substr($0, 1, length(pre))) == tolower(pre)) $0 = substr($0, length(pre) + 1); print }' | flatten_lines
 }
 
-# refresh_drive_offsets: rebuilds cddriveoffsets.csv from AccurateRip's own list of drive read offsets,
+# refresh_drive_offsets: rebuilds driveoffsets.csv from AccurateRip's own list of drive read offsets,
 # DriveOffsets.bin. Each drive is a 69-byte record: its read offset as a little-endian signed 16-bit
 # number, then its "VENDOR - MODEL" name in 32 bytes, then 35 unused bytes. The list is written as
 # "name|offset" lines, the layout lookup_drive_offset reads. Uses only wget, od and awk. If the
@@ -135,25 +135,33 @@ if wget --quiet --tries=1 --timeout=10 http://www.accuraterip.com/accuraterip/Dr
       }
     }' > "$newlist"
   # A real list holds thousands of drives: anything much shorter means the download wasn't the real thing
-  if [[ $(wc -l < "$newlist") -gt 100 ]]; then mv "$newlist" "$CONFDIR/txt/cddriveoffsets.csv"; fi
+  if [[ $(wc -l < "$newlist") -gt 100 ]]; then mv "$newlist" "$CONFDIR/txt/driveoffsets.csv"; fi
 fi
 rm -f "$binfile" "$newlist"
 }
 
-# lookup_drive_offset DEVICE: prints the read offset listed in cddriveoffsets.csv for the drive at
+# lookup_drive_offset DEVICE: prints the read offset listed in driveoffsets.csv for the drive at
 # DEVICE (as identified by cdparanoia), or nothing if the drive is not listed. Linux only.
+# driveoffsets.csv is this computer's own copy, refreshed from AccurateRip, and is never committed;
+# cddriveoffsets.csv is Semplice's fallback copy in the repository, and is never changed here.
 function lookup_drive_offset {
-local driveid offsetlist="$CONFDIR/txt/cddriveoffsets.csv"
+local driveid offsetlist="$CONFDIR/txt/driveoffsets.csv"
 # Refresh the list from AccurateRip when it is missing or more than 30 days old (a fresh install
 # fetches it too). If AccurateRip can't be reached, the existing list is used as it is.
 if [[ ! -f "$offsetlist" || -n $(find "$offsetlist" -mtime +30 2>/dev/null) ]]; then
   refresh_drive_offsets
 fi
-# Last resort, when AccurateRip couldn't be reached and there is no list at all: Semplice's own copy
+# Last resort, when AccurateRip couldn't be reached and there is no list at all: Semplice's own copy,
+# dated as old so that AccurateRip is tried again at the next lookup
 if ! [[ -f "$offsetlist" ]]; then
-  wget --quiet https://raw.githubusercontent.com/dizwell/semplice4/main/txt/cddriveoffsets.csv -O "$offsetlist"
+  if [[ -s "$CONFDIR/txt/cddriveoffsets.csv" ]]; then
+    cp "$CONFDIR/txt/cddriveoffsets.csv" "$offsetlist"
+  else
+    wget --quiet https://raw.githubusercontent.com/dizwell/semplice4/main/txt/cddriveoffsets.csv -O "$offsetlist"
+  fi
+  [[ -s "$offsetlist" ]] && touch -t 200001010000 "$offsetlist" || rm -f "$offsetlist"
 fi
 driveid=$(cdparanoia -vsQ -d "$1" 2>&1 | awk -F: '/sensed/ {print $2}' | awk '{print $--NF}')
 if [[ -z $driveid ]]; then return; fi
-$GREPPROG -Rnw "$CONFDIR/txt/cddriveoffsets.csv" -e "$driveid" | awk -F '|' '{print $2; exit;}'
+$GREPPROG -Rnw "$offsetlist" -e "$driveid" | awk -F '|' '{print $2; exit;}'
 }

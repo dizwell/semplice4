@@ -463,7 +463,7 @@ if [[ "$response" == [Yy]* ]]; then
 
   # Drive read offsets: every install or upgrade starts with a fresh copy of AccurateRip's list.
   # If AccurateRip can't be reached now, Semplice fetches it the first time it needs an offset.
-  rm -f "$NEWCONF/txt/cddriveoffsets.csv"
+  rm -f "$NEWCONF/txt/driveoffsets.csv"
   ( CONFDIR="$NEWCONF"; source "$NEWCONF/bin/semfunctions.sh"; refresh_drive_offsets ) >/dev/null 2>&1
 
   # 6. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
