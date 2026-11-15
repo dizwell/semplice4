@@ -77,7 +77,18 @@ if [[ ${CONFRIPMODE,,} == "safe" || ${CONFRIPMODE,,} == "fast" ]]; then CONFRIPM
 # Check for legal values and replace with defaults if not legal
 # ====================================================================
 
-if ! [[ $CONFOFFSET =~ ^[+-]?[0-9]+$ ]]; then CONFOFFSET=0; fi
+# Read offset: empty is allowed, and means "work it out automatically" (Linux: from the offsets list). A whole
+# number is kept if it is within +/-3000 samples (real drives run from about -1200 to +1800); anything else is
+# refused, with a message, and the previous value kept.
+CONFOFFSET=${CONFOFFSET// /}; CONFOFFSET=${CONFOFFSET#+}
+if [[ -n $CONFOFFSET ]]; then
+  if [[ $CONFOFFSET =~ ^-?[0-9]+$ && $((10#${CONFOFFSET#-})) -le 3000 ]]; then
+    if [[ $CONFOFFSET == -* ]]; then CONFOFFSET="-$((10#${CONFOFFSET#-}))"; else CONFOFFSET="$((10#$CONFOFFSET))"; fi
+  else
+    dialog --backtitle "Semplice Configuration File Editor" --title " Read offset not changed " --msgbox "\nThe read offset must be a whole number of samples between -3000 and +3000 (or left empty, for automatic detection). \"$CONFOFFSET\" isn't, so the previous value has been kept." 10 80
+    CONFOFFSET="${confoffset#+}"
+  fi
+fi
 if ! [[ $CONFRETRIES =~ ^[+-]?[0-9]+$ ]] ; then CONFRETRIES=40; fi
 if [[ ${CONFHYPER,,} == "yes" || ${CONFHYPER,,} == "no" ]]; then CONFHYPER=${CONFHYPER,,}; else CONFHYPER="no"; fi
 if [[ ${CONFDELETE,,} == "yes" || ${CONFDELETE,,} == "no" ]]; then CONFDELETE=${CONFDELETE,,}; else CONFDELETE="yes"; fi
