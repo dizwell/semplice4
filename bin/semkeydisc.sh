@@ -62,7 +62,7 @@ function kd_ask_for_disc {
 # Returns 1 if the user wants to stop.
 local title=" Insert a key disc " what="an audio CD"
 if [[ $2 == "another" ]]; then title=" Insert another key disc "; what="another audio CD"; fi
-dialog --backtitle "$KD_TITLE" --title "$title" --yes-label "Continue" --no-label "Stop" --yesno "\n${1:+$1\n\n}Please insert $what, then choose Continue.\n\nNo special disc is needed: any ordinary commercial CD that is likely to be in the AccurateRip database will do. Home-made or very obscure discs are unlikely to work.\n\nIf you stop now, the discs tried so far are remembered for next time." 17 80
+dialog --backtitle "$KD_TITLE" --title "$title" --yes-label "Continue" --no-label "Stop" --yesno "\n${1:+$1\n\n}Please insert $what, then choose Continue.\n\nNo special disc is needed: any ordinary commercial CD that is likely to be in the AccurateRip database will do. Home-made or very obscure discs are unlikely to work.\n\nIf you stop now, the discs tried so far are remembered for next time." 20 80
 }
 
 function kd_test_disc {
@@ -149,7 +149,7 @@ while true; do
         KD_MSG="You've already used that disc: please try a different one."
       else
         echo "$KD_DISCID $KD_OFFSETS" >> "$KD_VOTES"
-        KD_MSG="That disc was useful, but more discs are needed to be sure of the offset."
+        KD_MSG="That disc was useful."
       fi ;;
     "RESULT: NOTINDB")
       KD_MSG="That disc isn't in the AccurateRip database, so it can't be used." ;;
@@ -174,6 +174,11 @@ while true; do
     kd_eject; kd_save_offset "$KD_TOP" "$KD_TOPVOTES key discs agree"; return
   fi
 
+  # Say how close we are: the best-supported offset's votes, out of the three needed
+  if [[ -n $KD_TOPVOTES ]]; then
+    if [[ $KD_TOPVOTES -eq 1 ]]; then KD_VOTEWORD="1 vote"; else KD_VOTEWORD="$KD_TOPVOTES votes"; fi
+    KD_MSG="$KD_MSG\n\nThe most likely read offset so far has $KD_VOTEWORD: it needs 3."
+  fi
   kd_eject
   kd_ask_for_disc "$KD_MSG" another || return
   if ! kd_wait_for_disc; then
