@@ -125,11 +125,16 @@ fi
 
 function perform_replaygain {
 tput civis; tput cup 25 1; printf $LINEDRAW2%.0s {1..101}; MESSAGE="Analysing the folder of FLACs…  "; tput cup 25 4	
-metaflac --add-replay-gain *.flac 2>/dev/null & spinner $!
+metaflac --add-replay-gain *.flac 2>/dev/null & RGPID=$!; spinner $RGPID
+wait $RGPID; RGSTATUS=$?                                                  # Did metaflac itself succeed?
 
-# Report the result: the album gain is the same in every FLAC, so read it from the first one
-f=$(ls *.flac 2>/dev/null | head -1)
-ALBUMGAIN=$(get_tag REPLAYGAIN_ALBUM_GAIN "$f")
+# Report the result: the album gain is the same in every FLAC, so read it from the first one. Only when
+# metaflac succeeded, though: if it failed, any gain still in the file is an old one from before.
+ALBUMGAIN=""
+if [[ $RGSTATUS -eq 0 ]]; then
+  f=$(ls *.flac 2>/dev/null | head -1)
+  ALBUMGAIN=$(get_tag REPLAYGAIN_ALBUM_GAIN "$f")
+fi
 if [[ -n $ALBUMGAIN ]]; then
   dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Applied " --msgbox "\n\nThe metadata volume boost has been successfully applied, with a calculated Album Gain of $ALBUMGAIN.\n\nClick OK to return to the main menu." 14 80
 else
