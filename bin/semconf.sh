@@ -85,7 +85,7 @@ if [[ -n $CONFOFFSET ]]; then
   if [[ $CONFOFFSET =~ ^-?[0-9]+$ && $((10#${CONFOFFSET#-})) -le 3000 ]]; then
     if [[ $CONFOFFSET == -* ]]; then CONFOFFSET="-$((10#${CONFOFFSET#-}))"; else CONFOFFSET="$((10#$CONFOFFSET))"; fi
   else
-    dialog --backtitle "Semplice Configuration File Editor" --title " Read offset not changed " --msgbox "\nThe read offset must be a whole number of samples between -3000 and +3000 (or left empty, for automatic detection). \"$CONFOFFSET\" isn't a valid value, so the previous value has been kept." 10 80
+    dialog --backtitle "Semplice Configuration File Editor" --title " Read offset not changed! " --msgbox "\nThe read offset must be a whole number of samples between -3000 and +3000 (or left empty, for automatic detection). \"$CONFOFFSET\" isn't a valid value, so the previous value has been kept." 10 80
     CONFOFFSET="${confoffset#+}"
   fi
 fi
