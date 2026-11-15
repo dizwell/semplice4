@@ -54,7 +54,7 @@ function cdrom_identify_macos {
   fi
 
   DEVICE_OFFSET=${OPTICAL_OFFSET:-0}
-  OFFSETSOURCE="the configured read offset"
+  OFFSETSOURCE="your configured read offset"
   offset_confirm
 }
 
@@ -85,18 +85,22 @@ fi
 
 if [[ $NODEVICE -eq 1 ]]; then return; fi
 
-# Read offset (Linux): a drive picked this session with Ripping option 2 brings its own offset. Otherwise
-# the configured drive's offset is looked up in the offsets list, falling back to the configured offset.
+# Read offset (Linux): a drive picked this session with Ripping option 2 brings its own offset. Otherwise a
+# configured read offset (typed in, or measured with Configure AccurateRip) always wins; only when none is
+# configured is the drive looked up in the offsets list, and only if it isn't listed is 0 used.
 if [[ -n $SESSION_DEVICE ]]; then
   DEVICE_OFFSET=$SESSION_OFFSET
   OFFSETSOURCE="set for this drive with Ripping option 2"
+elif [[ -n $OPTICAL_OFFSET ]]; then
+  DEVICE_OFFSET=$OPTICAL_OFFSET
+  OFFSETSOURCE="your configured read offset"
 else
   DEVICE_OFFSET=$(lookup_drive_offset "$OPTICAL_DEVICE")
   if [[ -n $DEVICE_OFFSET ]]; then
     OFFSETSOURCE="listed for your drive, $DEVICENAME"
   else
-    DEVICE_OFFSET=${OPTICAL_OFFSET:-0}
-    OFFSETSOURCE="the configured read offset: your drive is not in the offsets list"
+    DEVICE_OFFSET=0
+    OFFSETSOURCE="none configured, and your drive is not in the offsets list"
   fi
 fi
 offset_confirm
