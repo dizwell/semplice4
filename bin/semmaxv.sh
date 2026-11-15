@@ -144,9 +144,9 @@ else
   find_damaged_flac & spinner $!
   DAMAGEDFLAC=$(cat "$CONFDIR/tmp/damagedflac.txt" 2>/dev/null); rm -f "$CONFDIR/tmp/damagedflac.txt"
   if [[ -n $DAMAGEDFLAC ]]; then
-    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nAt least one of the FLACs in this folder appears to be damaged or corrupted, so the ReplayGain metadata could not be added:\n\n$DAMAGEDFLAC\n\nNo volume boost has been applied." 14 80
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed! " --msgbox "\nAt least one of the FLACs in this folder appears to be damaged or corrupted, so the ReplayGain metadata could not be added:\n\n$DAMAGEDFLAC\n\nNo volume boost has been applied." 14 80
   else
-    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed " --msgbox "\nThe ReplayGain metadata could not be added, so no volume boost has been applied.\n\nClick OK to return to the main program menu." 14 80
+    dialog --stdout --backtitle "Semplice FLAC Volume Boosting" --title " Metadata Volume Boost Failed! " --msgbox "\nThe ReplayGain metadata could not be added, so no volume boost has been applied.\n\nClick OK to return to the main program menu." 14 80
   fi
 fi
 }
