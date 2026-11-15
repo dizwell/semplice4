@@ -39,7 +39,7 @@ return 0
 function kd_wait_for_disc {
 # After the user says a disc is in: give the drive up to 30 seconds to spin it up and read it
 local tries=0
-dialog --backtitle "$KD_TITLE" --title " Configure AccurateRip " --infobox "\nWaiting for the disc to be ready..." 5 70
+dialog --backtitle "$KD_TITLE" --title " Configuring AccurateRip " --infobox "\nWaiting for the disc to be ready..." 5 70
 until kd_find_drive; do
   tries=$((tries+1))
   if [[ $tries -ge 15 ]]; then return 1; fi
@@ -54,7 +54,7 @@ if [[ $OSFAMILY == "MACOS" ]]; then drutil eject >/dev/null 2>&1; else eject "$K
 
 function kd_progress {
 # $1 = percentage done, $2 = the step now in progress
-echo "$1" | dialog --backtitle "$KD_TITLE" --title " Configure AccurateRip " --gauge "\nDrive: $KD_DRIVE\n\n$2" 10 70 0
+echo "$1" | dialog --backtitle "$KD_TITLE" --title " Configuring AccurateRip " --gauge "\nDrive: $KD_DRIVE\n\n$2" 10 70 0
 }
 
 function kd_ask_for_disc {
@@ -146,7 +146,7 @@ while true; do
       KD_DISCID=${KD_LINE%% *}; KD_OFFSETS=${KD_LINE#* }
       touch "$KD_VOTES"
       if $GREPPROG -q "^$KD_DISCID " "$KD_VOTES"; then                    # One vote per disc, however often it's tried
-        KD_MSG="You've already used that disc: please try a different one."
+        KD_MSG="You've already used that disc: please use a different one."
       else
         echo "$KD_DISCID $KD_OFFSETS" >> "$KD_VOTES"
         KD_MSG="That disc was useful."
