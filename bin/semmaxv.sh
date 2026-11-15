@@ -25,7 +25,7 @@ declare -A peak_volumes
 for f in *.flac; do
   # ffmpeg reports e.g. "max_volume: -3.2 dB". Take the number after "max_volume:" and drop any minus sign, so
   # "-3.2" becomes 3.2 (the headroom available). A full-volume track may be reported as "0.0" or "-0.0": either way it gives 0.
-  MAXV=$("$FFMPEG" -i "$f" -af "volumedetect" -vn -sn -dn -f null /dev/null 2>&1 | $GREPPROG -a 'max_volume:' | \
+  MAXV=$("$FFMPEG" -nostdin -i "$f" -af "volumedetect" -vn -sn -dn -f null /dev/null 2>&1 | $GREPPROG -a 'max_volume:' | \
          awk '{ for (i = 1; i < NF; i++) if ($i == "max_volume:") { v = $(i+1); sub(/^[-+]/, "", v); print v; exit } }')
 
   # If nothing could be read at all, treat the file as having no headroom: that safely prevents any boost
@@ -94,9 +94,9 @@ if [[ $CANBEBOOSTED -eq 1 ]]; then                                              
     BOOSTED="+$CANDIDATE_BOOST-dB-$f"                                                           # e.g. "+3.5-dB-01 - Allegro.flac"
 
     if [ $BITDEPTH -eq 24 ]; then
-      "$FFMPEG" -y -i "$f" -sample_fmt s32 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
+      "$FFMPEG" -nostdin -y -i "$f" -sample_fmt s32 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
     else
-      "$FFMPEG" -y -i "$f" -sample_fmt s16 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
+      "$FFMPEG" -nostdin -y -i "$f" -sample_fmt s16 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
     fi
     wait $FFPID; FFSTATUS=$?
     BOOSTEDFILES+=("$BOOSTED")

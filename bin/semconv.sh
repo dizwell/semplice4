@@ -246,7 +246,7 @@ if [[ $INPUTFORMAT == "ISO" ]]; then
   else
     LOWPASS=21000
   fi
-  "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+  "$FDPROG" -j "$THREADS" -d 1 -t f -e "dsf" -x "$FFMPEG" -nostdin -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
 fi
 
 if [[ $INPUTFORMAT == "DSF" ]]; then                # Only major difference to any other conversion is addition of a low-pass filter to stop quantisation effects appearing in the output
@@ -258,13 +258,13 @@ if [[ $INPUTFORMAT == "DSF" ]]; then                # Only major difference to a
     LOWPASS=21000
   fi
   MESSAGE="Converting DSF files to $DISPLAYOUT. Please wait…  "
-  "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+  "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x "$FFMPEG" -nostdin -hide_banner -loglevel 0 -i "{}" -af "lowpass=$LOWPASS" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
 elif [[ $INPUTFORMAT != "ISO" ]]; then           # ISOs were dealt with above
   MESSAGE="Converting $DISPLAYIN files to $DISPLAYOUT. Please wait…  "
   if [[ ! $IN == "aiff" ]]; then    # AIFFs come with multiple possible extensions, so they need a separate '-e' extension clause
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+    "$FDPROG" -j "$THREADS" -d 1 -t f -e "$IN" -x "$FFMPEG" -nostdin -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
   else
-    "$FDPROG" -j "$THREADS" -d 1 -t f -e aiff -e aif -e aifc -x "$FFMPEG" -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
+    "$FDPROG" -j "$THREADS" -d 1 -t f -e aiff -e aif -e aifc -x "$FFMPEG" -nostdin -hide_banner -loglevel 0 -i "{}" "${PRESERVETAG[@]}" $BITDEPTH -y "{.}$BITS.$OUT" & spinner $!
   fi
 fi
 

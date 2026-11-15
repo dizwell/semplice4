@@ -289,7 +289,7 @@ $SEDPROG -i "s/'/'\\\''/g" "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null         
 $SEDPROG -i "s/+^+^+/'/g" "$CONFDIR/tmp/cao-tracklist.txt"                      # Parse triple plusses and replace then with vanilla single quotes
 
 MESSAGE="Merging files…   "
-"$FFMPEG" -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/cao-tracklist.txt" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
+"$FFMPEG" -nostdin -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/cao-tracklist.txt" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
 rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
 
 # The merge worked only if the SuperFLAC is exactly as long as all the tracks put together
@@ -350,7 +350,7 @@ rm "cuesheet.cue"
 # Offer to delete the individual FLAC files, leaving only the SuperFLAC
 # ------------------------------------------------------------------------------------------
 rm -rf "/$CONFDIR/tmp/cao-files.txt"
-find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' | sort > "/$CONFDIR/tmp/cao-files.txt"
+{ echo; find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' | sort; } > "/$CONFDIR/tmp/cao-files.txt"     # The leading blank line separates the box title from the list
 $SEDPROG -i 's/.\///g' "/$CONFDIR/tmp/cao-files.txt"     # Bit of trimming to remove leading periods and slashes.
 
 if [[ $MERGEOK -eq 0 ]]; then                                                  # The merge failed: keep the tracks and remove the faulty SuperFLAC
