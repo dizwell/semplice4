@@ -145,9 +145,12 @@ while true; do
       KD_LINE=${KD_RESULT#RESULT: OFFSETS }
       KD_DISCID=${KD_LINE%% *}; KD_OFFSETS=${KD_LINE#* }
       touch "$KD_VOTES"
-      $GREPPROG -v "^$KD_DISCID " "$KD_VOTES" > "$KD_VOTES.new"; mv "$KD_VOTES.new" "$KD_VOTES"     # One vote per disc, however often it's tried
-      echo "$KD_DISCID $KD_OFFSETS" >> "$KD_VOTES"
-      KD_MSG="That disc was useful, but more discs are needed to be sure of the offset." ;;
+      if $GREPPROG -q "^$KD_DISCID " "$KD_VOTES"; then                    # One vote per disc, however often it's tried
+        KD_MSG="You've already used that disc: please try a different one."
+      else
+        echo "$KD_DISCID $KD_OFFSETS" >> "$KD_VOTES"
+        KD_MSG="That disc was useful, but more discs are needed to be sure of the offset."
+      fi ;;
     "RESULT: NOTINDB")
       KD_MSG="That disc isn't in the AccurateRip database, so it can't be used." ;;
     "RESULT: NOMATCH")
