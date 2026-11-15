@@ -161,7 +161,10 @@ for f in *.flac; do
 
   # Some streamers can't seek in a FLAC without a seek table, so give any FLAC that lacks one a
   # 100-point table (1% resolution). An existing seek table is left exactly as it is.
-  if ! metaflac --list --block-type=SEEKTABLE "$f" 2>/dev/null | $GREPPROG -q SEEKTABLE; then
+  # A seek table with no points in it (some converters write one) counts as none: it is removed and replaced.
+  seekpoints=$(metaflac --list --block-type=SEEKTABLE "$f" 2>/dev/null | awk '/seek points:/ {print $3; exit}')
+  if [[ -z $seekpoints || $seekpoints -eq 0 ]]; then
+    [[ -n $seekpoints ]] && metaflac --remove --block-type=SEEKTABLE "$f" 2>/dev/null
     metaflac --add-seekpoint=100x "$f" 2>/dev/null
   fi
 done
