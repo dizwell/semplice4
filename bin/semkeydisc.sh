@@ -16,6 +16,7 @@
 #
 ####################################################################
 
+source "$CONFDIR/bin/semspin.sh"
 KD_TITLE="Semplice AccurateRip Configuration"
 KD_TMP="$CONFDIR/tmp/keydisc"
 
