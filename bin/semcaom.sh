@@ -358,7 +358,7 @@ if [[ $MERGEOK -eq 0 ]]; then                                                  #
   dialog --backtitle "Semplice FLAC Merging" --title " SuperFLAC Creation Failure! " --msgbox "\nThe per-track FLACs could not be merged properly: there may be internal corruption preventing this, for example. The SuperFLAC could therefore not be created.\n\nThe per-track FLACs have, however, been retained." 12 80
 else
   if [[ $AUTODELETE -eq 0 ]]; then
-    dialog --backtitle "Semplice FLAC Merging" --title " Do you want to delete the per-track FLACs listed here? " --extra-button --extra-label "No" --default-button extra --ok-label "Yes" --textbox "$CONFDIR/tmp/cao-files.txt" 16 90
+    dialog --no-mouse --backtitle "Semplice FLAC Merging" --title " Do you want to delete the per-track FLACs listed here? " --extra-button --extra-label "No" --default-button extra --ok-label "Yes" --textbox "$CONFDIR/tmp/cao-files.txt" 16 90
     exitStatus=$?
     if [[ $exitStatus -eq 0 ]]; then                                          # True if they've taken the 'Yes' option
       find . -maxdepth 1 -type f -name '*.flac' ! -name '*superflac*' -exec rm -- '{}' +

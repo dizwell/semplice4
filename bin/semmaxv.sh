@@ -125,7 +125,7 @@ fi
 
 function perform_cleanup {
 if [[ $BOOSTPERFORMED -eq 1 ]]; then                                   # Ditto! Don't even offer to delete anything if you haven't actually volume-boosted something
-  dialog --backtitle "Semplice FLAC Volume Boosting" --title " Do you want to delete the original FLACs? " --defaultno --yesno "\nVolume boosting is complete. Do you wish to now delete the original FLACs?" 14 80
+  dialog --no-mouse --backtitle "Semplice FLAC Volume Boosting" --title " Do you want to delete the original FLACs? " --defaultno --yesno "\nVolume boosting is complete. Do you wish to now delete the original FLACs?" 14 80
   exitStatus=$?
   if [[ $exitStatus -eq 0 ]]; then DELETESOURCE=1; fi
   if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then DELETESOURCE=0; fi
