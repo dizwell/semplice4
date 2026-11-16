@@ -235,8 +235,18 @@ if [[ $INPUTFORMAT == "ISO" ]]; then
   MESSAGE="Splitting the ISO. Please wait…  "
   shopt -s nullglob; PREDSF=(*.dsf); shopt -u nullglob   # Note any DSFs already here, so only the ones extracted below count as intermediate files
   for f in *.iso; do
-    # Extract the ISO to DSFs, move them all into the source folder and delete the "Stereo" subfolder sacd_extract originally writes them to
-    "$SACDEXTRACT" -2 -s -i "$f" >/dev/null & spinner $! && find . -name "*.dsf" -exec mv {} . \; && find . -type d -empty -delete
+    # Extract the ISO to DSFs, then move them all up into the source folder
+    "$SACDEXTRACT" -2 -s -i "$f" >/dev/null & spinner $!
+    EXTRACTDIRS=$(find . -mindepth 2 -name "*.dsf" -exec dirname {} \; | sort -u)    # The folders sacd_extract wrote them to
+    find . -mindepth 2 -name "*.dsf" -exec mv {} . \;
+    # Remove those folders (the "Stereo" folder and the album folder above it), and only those. Finder may have left
+    # a hidden .DS_Store in them, which would stop them counting as empty, so that goes first.
+    while IFS= read -r d; do
+      while [[ -n $d && $d != "." ]]; do
+        rm -f "$d/.DS_Store"; rmdir "$d" 2>/dev/null || break
+        d=$(dirname "$d")
+      done
+    done <<< "$EXTRACTDIRS"
   done
   MESSAGE="Converting the output files to $DISPLAYOUT. Please wait…  "
   if [[ $XHIRES -eq 1 ]]; then
