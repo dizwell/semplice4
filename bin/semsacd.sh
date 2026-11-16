@@ -114,6 +114,7 @@ if [[ $GOODIP -eq 1 ]]; then
     if ! [[ -d "$RIPDIR"/SACD_ISORIPS ]]; then mkdir "$RIPDIR"/SACD_ISORIPS 2>/dev/null; fi 
     # The ripper runs in its own WezTerm window (all platforms), which stays open until Enter is pressed
     RIPCMD='"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "'
+    RIPSIZE=(--config initial_cols=90 --config initial_rows=22)    # A little smaller than Semplice's 103x28, so Semplice still shows behind it
     OPENED=0
     if [[ $OSFAMILY == "MACOS" ]]; then
       # MacOS: open the window through WezTerm's own app. Started as a child of Semplice.app, MacOS refuses the
@@ -121,10 +122,10 @@ if [[ $GOODIP -eq 1 ]]; then
       # for the window to close, as before. MacPorts and Homebrew both work: use the app WezTerm runs from.
       WEZAPP="${WEZTERM_EXECUTABLE%%/Contents/MacOS/*}"
       if ! [[ $WEZAPP == *.app && -d $WEZAPP ]]; then WEZAPP="WezTerm"; fi
-      open -W -n -a "$WEZAPP" --args start -- bash -c "$RIPCMD" "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null && OPENED=1
+      open -W -n -a "$WEZAPP" --args "${RIPSIZE[@]}" start -- bash -c "$RIPCMD" "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null && OPENED=1
     fi
     if [[ $OPENED -eq 0 ]]; then
-      "${WEZTERM_EXECUTABLE:-wezterm}" start --always-new-process -- bash -c "$RIPCMD" "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
+      "${WEZTERM_EXECUTABLE:-wezterm}" "${RIPSIZE[@]}" start --always-new-process -- bash -c "$RIPCMD" "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
     fi
   else
     dialog --stdout --backtitle "Semplice SACD Ripping" --title " Networking Error! " --msgbox "\nAn SACD ripping server cannot be contacted at this IP address." 8 80
