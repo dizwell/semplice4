@@ -113,7 +113,19 @@ if [[ $GOODIP -eq 1 ]]; then
     tput cup 25 4; echo -e "Invoking the SACD ripper in another terminal session..."
     if ! [[ -d "$RIPDIR"/SACD_ISORIPS ]]; then mkdir "$RIPDIR"/SACD_ISORIPS 2>/dev/null; fi 
     # The ripper runs in its own WezTerm window (all platforms), which stays open until Enter is pressed
-    "${WEZTERM_EXECUTABLE:-wezterm}" start --always-new-process -- bash -c '"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "' "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
+    RIPCMD='"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "'
+    OPENED=0
+    if [[ $OSFAMILY == "MACOS" ]]; then
+      # MacOS: open the window through WezTerm's own app. Started as a child of Semplice.app, MacOS refuses the
+      # ripper's connection to the player ("No route to host"); through WezTerm's app it is allowed. -W: wait
+      # for the window to close, as before. MacPorts and Homebrew both work: use the app WezTerm runs from.
+      WEZAPP="${WEZTERM_EXECUTABLE%%/Contents/MacOS/*}"
+      if ! [[ $WEZAPP == *.app && -d $WEZAPP ]]; then WEZAPP="WezTerm"; fi
+      open -W -n -a "$WEZAPP" --args start -- bash -c "$RIPCMD" "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null && OPENED=1
+    fi
+    if [[ $OPENED -eq 0 ]]; then
+      "${WEZTERM_EXECUTABLE:-wezterm}" start --always-new-process -- bash -c "$RIPCMD" "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
+    fi
   else
     dialog --stdout --backtitle "Semplice SACD Ripping" --title " Networking Error! " --msgbox "\nAn SACD ripping server cannot be contacted at this IP address." 8 80
   fi
