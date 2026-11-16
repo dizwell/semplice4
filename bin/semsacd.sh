@@ -50,6 +50,7 @@ if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then
   break
 else
   if [[ -d "$RIPDIR" ]]; then
+    RIPDIR="${RIPDIR%/}"; RIPDIR="${RIPDIR:-/}"         # No trailing slash (so no "Desktop//SACD_ISORIPS"), but keep a lone /
     echo "$RIPDIR" > "$CONFDIR/txt/sacddir.txt"
     break
   fi

@@ -58,10 +58,11 @@ fi
 
 echo "Building sacd_extract..."
 cd sacd-ripper
+HASH=$(git rev-parse --short HEAD 2>/dev/null || echo NA)    # Shown in sacd_extract's banner: which version of EuFlo's source this is
 L=libs
 SRC=$(ls tools/sacd_extract/*.c $L/libcommon/*.c $L/libdstdec/*.c $L/libid3/*.c $L/libsacd/*.c \
       | grep -v -E "usocket.c|wsocket.c|dst_decoder_ps3.c|/ioctl.c|sac_accessor.c")
-cc -O2 -w -D_FILE_OFFSET_BITS=64 -Itools/sacd_extract -I$L/libcommon -I$L/libdstdec \
+cc -O2 -w -D_FILE_OFFSET_BITS=64 -DGIT_COMMIT_HASH=$HASH -Itools/sacd_extract -I$L/libcommon -I$L/libdstdec \
    -I$L/libid3 -I$L/libsacd $XMLINC $SRC $LINK -o "$OUTFILE" 2>&1 | grep -v -i -E "warning|gethostby" || true
 strip "$OUTFILE"
 
