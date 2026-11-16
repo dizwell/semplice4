@@ -114,7 +114,11 @@ if [[ $GOODIP -eq 1 ]]; then
     if ! [[ -d "$RIPDIR"/SACD_ISORIPS ]]; then mkdir "$RIPDIR"/SACD_ISORIPS 2>/dev/null; fi 
     # The ripper runs in its own WezTerm window (all platforms), which stays open until Enter is pressed
     RIPCMD='"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "'
-    RIPSIZE=(--config initial_cols=90 --config initial_rows=22)    # A little smaller than Semplice's 103x28, so Semplice still shows behind it
+    # Wider but shorter than Semplice's 103x28, in Semplice's own WezTerm settings (so the same font and spacing):
+    # whichever window is in front, part of the other still shows
+    RIPSIZE=()
+    if [[ -f $HOME/.semplice.lua ]]; then RIPSIZE+=(--config-file "$HOME/.semplice.lua"); fi
+    RIPSIZE+=(--config initial_cols=115 --config initial_rows=20)
     OPENED=0
     if [[ $OSFAMILY == "MACOS" ]]; then
       # MacOS: open the window through WezTerm's own app. Started as a child of Semplice.app, MacOS refuses the
