@@ -239,7 +239,7 @@ fi
 chmod +x "$NEWCONF/exec/"*
 
 # Art files next
-components=(Luxi_License.txt luximr.ttf sempliceico.png sempliceicobeta.png sempliceico.svg)
+components=(Luxi_License.txt luximr.ttf LinLibertine_M.otf sempliceico.png sempliceicobeta.png sempliceico.svg)
 total=${#components[@]}
 count=0
 (
@@ -492,13 +492,15 @@ if [[ "$response" == [Yy]* ]]; then
 
   # 6. Try to install the program fonts (but it may not work on all distros, and ultimately it's up to them)
   # -----------------------------------------------------
-  # WezTerm's Semplice settings use the Luxi Mono font, so it must be installed where the system looks for fonts
+  # WezTerm's Semplice settings use the Linux Libertine Mono O font (as Giocoso does), so it must be installed where the system looks for fonts
   if [[ $(uname -s) == "Darwin" ]]; then
     mkdir -p "$HOME/Library/Fonts" 2>/dev/null
     cp "$HOME/.local/share/semplice4/art/"*.ttf "$HOME/Library/Fonts/" 2>/dev/null
+    cp "$HOME/.local/share/semplice4/art/"*.otf "$HOME/Library/Fonts/" 2>/dev/null
   else
     mkdir -p "$HOME/.local/share/fonts" 2>/dev/null
     cp "$HOME/.local/share/semplice4/art/"*.ttf "$HOME/.local/share/fonts/" 2>/dev/null
+    cp "$HOME/.local/share/semplice4/art/"*.otf "$HOME/.local/share/fonts/" 2>/dev/null
     fc-cache -f 2>/dev/null
     clear
   fi
@@ -512,7 +514,7 @@ local config = wezterm.config_builder()
 config.initial_cols = 103
 config.initial_rows = 28
 config.color_scheme = 'Galaxy'
-config.font = wezterm.font("Luxi Mono", {weight="Regular", stretch="Normal", style="Normal"})
+config.font = wezterm.font("Linux Libertine Mono O", {weight="Regular", stretch="Normal", style="Normal"})
 config.font_size = 12
 config.audible_bell = "Disabled"
 config.window_close_confirmation = "NeverPrompt"
