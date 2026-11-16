@@ -74,6 +74,19 @@ if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
 fi
 }
 
+function sacd_server_reachable {
+# True if the SACD player's ripping server (port 2002, the one sacd_extract uses) accepts a connection within
+# five seconds. A plain TCP connection in bash, deliberately not ping: MacOS can block ping from Semplice.app
+# while the connection the ripper needs works fine, and a player can answer pings without its server running.
+( exec 3<>"/dev/tcp/$1/2002" ) 2>/dev/null &
+local pid=$! tenths=0
+while kill -0 $pid 2>/dev/null; do
+  if [[ $tenths -ge 50 ]]; then kill $pid 2>/dev/null; wait $pid 2>/dev/null; return 1; fi
+  sleep 0.1; tenths=$((tenths + 1))
+done
+wait $pid
+}
+
 # SACDEXTRACT is sacd_extract-<macos|linux>-<arm64|x86_64>, set by semoscheck.sh
 if [[ ! -x $SACDEXTRACT ]]; then
   dialog --stdout --backtitle "Semplice SACD Ripping" --title " SACD Ripper Missing " --msgbox "\nSemplice's SACD ripping program for this computer could not be found, so SACD ripping is not possible." 8 80
@@ -96,13 +109,12 @@ done
 
 
 if [[ $GOODIP -eq 1 ]]; then
-  ping >/dev/null -c 1 "$SACDIP" ; ping_status=$?
-  if [ $ping_status -eq 0 ]; then
+  if sacd_server_reachable "$SACDIP"; then
     tput cup 25 4; echo -e "Invoking the SACD ripper in another terminal session..."
     if ! [[ -d "$RIPDIR"/SACD_ISORIPS ]]; then mkdir "$RIPDIR"/SACD_ISORIPS 2>/dev/null; fi 
     # The ripper runs in its own WezTerm window (all platforms), which stays open until Enter is pressed
     "${WEZTERM_EXECUTABLE:-wezterm}" start --always-new-process -- bash -c '"$0" -i "$1":2002 -I -z -2 -A -a -b -o "$2"; echo; read -rp "SACD ripping has finished. Press Enter to close this window. "' "$SACDEXTRACT" "$SACDIP" "$RIPDIR/SACD_ISORIPS" 2>/dev/null
   else
-    dialog --stdout --backtitle "Semplice SACD Ripping" --title " Networking Error! " --msgbox "\nAn SACD player cannot be contacted at this IP address." 8 80
+    dialog --stdout --backtitle "Semplice SACD Ripping" --title " Networking Error! " --msgbox "\nAn SACD ripping server cannot be contacted at this IP address." 8 80
   fi
 fi
