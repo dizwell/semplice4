@@ -21,9 +21,10 @@ awk '{ sub(/\r$/, ""); sub(/^[ \t]+/, ""); sub(/[ \t]+$/, "")
 # Typed text on macOS can arrive decomposed. Elsewhere, or if uconv is missing, text passes through unchanged.
 function clean_tag {
 # A tag value as Semplice writes it: no pipes or backslashes (no classical tag needs them, and they upset tools that use
-# them as separators or escape characters, such as Giocoso's database refresh), and any stray line break becomes a space.
+# them as separators or escape characters, such as Giocoso's database refresh), any stray line break becomes a space, and runs of spaces become one.
 local v="$1"
 v="${v//|/}"; v="${v//\\/}"; v="${v//$'\r'/ }"; v="${v//$'\n'/ }"
+while [[ $v == *"  "* ]]; do v="${v//  / }"; done                        # Any run of spaces this leaves becomes a single space
 printf '%s' "$v"
 }
 

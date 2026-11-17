@@ -296,7 +296,7 @@ for f in *.flac; do
   metaflac $UTFCHARS --remove-tag=Date "$f" 2>/dev/null
   metaflac $UTFCHARS --remove-tag=Tagdate "$f" 2>/dev/null
   metaflac $UTFCHARS --remove-tag=Comment "$f" 2>/dev/null
-  $SEDPROG -i 's/[|\\]//g' "$TAGFILE"                        # No pipes or backslashes in tags (see clean_tag)
+  $SEDPROG -i 's/[|\\]//g; s/  */ /g' "$TAGFILE"            # No pipes or backslashes in tags, and single spaces (see clean_tag)
   metaflac $UTFCHARS --import-tags-from="$TAGFILE" "$f"
   metaflac $UTFCHARS --set-tag=COMMENT="$(clean_tag "$COMMENTS")" "$f"
 done
