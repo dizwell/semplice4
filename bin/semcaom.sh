@@ -210,7 +210,7 @@ for f in *.flac; do
     TITLE="${TITLE//.../…}"
     TITLE="${TITLE//../…}"
     metaflac $UTFCHARS --remove-tag="Title" "$f"
-    metaflac $UTFCHARS "--set-tag=Title=$TITLE" "$f"
+    metaflac $UTFCHARS "--set-tag=Title=$(clean_tag "$TITLE")" "$f"
     mv "${f}" "${f//.../…}"
   fi
 done
@@ -221,7 +221,7 @@ for f in *.flac; do
     TITLE="${TITLE//.../…}"
     TITLE="${TITLE//../…}"
     metaflac $UTFCHARS --remove-tag="Title" "$f"
-    metaflac $UTFCHARS "--set-tag=Title=$TITLE" "$f"
+    metaflac $UTFCHARS "--set-tag=Title=$(clean_tag "$TITLE")" "$f"
     mv "${f}" "${f//../…}"
   fi
 done
@@ -305,16 +305,16 @@ FILENAME="${FILENAME//\[/\\[}"                        # If the filename contains
 FILENAME="${FILENAME//\]/\\]}"                        # for 'find' to be able to find them. If not, the resulting super-FLAC won't get tagged up
 
 f=$(find "$(pwd)" -maxdepth 1 -name "$FILENAME")      # Only look in current directory, not in any folders that may be hanging off this one
-metaflac $UTFCHARS --set-tag="Composer=$ARTIST" "$f"
-metaflac $UTFCHARS --set-tag="Artist=$ARTIST" "$f"
-metaflac $UTFCHARS --set-tag="Album=$ALBUM" "$f"
-metaflac $UTFCHARS --set-tag="TRACKNUMBER=$TRACKNUMBER" "$f"
-metaflac $UTFCHARS --set-tag="Title=$ALBUM" "$f"
-metaflac $UTFCHARS --set-tag="Genre=$GENRE" "$f"
-metaflac $UTFCHARS --set-tag="Comment=$COMMENT" "$f"
-metaflac $UTFCHARS --set-tag="Performer=$PERFORMER" "$f"
-metaflac $UTFCHARS --set-tag="Date=$YEAR" "$f"
-metaflac $UTFCHARS --set-tag="Notes=$NOTES" "$f"
+metaflac $UTFCHARS --set-tag="Composer=$(clean_tag "$ARTIST")" "$f"
+metaflac $UTFCHARS --set-tag="Artist=$(clean_tag "$ARTIST")" "$f"
+metaflac $UTFCHARS --set-tag="Album=$(clean_tag "$ALBUM")" "$f"
+metaflac $UTFCHARS --set-tag="TRACKNUMBER=$(clean_tag "$TRACKNUMBER")" "$f"
+metaflac $UTFCHARS --set-tag="Title=$(clean_tag "$ALBUM")" "$f"
+metaflac $UTFCHARS --set-tag="Genre=$(clean_tag "$GENRE")" "$f"
+metaflac $UTFCHARS --set-tag="Comment=$(clean_tag "$COMMENT")" "$f"
+metaflac $UTFCHARS --set-tag="Performer=$(clean_tag "$PERFORMER")" "$f"
+metaflac $UTFCHARS --set-tag="Date=$(clean_tag "$YEAR")" "$f"
+metaflac $UTFCHARS --set-tag="Notes=$(clean_tag "$NOTES")" "$f"
 
 if [[ -n $RPG_ALBUMGAIN ]]; then                               # Track 1's ReplayGain tags carry over whenever it has them, whatever the default boost method
   metaflac $UTFCHARS --set-tag="REPLAYGAIN_REFERENCE_LOUDNESS=$RPG_REFERENCE" "$f"
@@ -331,7 +331,7 @@ if [[ $CUSTOMTAGS -eq 1 ]]; then
   for ((ct=1; ct<=9; ct++)); do                                       # Only copy custom tags that are in use and have a value
     CTNAME="CUSTOMTAG$ct"; CTVAL="CUSTOMTAGVALUE$ct"
     if [[ -n ${!CTNAME} && ${!CTNAME} != "XqXXqXX" && -n ${!CTVAL} ]]; then
-      metaflac $UTFCHARS --set-tag="${!CTNAME}=${!CTVAL}" "$f"
+      metaflac $UTFCHARS --set-tag="${!CTNAME}=$(clean_tag "${!CTVAL}")" "$f"
     fi
   done
 fi

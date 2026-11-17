@@ -46,7 +46,7 @@ done
 for f in semrenum-tmp-*.flac.renum; do
   [[ -f $f ]] || continue
   tag=TRACKNUMBER;metaflac $UTFCHARS "--remove-tag=$tag" "$f"
-  tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$TRACKNO" "$f"
+  tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$TRACKNO")" "$f"
 
   TRACKTITLE=$(get_tag TITLE "$f")
   if [[ -z $TRACKTITLE ]]; then

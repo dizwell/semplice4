@@ -19,6 +19,14 @@ awk '{ sub(/\r$/, ""); sub(/^[ \t]+/, ""); sub(/[ \t]+$/, "")
 # to_nfc: on macOS, converts text read from standard input into 'composed' Unicode (NFC), so
 # an accented letter is stored as one character rather than a letter plus a separate accent mark.
 # Typed text on macOS can arrive decomposed. Elsewhere, or if uconv is missing, text passes through unchanged.
+function clean_tag {
+# A tag value as Semplice writes it: no pipes or backslashes (no classical tag needs them, and they upset tools that use
+# them as separators or escape characters, such as Giocoso's database refresh), and any stray line break becomes a space.
+local v="$1"
+v="${v//|/}"; v="${v//\\/}"; v="${v//$'\r'/ }"; v="${v//$'\n'/ }"
+printf '%s' "$v"
+}
+
 function to_nfc {
 if [[ $(uname) == "Darwin" ]] && command -v uconv >/dev/null 2>&1; then
   uconv -x any-nfc

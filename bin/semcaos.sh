@@ -233,23 +233,23 @@ for g in split/*.flac; do
     if [[ -z $tracktitle ]]; then tracktitle="track$counter"; fi
     tracktitle="${tracktitle#*title:}"		# Remove the 'title:' bit from the front of the retrieved text for track title
     tracktitle="$(printf '%s\n' "$tracktitle" | $SEDPROG 's/^[[:space:]]*//; s/[[:space:]]*$//')"  # Trim spaces and tabs at front and end of title (quoted, so a '*' in a title is never expanded)
-    tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$tracknum" "$g"
-    tag=TITLE;metaflac $UTFCHARS "--set-tag=$tag=$tracktitle" "$g"
-    tag=COMPOSER;metaflac $UTFCHARS "--set-tag=$tag=$COMPOSER" "$g"
-    tag=ARTIST;metaflac $UTFCHARS "--set-tag=$tag=$ARTIST" "$g"
-    tag=ALBUM;metaflac $UTFCHARS "--set-tag=$tag=$ALBUM" "$g"
-    tag=GENRE;metaflac $UTFCHARS "--set-tag=$tag=$GENRE" "$g"
-    tag=DATE;metaflac $UTFCHARS "--set-tag=$tag=$DATE" "$g"
-    tag=COMMENT;metaflac $UTFCHARS "--set-tag=$tag=$COMMENT" "$g"
-	tag=NOTES;metaflac $UTFCHARS "--set-tag=$tag=$NOTES" "$g"
-    tag=PERFORMER;metaflac $UTFCHARS "--set-tag=$tag=$PERFORMER" "$g"
+    tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$tracknum")" "$g"
+    tag=TITLE;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$tracktitle")" "$g"
+    tag=COMPOSER;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$COMPOSER")" "$g"
+    tag=ARTIST;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$ARTIST")" "$g"
+    tag=ALBUM;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$ALBUM")" "$g"
+    tag=GENRE;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$GENRE")" "$g"
+    tag=DATE;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$DATE")" "$g"
+    tag=COMMENT;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$COMMENT")" "$g"
+	tag=NOTES;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$NOTES")" "$g"
+    tag=PERFORMER;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$PERFORMER")" "$g"
     if [ -f albumart ]; then metaflac $UTFCHARS --import-picture-from="albumart" "$g"; fi
 
     if [[ $CUSTOMTAGS -eq 1 ]]; then
       for ((ct=1; ct<=9; ct++)); do                                       # Only copy custom tags that are in use and have a value
         CTNAME="CUSTOMTAG$ct"; CTVAL="CUSTOMTAGVALUE$ct"
         if [[ -n ${!CTNAME} && ${!CTNAME} != "XqXXqXX" && -n ${!CTVAL} ]]; then
-          metaflac $UTFCHARS --set-tag="${!CTNAME}=${!CTVAL}" "$g"
+          metaflac $UTFCHARS --set-tag="${!CTNAME}=$(clean_tag "${!CTVAL}")" "$g"
         fi
       done
     fi

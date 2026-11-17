@@ -216,7 +216,7 @@ function auto_tracknums {
 TRACKNO=1
 for f in *.flac; do
   metaflac "--remove-tag=TRACKNUMBER" "$f"
-  metaflac "--set-tag=TRACKNUMBER=$TRACKNO" "$f"
+  metaflac "--set-tag=TRACKNUMBER=$(clean_tag "$TRACKNO")" "$f"
   FIXEDTRACK="${TRACKNO#0}"		# 2-digit numbers with leading zeroes causing problems for printf. This fixes that.
 
   TRACKTITLE=$(get_tag Title "$f")
@@ -296,8 +296,9 @@ for f in *.flac; do
   metaflac $UTFCHARS --remove-tag=Date "$f" 2>/dev/null
   metaflac $UTFCHARS --remove-tag=Tagdate "$f" 2>/dev/null
   metaflac $UTFCHARS --remove-tag=Comment "$f" 2>/dev/null
+  $SEDPROG -i 's/[|\\]//g' "$TAGFILE"                        # No pipes or backslashes in tags (see clean_tag)
   metaflac $UTFCHARS --import-tags-from="$TAGFILE" "$f"
-  metaflac $UTFCHARS --set-tag=COMMENT="$COMMENTS" "$f"
+  metaflac $UTFCHARS --set-tag=COMMENT="$(clean_tag "$COMMENTS")" "$f"
 done
 rm -f "$TAGFILE" 2>/dev/null
 }

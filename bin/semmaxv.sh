@@ -111,7 +111,7 @@ if [[ $CANBEBOOSTED -eq 1 ]]; then                                              
 
     metaflac $UTFCHARS --remove-tag=COMMENT --remove-tag=DESCRIPTION "$BOOSTED"                 # Remove ffmpeg's spurious DESCRIPTION (and any COMMENT)...
     if [[ -n $ORIGCOMMENT ]]; then
-      metaflac $UTFCHARS "--set-tag=COMMENT=$ORIGCOMMENT" "$BOOSTED"                            # ...then restore this file's own COMMENT
+      metaflac $UTFCHARS "--set-tag=COMMENT=$(clean_tag "$ORIGCOMMENT")" "$BOOSTED"                            # ...then restore this file's own COMMENT
     fi
   done
 

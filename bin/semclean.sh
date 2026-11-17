@@ -148,6 +148,7 @@ for f in *.flac; do
   metaflac --remove --block-type=PICTURE "$f" 2>/dev/null
 
   if [[ -f $TAGFILE ]]; then
+    $SEDPROG -i 's/[|\\]//g' "$TAGFILE"                        # No pipes or backslashes in tags (see clean_tag)
     metaflac $UTFCHARS --import-tags-from="$TAGFILE" "$f"
   fi
 

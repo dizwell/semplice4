@@ -336,7 +336,7 @@ if [[ $OUT == "flac" ]]; then
   if [[ -n $COMMENT ]]; then
     for f in *$BITS*.flac; do
       metaflac $UTFCHARS --remove-tag=COMMENT --remove-tag=DESCRIPTION "$f" 2>/dev/null
-      metaflac $UTFCHARS "--set-tag=COMMENT=$COMMENT" "$f" 2>/dev/null
+      metaflac $UTFCHARS "--set-tag=COMMENT=$(clean_tag "$COMMENT")" "$f" 2>/dev/null
     done
   fi
   source "$CONFDIR/bin/semclean.sh"

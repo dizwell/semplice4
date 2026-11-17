@@ -60,7 +60,7 @@ for f in *.flac; do
     metaflac $UTFCHARS --remove-tag="${USED_NAMES[$n]}" "$f" 2>/dev/null
     VALUE=$(printf '%s' "${ANSWERS[$n]}" | flatten_lines)
     if [[ -n $VALUE ]]; then
-      metaflac $UTFCHARS --set-tag="${USED_NAMES[$n]}=$VALUE" "$f"
+      metaflac $UTFCHARS --set-tag="${USED_NAMES[$n]}=$(clean_tag "$VALUE")" "$f"
     fi
   done
 done

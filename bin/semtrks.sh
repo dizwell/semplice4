@@ -84,7 +84,7 @@ for f in *.flac; do
   TITLE=${TITLE//.../…}	# Replace multiple dots with proper elipses.
   TITLE=${TITLE//../…}
   metaflac $UTFCHARS "--remove-tag=TITLE" "$f"
-  metaflac $UTFCHARS "--set-tag=TITLE=$TITLE" "$f"
+  metaflac $UTFCHARS "--set-tag=TITLE=$(clean_tag "$TITLE")" "$f"
   FILETITLE=$(tr '~#%&<>:"/\|?*' '_' <<< "$TITLE") # This makes sure we save files with NTFS-safe file names. The TITLE tag is unchanged, so full punctuation allowed there, but not in filenames on disk
   FIXEDTRACK="${LINECOUNT#0}"    # Note that if presented with a 2-digit number starting with 0, printf will assume octal number. 08 and 09 will therefore result in errors.
                                 # By stripping the leading zero at this point, we make printf work in decimal, which means 08 and 09 will be fine.
