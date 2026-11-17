@@ -215,7 +215,7 @@ count=0
 for f in "${components[@]}"; do
   downloaded=0
   for attempt in {1..5}; do
-    if wget -q --tries=1 "$REMOTESOURCE/exec/$f" -O "$NEWCONF/exec/$f"; then
+    if wget -q --tries=1 "$REMOTESOURCE/exec/$f" -O "$NEWCONF/exec/$f" && [[ -s "$NEWCONF/exec/$f" ]]; then
       downloaded=1
       break
     fi
@@ -246,7 +246,7 @@ count=0
 for f in "${components[@]}"; do
   downloaded=0
   for attempt in {1..5}; do
-    if wget -q --tries=1 "$REMOTESOURCE/art/$f" -O "$NEWCONF/art/$f"; then
+    if wget -q --tries=1 "$REMOTESOURCE/art/$f" -O "$NEWCONF/art/$f" && [[ -s "$NEWCONF/art/$f" ]]; then
       downloaded=1
       break
     fi

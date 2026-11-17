@@ -131,7 +131,12 @@ metaflac $UTFCHARS --show-tag="$1" "$2" 2>/dev/null | awk -v pre="$1=" '
 function refresh_drive_offsets {
 local binfile="$CONFDIR/tmp/DriveOffsets.bin" newlist="$CONFDIR/tmp/cddriveoffsets.new"
 mkdir -p "$CONFDIR/tmp" "$CONFDIR/txt"
-if wget --quiet --tries=1 --timeout=10 http://www.accuraterip.com/accuraterip/DriveOffsets.bin -O "$binfile" && [[ -s "$binfile" ]]; then
+local attempt
+for attempt in {1..5}; do                                                     # Up to five tries, each limited to 10 seconds
+  wget --quiet --tries=1 --timeout=10 http://www.accuraterip.com/accuraterip/DriveOffsets.bin -O "$binfile" && [[ -s "$binfile" ]] && break
+  rm -f "$binfile"; sleep 1
+done
+if [[ -s "$binfile" ]]; then
   od -A n -t u1 -v "$binfile" | awk '
     { for (i = 1; i <= NF; i++) b[n++] = $i }
     END {
@@ -166,7 +171,10 @@ if ! [[ -f "$offsetlist" ]]; then
   if [[ -s "$CONFDIR/txt/cddriveoffsets.csv" ]]; then
     cp "$CONFDIR/txt/cddriveoffsets.csv" "$offsetlist"
   else
-    wget --quiet https://raw.githubusercontent.com/dizwell/semplice4/main/txt/cddriveoffsets.csv -O "$offsetlist"
+    for attempt in {1..5}; do                                                 # Up to five tries; only a non-empty file counts
+      wget --quiet --tries=1 https://raw.githubusercontent.com/dizwell/semplice4/main/txt/cddriveoffsets.csv -O "$offsetlist" && [[ -s "$offsetlist" ]] && break
+      rm -f "$offsetlist"; sleep 1
+    done
   fi
   [[ -s "$offsetlist" ]] && touch -t 200001010000 "$offsetlist" || rm -f "$offsetlist"
 fi
