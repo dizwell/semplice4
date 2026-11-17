@@ -251,6 +251,10 @@ unset colourpair colourname colourvalue
 if [[ ${DIATHEME,,} =~ ^(standard|red|green|yellow|magenta)$ ]]; then DIATHEME=${DIATHEME,,}; else DIATHEME=standard; fi
 export DIALOGRC="$CONFDIR/txt/$DIATHEME.conf"
 
+# The logo size, as read from the configuration: a whole number of pixels from 100 to 400 (written as NxN), else 110
+LOGOSIZE="${LOGOSIZE%%x*}"
+if [[ $LOGOSIZE =~ ^[0-9]{1,4}$ ]] && (( 10#$LOGOSIZE >= 100 && 10#$LOGOSIZE <= 400 )); then LOGOSIZE="$((10#$LOGOSIZE))x$((10#$LOGOSIZE))"; else LOGOSIZE="110x110"; fi
+
 # The small menu logos are made on each computer from the full-size icons, at the configured size
 # (they aren't shipped). Make any that are missing; the configuration editor remakes them when saved.
 for smalllogo in sempliceico sempliceicobeta; do

@@ -191,7 +191,7 @@ if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then cancel_config; return; f
 readarray -t miscparams < "$CONFDIR/tmp/miscparams" 2>/dev/null
 CONFARTSIZE="${miscparams[0]}";  if [[ -z $CONFARTSIZE ]]; then CONFARTSIZE="380"; fi
 CONFLOGOSIZE="${miscparams[1]}"
-  if [[ $CONFLOGOSIZE =~ ^[0-9]+$ ]]; then CONFLOGOSIZE=$((10#$CONFLOGOSIZE)); else CONFLOGOSIZE=110; fi   # Digits only, read as decimal (0120 is 120)
+  if [[ $CONFLOGOSIZE =~ ^[0-9]{1,4}$ ]] && (( 10#$CONFLOGOSIZE >= 100 && 10#$CONFLOGOSIZE <= 400 )); then CONFLOGOSIZE=$((10#$CONFLOGOSIZE)); else CONFLOGOSIZE=110; fi   # 100 to 400, read as decimal (0120 is 120): default 110
   CONFLOGOSIZE=$CONFLOGOSIZE"x"$CONFLOGOSIZE
 CONFLOGOPOS="${miscparams[2]}"
   if [[ $((CONFLOGOPOS)) != "$CONFLOGOPOS" ]]; then CONFLOGOPOS=0; fi
