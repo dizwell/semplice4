@@ -18,15 +18,14 @@ fi
 
 function print_header {
 clear
-LOGO=6
 tput setaf $DRAWLINES; echo -e "┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                   │
 │                                                                                                   │
 │                                                                                                   │
 └───────────────────────────────────────────────────────────────────────────────────────────────────┘"
-tput cup  1 4; tput setaf $LOGO; echo -e "♬♪ Semplice Digital Music Manager Installer ♬♪"
-tput cup  2 4; echo -e "Copyright © H. Rogers $COPYRIGHT"
-tput cup  3 4; echo -e "Version $PROGVERSION"
+tput cup  1 4; tput setaf ${LOGOZ:-6}; echo -e "♬♪ Semplice Digital Music Manager Installer ♬♪"
+tput cup  2 4; tput setaf ${LOGOZ:-6}; echo -e "Copyright © H. Rogers $COPYRIGHT"
+tput cup  3 4; tput setaf ${LOGOZ:-6}; echo -e "Version $PROGVERSION"
 }
 
 function check_updates {
@@ -64,9 +63,10 @@ fi
 
 if [[ -z $SEMDISTRO ]]; then
   if [[ -f /etc/os-release ]]; then
-    . /etc/os-release
-    OS=$NAME
-    THISVER=$VERSION
+    # Read only the name and version: sourcing the whole file would overwrite the program's own variables (its LOGO=
+    # line, on Ubuntu and Fedora, would replace the logo colour), as Niente does
+    OS=$(. /etc/os-release; echo "$NAME")
+    THISVER=$(. /etc/os-release; echo "$VERSION")
   else
     OS=$(uname -s)
     THISVER=$(uname -r)
