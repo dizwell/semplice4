@@ -59,7 +59,9 @@ PROGFILE="${BASH_SOURCE[0]}"                      # This script's own path (a sy
 if ! sed -n '10p' "$PROGFILE" | grep -q '?'; then PROGVERSION="4.00"; else PROGVERSION="4.00-beta"; fi
 mkdir -p "$CONFDIR" "$CONFDIR/txt" "$CONFDIR/bin" "$CONFDIR/tmp" "$CONFDIR/art" "$CONFDIR/rip" 2>/dev/null	   # Create a folder structure, if it doesn't already exist (and suppress errors if it does!)
 
-trap ctrl_c INT  # Trap Ctrl+C if issued and run the ctrl_c function
+trap ctrl_c INT      # Ctrl+C
+trap exit_program TERM      # Told to terminate (a logout or shutdown, say): tidy up as Giocoso does
+trap exit_program SIGHUP    # The window was closed: tidy up just the same
 
 function basename {
   # Uses Bash built-in, so no call to external basename utility needed
@@ -80,7 +82,7 @@ source "$CONFDIR/bin/semparse.sh"
 function exit_program {
 pkill -f "cdparanoia" >/dev/null 2>&1
 rm -rf "$CONFDIR/art/albumart.jpg" 2>/dev/null
-tput cvvis; tput sgr0; clear
+if [[ -t 1 ]]; then tput cvvis; tput sgr0; clear; fi      # Only when there's still a screen (not after the window was closed)
 exit 0
 }
 
