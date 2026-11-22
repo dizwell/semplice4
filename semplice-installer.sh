@@ -389,6 +389,7 @@ fi
 
 # Confirmation when concluded
 dialog --title " Software Components Completed " --msgbox "\\n\\nAll Semplice's components have now been installed successfully.\\n\\nPress OK to see an installation summary report." 12 70
+tput civis                       # No blinking cursor while the installation summary is being prepared
 }
 
 function backup_install {
