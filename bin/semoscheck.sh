@@ -93,7 +93,7 @@ fi
 # -----------------------------------------------------------------------------
 if [[ $OS == *"DARWIN"* ]]; then OSFAMILY="MACOS"; fi
 if [[ $OS == *"VOID"* ]]; then OSFAMILY="VOID"; fi
-if [[ $OS == *"ALMA"* || $OS == *"ROCKY"* ]]; then OSFAMILY="RHEL"; fi
+if [[ $OS == *"ALMA"* || $OS == *"ROCKY"* || $OS == *"RHEL"* || $OS == *"RED HAT"* ]]; then OSFAMILY="RHEL"; fi
 if [[ $OS == *"ARCH"* || $OS == *"CACHY"* || $OS == *"MANJARO"* || $OS == *"ENDEAVOUROS"* || $OS == *"GARUDA"* ]]; then OSFAMILY="ARCH"; fi
 if [[ $OS == *"DEBIAN"* || $OS == *"DEVUAN"* || $OS == *"RASPBIAN"* || $OS == *"LMDE"* ]]; then OSFAMILY="DEBIAN"; fi
 if [[ $OS == *"FEDORA"* || $OS == *"ULTRAMARINE"* ]]; then OSFAMILY="FEDORA"; fi
