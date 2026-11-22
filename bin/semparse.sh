@@ -224,7 +224,7 @@ METAVOL=real
 # Parameters controlling general program behaviour
 # ====================================================================
 ARTSIZE=380
-LOGOSIZE=110x110
+LOGOSIZE=110
 LOGOPOS=0
 WEZTHEME=\"Galaxy\"
 WEZFNTSZ=12
@@ -251,7 +251,8 @@ unset colourpair colourname colourvalue
 if [[ ${DIATHEME,,} =~ ^(standard|red|green|yellow|magenta)$ ]]; then DIATHEME=${DIATHEME,,}; else DIATHEME=standard; fi
 export DIALOGRC="$CONFDIR/txt/$DIATHEME.conf"
 
-# The logo size, as read from the configuration: a whole number of pixels from 100 to 400 (written as NxN), else 110
+# The logo size, as read from the configuration: a whole number of pixels from 100 to 400 (written as a plain number, as
+# Giocoso and Niente do; an older NxN entry is still understood), else 110
 LOGOSIZE="${LOGOSIZE%%x*}"
 if [[ $LOGOSIZE =~ ^[0-9]{1,4}$ ]] && (( 10#$LOGOSIZE >= 100 && 10#$LOGOSIZE <= 400 )); then LOGOSIZE="$((10#$LOGOSIZE))x$((10#$LOGOSIZE))"; else LOGOSIZE="110x110"; fi
 

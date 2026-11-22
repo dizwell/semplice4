@@ -192,7 +192,6 @@ readarray -t miscparams < "$CONFDIR/tmp/miscparams" 2>/dev/null
 CONFARTSIZE="${miscparams[0]}";  if [[ -z $CONFARTSIZE ]]; then CONFARTSIZE="380"; fi
 CONFLOGOSIZE="${miscparams[1]}"
   if [[ $CONFLOGOSIZE =~ ^[0-9]{1,4}$ ]] && (( 10#$CONFLOGOSIZE >= 100 && 10#$CONFLOGOSIZE <= 400 )); then CONFLOGOSIZE=$((10#$CONFLOGOSIZE)); else CONFLOGOSIZE=110; fi   # 100 to 400, read as decimal (0120 is 120): default 110
-  CONFLOGOSIZE=$CONFLOGOSIZE"x"$CONFLOGOSIZE
 CONFLOGOPOS="${miscparams[2]}"
   if [[ $((CONFLOGOPOS)) != "$CONFLOGOPOS" ]]; then CONFLOGOPOS=0; fi
 CONFWEZTHEME="${miscparams[3]}"
@@ -311,8 +310,8 @@ LOGOPOS=$CONFLOGOPOS" > "$CONFDIR/txt/semplice.conf"
 
 # Regenerate the small program logos based on the new logo size parameter (as Giocoso does)
 # ====================================================================
-$CONVPROG "$CONFDIR/art/sempliceicobeta.png" -resize "$CONFLOGOSIZE" "$CONFDIR/art/sempliceicosmallbeta.png" 2>/dev/null
-$CONVPROG "$CONFDIR/art/sempliceico.png" -resize "$CONFLOGOSIZE" "$CONFDIR/art/sempliceicosmall.png" 2>/dev/null
+$CONVPROG "$CONFDIR/art/sempliceicobeta.png" -resize "${CONFLOGOSIZE}x${CONFLOGOSIZE}" "$CONFDIR/art/sempliceicosmallbeta.png" 2>/dev/null
+$CONVPROG "$CONFDIR/art/sempliceico.png" -resize "${CONFLOGOSIZE}x${CONFLOGOSIZE}" "$CONFDIR/art/sempliceicosmall.png" 2>/dev/null
 
 rm -f "$CONFDIR/tmp/ripparams" 2>/dev/null
 rm -f "$CONFDIR/tmp/tagparams" 2>/dev/null
