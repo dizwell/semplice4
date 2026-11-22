@@ -10,7 +10,7 @@ if [[ -f "$CONFDIR/bin/semtput.sh" ]]; then
   source "$CONFDIR/bin/semtput.sh"
 fi
 if [[ -z $1 ]]; then set -- "checkonly"; fi
-if [[ $1 == "install" ]]; then
+if [[ $1 == "install" || $1 == "detect" ]]; then     # The installer's early check works from the system (and -d) alone, as the install itself does
   CHECKONLY=0
 else
   CHECKONLY=1
@@ -104,6 +104,9 @@ if [[ -z $OSFAMILY ]]; then OSFAMILY="ELSE"; fi
 
 # Raspberry Pi OS calls itself Debian, so spot it by the file only a Pi has (as Giocoso does)
 if [[ -f /etc/rpi-issue ]]; then OSFAMILY="RASPBIAN"; fi
+
+# The installer's early check ('detect'): just say whether this system is supported, and do nothing else
+if [[ $1 == "detect" ]]; then [[ $OSFAMILY != "ELSE" ]]; return; fi
 
 
 function cuetools_install {
@@ -657,7 +660,7 @@ case $OSFAMILY in
   ;;  
   
   *)
-  echo "Sorry, but you are using an unsupported operating system. I cannot proceed, so quitting!"
+  tput setaf ${ALERT:-1}; echo ""; echo "    Sorry, but you are using an unsupported operating system. I cannot proceed, so quitting!"; tput sgr0
   exit 1
   ;;
 esac
