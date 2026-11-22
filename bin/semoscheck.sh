@@ -91,14 +91,15 @@ fi
 
 # Put OS into appropriate family:
 # -----------------------------------------------------------------------------
+# Only the canonical distributions are recognised (as Giocoso): anything else is unsupported, unless the installer's
+# -d switch names one of these families for it (a Fedora relative, say, with -d fedora)
 if [[ $OS == *"DARWIN"* ]]; then OSFAMILY="MACOS"; fi
+if [[ $OS == *"ARCH"* ]]; then OSFAMILY="ARCH"; fi
 if [[ $OS == *"VOID"* ]]; then OSFAMILY="VOID"; fi
 if [[ $OS == *"ALMA"* || $OS == *"ROCKY"* || $OS == *"RHEL"* || $OS == *"RED HAT"* ]]; then OSFAMILY="RHEL"; fi
-if [[ $OS == *"ARCH"* || $OS == *"CACHY"* || $OS == *"MANJARO"* || $OS == *"ENDEAVOUROS"* || $OS == *"GARUDA"* ]]; then OSFAMILY="ARCH"; fi
-if [[ $OS == *"DEBIAN"* || $OS == *"DEVUAN"* || $OS == *"RASPBIAN"* || $OS == *"LMDE"* ]]; then OSFAMILY="DEBIAN"; fi
-if [[ $OS == *"FEDORA"* || $OS == *"ULTRAMARINE"* ]]; then OSFAMILY="FEDORA"; fi
-if [[ $OS == *"UBUNTU"* || $OS == *"MINT"* || $OS == *"POP!"* || $OS == *"ZORIN"* || $OS == *"ELEMENTARY"* || $OS == *"TUXEDO"* || $OS == *"NEON"* ]]; then OSFAMILY="UBUNTU"; fi
-if [[ $OS == *"MANJARO ARM"* ]]; then OSFAMILY="MANARM"; fi
+if [[ $OS == *"FEDORA"* ]]; then OSFAMILY="FEDORA"; fi
+if [[ $OS == *"DEBIAN"* ]]; then OSFAMILY="DEBIAN"; fi
+if [[ $OS == *"UBUNTU"* ]]; then OSFAMILY="UBUNTU"; fi
 if [[ -z $OSFAMILY ]]; then OSFAMILY="ELSE"; fi
 
 # Raspberry Pi OS calls itself Debian, so spot it by the file only a Pi has (as Giocoso does)
@@ -656,7 +657,7 @@ case $OSFAMILY in
   ;;  
   
   *)
-  echo "You are using an unsupported operating system. Quitting!"
+  echo "Sorry, but you are using an unsupported operating system. I cannot proceed, so quitting!"
   exit 1
   ;;
 esac
