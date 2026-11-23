@@ -43,7 +43,7 @@ fi
 
 function rip_folder {
 while :; do
-RIPDIR=$(dialog --backtitle "Semplice SACD Ripping" --title " Please choose where to save your rips " --dselect "$PROPOSEDDIR" 12 80 3>&1 1>&2 2>&3 3>&- )
+RIPDIR=$(dialog --backtitle "Semplice SACD Ripping" --title " Please choose where to save your rips " --dselect "$PROPOSEDDIR" 18 80 3>&1 1>&2 2>&3 3>&- )
 exitStatus=$?
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then
   RIPDIR=""                                           # Cancel or Esc: no folder, so the rip will not go ahead

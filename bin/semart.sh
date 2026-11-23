@@ -44,7 +44,7 @@ fi
 }
 
 function file_prompt {
-ARTFILE=$(dialog --backtitle "Semplice FLAC Tagging"  --stdout --title " Pick a JPG or PNG album art file " --fselect "$CURDIR" 12 90)
+ARTFILE=$(dialog --backtitle "Semplice FLAC Tagging"  --stdout --title " Pick a JPG or PNG album art file " --fselect "$CURDIR" 18 90)
 exitStatus=$?
 if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then                         # Cancel or Esc: no art chosen
   GOODART=0
