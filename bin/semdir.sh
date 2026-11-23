@@ -14,7 +14,7 @@ function basename {
 }
 
 while [[ $FILECOUNT -eq 0 ]]; do
-  NEWDIR=$(dialog --backtitle "Semplice FLAC Tagging" --title " Please choose a working folder " --dselect "$WORKINGDIR" 18 80  3>&1 1>&2 2>&3 3>&- )
+  NEWDIR=$(dialog --backtitle "Semplice FLAC Tagging" --title " Please choose a working folder " --dselect "$WORKINGDIR" $PICKHEIGHT 80  3>&1 1>&2 2>&3 3>&- )
   exitStatus=$?
 
   if [[ $exitStatus -eq 1 || $exitStatus -eq 255 ]]; then break; fi      # 1 is cancel, 255 is hitting the ESC key

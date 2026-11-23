@@ -53,6 +53,11 @@
 # ==============================================================================================================
 echo -ne "\033]0;Semplice: The Digital Music Manager\007"
 CONFDIR="$HOME/.local/share/semplice4"  OLDIFS=$IFS
+
+# Folder and file pickers: dialog versions from late 2019 to May 2021 (RHEL 9's, for one) squash them, so give those
+# a taller box; later versions grow the box themselves, and a taller one there covers the screen's title and messages
+DIALOGDATE=$(dialog --version 2>/dev/null | grep -o '[0-9]\{8\}' | head -1)
+if [[ -n $DIALOGDATE && $DIALOGDATE -lt 20210601 ]]; then PICKHEIGHT=18; else PICKHEIGHT=12; fi
 # If the folder Semplice was started from no longer exists (moved or deleted since the Terminal was in it), start in the home folder instead
 if [[ ! -d $PWD ]]; then cd "$HOME" 2>/dev/null || exit 1; fi
 PROGFILE="${BASH_SOURCE[0]}"                      # This script's own path (a symlink such as /usr/local/bin/semplice is fine)
