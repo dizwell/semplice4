@@ -635,7 +635,7 @@ EOF
     fi
   else
     DIALOGTEXT=$DIALOGTEXT"\n\n  ✘ Your basic Semplice installation appears to be wrong."
-   DIALOGTEXT=$DIALOGTEXT"\n\nSince even the basic installation seems faulty, you're advised to check your network connection and try re-installing Semplice afresh."
+   DIALOGTEXT=$DIALOGTEXT"\n\nSince even the basic installation seems faulty, you're advised to check your network connection and try reinstalling Semplice afresh."
   fi
   
   dialog --stdout --backtitle "Semplice Software Install" --title " Software installation status " --msgbox "\n$DIALOGTEXT" 18 80 
