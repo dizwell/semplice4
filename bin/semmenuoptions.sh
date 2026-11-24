@@ -265,7 +265,8 @@ elif [[ $1 == "misc" ]]; then
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup  8 4; tput setaf $MAINTEXT; echo -e "1) Edit Configuration File"
   tput cup  9 4; echo "2) Display License"
-  tput cup 10 4; echo "3) Change the program colour scheme"  
+  tput cup 10 4; echo "3) Change the program colour scheme"
+  tput cup 11 4; echo "4) Check for a newer version"
   tput cup 12 4; echo -e "W) Change Working Folder"
   tput cup 13 4; echo -e "F) Open File Manager"
   tput cup 14 4; echo -e "K) Clean FLAC tags in current folder"
@@ -301,6 +302,7 @@ elif [[ $1 == "misc" ]]; then
         fi
         smenuoptions misc ;;
     3 ) source "$CONFDIR/bin/semcolour.sh"; smenuoptions misc;;
+    4 ) check_new_version; smenuoptions misc;;
     W|w ) source "$CONFDIR/bin/semdir.sh"; cd "$WORKINGDIR"; smenuoptions misc ;;
     F|f ) if [[ $OSFAMILY == "MACOS" ]]; then open "."; else xdg-open "." 2>/dev/null; fi; ;;
     K|k ) source "$CONFDIR/bin/semclean.sh"; warn_corrupt; smenuoptions misc;;
