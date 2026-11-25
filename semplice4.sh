@@ -61,7 +61,14 @@ if [[ -n $DIALOGDATE && $DIALOGDATE -lt 20210601 ]]; then PICKHEIGHT=18; else PI
 # If the folder Semplice was started from no longer exists (moved or deleted since the Terminal was in it), start in the home folder instead
 if [[ ! -d $PWD ]]; then cd "$HOME" 2>/dev/null || exit 1; fi
 PROGFILE="${BASH_SOURCE[0]}"                      # This script's own path (a symlink such as /usr/local/bin/semplice is fine)
-if ! sed -n '10p' "$PROGFILE" | grep -q '?'; then PROGVERSION="4.00"; else PROGVERSION="4.00-beta"; fi
+if ! sed -n '10p' "$PROGFILE" | grep -q '?'; then
+  PROGBETA="no"; PROGVERSION="4.00"
+else
+  PROGBETA="yes"
+  # A beta install adds the date of the GitHub commit it was installed from (YYMMDD), so two beta installs can be told apart
+  BETADATE=$(grep -m1 '^INSTDATE=' "$CONFDIR/txt/installedversion.txt" 2>/dev/null | sed 's/^INSTDATE="..\(..\)-\(..\)-\(..\).*/\1\2\3/')
+  if [[ $BETADATE =~ ^[0-9]{6}$ ]]; then PROGVERSION="4.00-$BETADATE"; else PROGVERSION="4.00-beta"; fi
+fi
 mkdir -p "$CONFDIR" "$CONFDIR/txt" "$CONFDIR/bin" "$CONFDIR/tmp" "$CONFDIR/art" "$CONFDIR/rip" 2>/dev/null	   # Create a folder structure, if it doesn't already exist (and suppress errors if it does!)
 
 trap ctrl_c INT      # Ctrl+C

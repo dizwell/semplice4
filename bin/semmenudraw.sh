@@ -3,7 +3,7 @@
 # semmenudraw: Clear screen drawing routine
 ####################################################################
 source "$CONFDIR/bin/semtput.sh"
-if [[ $PROGVERSION == *"beta"* ]]; then LOGO_PATH="$CONFDIR/art/sempliceicosmallbeta.png"; else LOGO_PATH="$CONFDIR/art/sempliceicosmall.png"; fi
+if [[ $PROGBETA == "yes" ]]; then LOGO_PATH="$CONFDIR/art/sempliceicosmallbeta.png"; else LOGO_PATH="$CONFDIR/art/sempliceicosmall.png"; fi
 if [[ -z $LOGOSIZE ]]; then LOGOSIZE="110x110"; fi; LOGOWIDTH="${LOGOSIZE%x*}"
 if [[ -z $LOGOPOS ]]; then LOGOPOS=0; fi
 tput cup 0 0
