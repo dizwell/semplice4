@@ -269,28 +269,24 @@ for f in *.flac; do
   COUNTER=$((COUNTER+1))
 done
 
-# And concatenate the music. Note that the problem here is that the path might contain
-# single quotes (eg. Overture from 'Othello'). However, the list of files to be concatenated
-# all needs to be contained within a set of single quotes too. So how to differentiate "our"
-# single quotes from the ones inside the path? We don't use "outer" single quotes but triple
-# plusses. Then, we sed the triple plusses into being single quotes later on. Clumsy, but
-# avoids a lot of parsing hassles.
+# And concatenate the music. Each track is given to ffmpeg as its own input and joined with the concat filter,
+# which decodes every track on its own terms: tracks encoded with different FLAC block sizes merge correctly.
+# (The concat demuxer used before held every track to the first one's block size, losing the audio of any later
+# track with larger blocks.) Passing the names as separate arguments also means quotes in paths need no special handling.
 # ------------------------------------------------------------------------------------------
-rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
 TRACKSAMPLES=0                                                                  # Total length of all the tracks, in samples, to check the merge against
+MERGEINPUTS=() MERGEFILTER="" MERGECOUNT=0
 for f in *.flac; do
   TRACKSAMPLES=$((TRACKSAMPLES + $(metaflac --show-total-samples "$f" 2>/dev/null || echo 0)))
-  filename=$(basename "$f")
-  albumdir=$(dirname "$(pwd)"/"$f")
-  echo "file +^+^+$(pwd)/$filename+^+^+" >> "$CONFDIR/tmp/cao-tracklist.txt"
+  MERGEINPUTS+=(-i "$(pwd)/$f")
+  MERGEFILTER+="[$MERGECOUNT:a]"
+  MERGECOUNT=$((MERGECOUNT + 1))
 done
-
-$SEDPROG -i "s/'/'\\\''/g" "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null         # Parse tracklist and replace "inner" single quotes with escaped version
-$SEDPROG -i "s/+^+^+/'/g" "$CONFDIR/tmp/cao-tracklist.txt"                      # Parse triple plusses and replace then with vanilla single quotes
+MERGEFILTER+="concat=n=$MERGECOUNT:v=0:a=1"
 
 MESSAGE="Merging files…   "
-"$FFMPEG" -nostdin -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/cao-tracklist.txt" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
-rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
+"$FFMPEG" -nostdin -hide_banner -loglevel 0 "${MERGEINPUTS[@]}" -filter_complex "$MERGEFILTER" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
+unset MERGEINPUTS MERGEFILTER MERGECOUNT
 
 # The merge worked only if the SuperFLAC is exactly as long as all the tracks put together
 MERGEOK=0
