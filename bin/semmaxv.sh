@@ -14,7 +14,7 @@ is_numeric() {
 }
 
 function perform_volumeanalysis {
-tput civis; tput cup 25 1; printf $LINEDRAW2%.0s {1..101}; MESSAGE="Analysing each of the FLACs in turn…  "; tput cup 25 4;
+tput civis; MESSAGE="Analysing each of the FLACs in turn…  "; tput cup 25 4;
 declare -A peak_volumes
 # Loop through each FLAC in turn. Analyse its peak volume level. Add to text file.
 # Then sort the file such that the first item has the lowest peak volume number:
@@ -140,7 +140,7 @@ fi
 }
 
 function perform_replaygain {
-tput civis; tput cup 25 1; printf $LINEDRAW2%.0s {1..101}; MESSAGE="Analysing the folder of FLACs…  "; tput cup 25 4	
+tput civis; MESSAGE="Analysing the folder of FLACs…  "; tput cup 25 4	
 metaflac --add-replay-gain *.flac 2>/dev/null & RGPID=$!; spinner $RGPID
 wait $RGPID; RGSTATUS=$?                                                  # Did metaflac itself succeed?
 
@@ -205,7 +205,7 @@ BOOSTPERFORMED=0; CANBEBOOSTED=0; DELETESOURCE=0; BOOSTFAILED=""; BOOSTEDFILES=(
 if [[ $BOOSTTYPE == "real" ]]; then
   # A damaged FLAC would be re-encoded with the damaged part skipped, so check every FLAC first
   rm -f "$CONFDIR/tmp/damagedflac.txt"
-  tput civis; tput cup 25 1; printf $LINEDRAW2%.0s {1..101}; MESSAGE="Checking the FLACs for damage…  "; tput cup 25 4
+  tput civis; MESSAGE="Checking the FLACs for damage…  "; tput cup 25 4
   find_damaged_flac & spinner $!
   DAMAGEDFLAC=$(cat "$CONFDIR/tmp/damagedflac.txt" 2>/dev/null); rm -f "$CONFDIR/tmp/damagedflac.txt"
   if [[ -n $DAMAGEDFLAC ]]; then

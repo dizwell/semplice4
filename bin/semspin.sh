@@ -11,7 +11,6 @@
 source "$CONFDIR/bin/semtput.sh" 
 function spinner {
 tput civis
-tput cup 25 1; printf $LINEDRAW2%.0s {1..101}
 spin=()
 pid=$!    # Process Id of the previous running command
 spin[0]="◐";spin[1]="◓";spin[2]="◑";spin[3]="◒"
