@@ -18,20 +18,20 @@ fi
 
 function print_header {
 clear
-tput setaf $DRAWLINES; echo -e "┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
+tput setaf ${DRAWLINES:-2}; echo -e "┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                                                                                   │
 │                                                                                                   │
 │                                                                                                   │
 └───────────────────────────────────────────────────────────────────────────────────────────────────┘"
-tput cup  1 4; tput setaf ${LOGOZ:-6}; echo -e "♬♪ Semplice Digital Music Manager Installer ♬♪"
-tput cup  2 4; tput setaf ${LOGOZ:-6}; echo -e "Copyright © H. Rogers $COPYRIGHT"
-tput cup  3 4; tput setaf ${LOGOZ:-6}; echo -e "Version $PROGVERSION"
+tput cup  1 4; tput setaf ${LOGO:-6}; echo -e "♬♪ Semplice Digital Music Manager Installer ♬♪"
+tput cup  2 4; tput setaf ${LOGO:-6}; echo -e "Copyright © H. Rogers $COPYRIGHT"
+tput cup  3 4; tput setaf ${LOGO:-6}; echo -e "Version $PROGVERSION"
 }
 
 function check_updates {
 if [[ $pending -gt 0 ]]; then
   print_header
-  tput cup 6 4; tput setaf $ALERT; echo "!! You have pending OS software updates !!"
+  tput cup 6 4; tput setaf ${ALERT:-1}; echo "!! You have pending OS software updates !!"
   tput cup 8 4; tput setaf ${ALERT:-1}; echo "Do you want to quit the current installation and apply them yourself, or do you wish to proceed with installing Semplice regardless? [q/p] " | fold -s -w 76 | sed '2,$s/^/    /'
   read -s -n 1 choice
   tput setaf ${MAINTEXT:-11}
