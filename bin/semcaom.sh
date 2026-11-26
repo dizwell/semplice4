@@ -276,13 +276,34 @@ done
 # plusses. Then, we sed the triple plusses into being single quotes later on. Clumsy, but
 # avoids a lot of parsing hassles.
 # ------------------------------------------------------------------------------------------
-rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
+rm -f "$CONFDIR/tmp/cao-tracklist.txt" "$CONFDIR/tmp/cao-firsttrack.flac" 2>/dev/null
+
+# ffmpeg's concat takes its decoding limits from the first track, so a later track encoded with larger FLAC blocks
+# than the first track's largest would lose its audio. In that case only, a temporary copy of track 1 is re-encoded
+# at the largest block size found (the audio is unchanged: block size is only packaging) and merged in its place.
+FIRSTBLOCK=0 LARGESTBLOCK=0 MERGEFIRST=""
+for f in *.flac; do
+  BLOCK=$(metaflac --show-max-blocksize "$f" 2>/dev/null || echo 0)
+  [[ $FIRSTBLOCK -eq 0 ]] && FIRSTBLOCK=$BLOCK
+  [[ $BLOCK -gt $LARGESTBLOCK ]] && LARGESTBLOCK=$BLOCK
+done
+if [[ $LARGESTBLOCK -gt $FIRSTBLOCK ]]; then
+  for f in *.flac; do break; done                                               # The first track, in merge order
+  MESSAGE="Preparing track 1…   "
+  "$FFMPEG" -nostdin -hide_banner -loglevel 0 -i "$f" -map 0:a -frame_size "$LARGESTBLOCK" -y "$CONFDIR/tmp/cao-firsttrack.flac" & spinner $!
+  [[ -s $CONFDIR/tmp/cao-firsttrack.flac ]] && MERGEFIRST="$CONFDIR/tmp/cao-firsttrack.flac"
+fi
+
 TRACKSAMPLES=0                                                                  # Total length of all the tracks, in samples, to check the merge against
 for f in *.flac; do
   TRACKSAMPLES=$((TRACKSAMPLES + $(metaflac --show-total-samples "$f" 2>/dev/null || echo 0)))
   filename=$(basename "$f")
   albumdir=$(dirname "$(pwd)"/"$f")
-  echo "file +^+^+$(pwd)/$filename+^+^+" >> "$CONFDIR/tmp/cao-tracklist.txt"
+  if [[ -n $MERGEFIRST ]]; then                                                 # Track 1's re-encoded copy stands in for it
+    echo "file +^+^+$MERGEFIRST+^+^+" >> "$CONFDIR/tmp/cao-tracklist.txt"; MERGEFIRST=""
+  else
+    echo "file +^+^+$(pwd)/$filename+^+^+" >> "$CONFDIR/tmp/cao-tracklist.txt"
+  fi
 done
 
 $SEDPROG -i "s/'/'\\\''/g" "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null         # Parse tracklist and replace "inner" single quotes with escaped version
@@ -290,7 +311,8 @@ $SEDPROG -i "s/+^+^+/'/g" "$CONFDIR/tmp/cao-tracklist.txt"                      
 
 MESSAGE="Merging files…   "
 "$FFMPEG" -nostdin -hide_banner -loglevel 0 -f concat -safe 0 -i "$CONFDIR/tmp/cao-tracklist.txt" -max_muxing_queue_size 900000 "$FILENAME" & spinner $!
-rm -f "$CONFDIR/tmp/cao-tracklist.txt" 2>/dev/null
+rm -f "$CONFDIR/tmp/cao-tracklist.txt" "$CONFDIR/tmp/cao-firsttrack.flac" 2>/dev/null
+unset FIRSTBLOCK LARGESTBLOCK MERGEFIRST BLOCK
 
 # The merge worked only if the SuperFLAC is exactly as long as all the tracks put together
 MERGEOK=0
