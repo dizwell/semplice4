@@ -51,7 +51,7 @@ tput cup 13 54; echo "                     |_|                  "
 function sixel_logo {
 wordlogo                                                 
 tput cup 14 60; tput setaf $SPINNER; echo -en "♬♪ "; tput setaf $INFOTEXT; echo -en "The Digital Music Manager"; tput setaf $SPINNER; echo -en " ♬♪"
-tput cup 16 $LOGO_POSITION; "$SIXEL" -w $LOGOWIDTH "$LOGO_PATH" 2>/dev/null; printf "%s\n"
+tput cup 16 $LOGO_POSITION; "$SIXEL" -w $LOGOWIDTH "$LOGO_PATH" 2>/dev/null; printf "\n"
 }
 
 function audio_data {
