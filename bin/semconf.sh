@@ -50,7 +50,7 @@ if [[ -f "$CONFFILE" ]]; then
   confmetavol=$(cat "$CONFFILE" | $GREPPROG -i METAVOL= | awk -F= '{print $2}'); if [[ -z $confmetavol ]]; then confmetavol='real'; fi
   confartsize=$(cat "$CONFFILE" | $GREPPROG -i ARTSIZE= | awk -F= '{print $2}'); if [[ -z $confartsize ]]; then confartsize=380; fi
   conflogosize=$(cat "$CONFFILE" | $GREPPROG -i LOGOSIZE= | awk -F= '{print $2}'); if [[ -z $conflogosize ]]; then conflogosize=110; elif [[ $conflogosize == *"x"* ]]; then conflogosize=$(echo "$conflogosize" | awk -Fx '{print $1}'); fi
-  conflogopos=$(cat "$CONFFILE" | $GREPPROG -i LOGOPOS= | awk -F= '{print $2}'); if [ -z $conflogopos ]; then conflogopos=0; fi
+  conflogopos=$(cat "$CONFFILE" | $GREPPROG -i LOGOPOS= | awk -F= '{print $2}'); if [[ -z $conflogopos ]]; then conflogopos=0; fi
   confweztheme=$(cat "$CONFFILE" | $GREPPROG -i WEZTHEME= | awk -F= '{print $2}' | tr -d '"'); if [[ -z $confweztheme ]]; then confweztheme="Galaxy"; fi
   confwezfntsz=$(cat "$CONFFILE" | $GREPPROG -i WEZFNTSZ= | awk -F= '{print $2}'); if [[ -z $confwezfntsz ]]; then confwezfntsz=12; fi
   confdiatheme=$(cat "$CONFFILE" | $GREPPROG -i DIATHEME= | awk -F= '{print $2}' | tr -d '"'); if [[ -z $confdiatheme ]]; then confdiatheme="standard"; fi

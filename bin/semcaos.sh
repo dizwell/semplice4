@@ -243,7 +243,7 @@ for g in split/*.flac; do
     tag=COMMENT;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$COMMENT")" "$g"
 	tag=NOTES;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$NOTES")" "$g"
     tag=PERFORMER;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$PERFORMER")" "$g"
-    if [ -f albumart ]; then metaflac $UTFCHARS --import-picture-from="albumart" "$g"; fi
+    if [[ -f albumart ]]; then metaflac $UTFCHARS --import-picture-from="albumart" "$g"; fi
 
     if [[ $CUSTOMTAGS -eq 1 ]]; then
       for ((ct=1; ct<=9; ct++)); do                                       # Only copy custom tags that are in use and have a value

@@ -31,7 +31,7 @@ if [[ $1 == "tag" ]]; then
   tput setaf $HOTKEY; echo -en "Q"; tput setaf $DRAWLINES; echo -en "uit"
   # ======================================================================================================
   DISPLAYNAME=$(basename "$(pwd)"); DISPLAYNAME=$(echo $DISPLAYNAME | awk -F '/' '{print $NF}') 
-  if [ ${#DISPLAYNAME} -gt 70 ]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
+  if [[ ${#DISPLAYNAME} -gt 70 ]]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup  8 4; tput setaf $MAINTEXT; echo "1) Auto-Tagging"
   tput cup  9 4; echo "2) Set recording-wide tags"
@@ -111,7 +111,7 @@ elif [[ $1 == "audio" ]]; then
   tput setaf $HOTKEY; echo -en "Q"; tput setaf $DRAWLINES; echo -en "uit"
   # ======================================================================================================  
   DISPLAYNAME=$(basename "$(pwd)"); DISPLAYNAME=$(echo $DISPLAYNAME | awk -F '/' '{print $NF}') 
-  if [ ${#DISPLAYNAME} -gt 70 ]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
+  if [[ ${#DISPLAYNAME} -gt 70 ]]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup  8 4; tput setaf $MAINTEXT; echo -e "1) Boost volume"
   tput cup  9 4; echo "2) Convert between audio formats"
@@ -163,7 +163,7 @@ elif [[ $1 == "super" ]]; then
   tput setaf $HOTKEY; echo -en "Q"; tput setaf $DRAWLINES; echo -en "uit"
   # ======================================================================================================
   DISPLAYNAME=$(basename "$(pwd)"); DISPLAYNAME=$(echo $DISPLAYNAME | awk -F '/' '{print $NF}') 
-  if [ ${#DISPLAYNAME} -gt 70 ]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
+  if [[ ${#DISPLAYNAME} -gt 70 ]]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup  8 4; tput setaf $MAINTEXT; echo -e "1) Merge tracks into SuperFLAC"
   tput cup  9 4; echo "2) Split FLAC out into separate tracks"
@@ -211,7 +211,7 @@ elif [[ $1 == "rip" ]]; then
   tput setaf $HOTKEY; echo -en "Q"; tput setaf $DRAWLINES; echo -en "uit"
   # ======================================================================================================
   DISPLAYNAME=$(basename "$(pwd)"); DISPLAYNAME=$(echo $DISPLAYNAME | awk -F '/' '{print $NF}') 
-  if [ ${#DISPLAYNAME} -gt 70 ]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
+  if [[ ${#DISPLAYNAME} -gt 70 ]]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup  8 4; tput setaf $MAINTEXT; echo -e "1) Rip CD"
   tput cup  9 4; echo -e "2) Specify Optical Drive"
@@ -261,7 +261,7 @@ elif [[ $1 == "misc" ]]; then
   tput setaf $HOTKEY; echo -en "Q"; tput setaf $DRAWLINES; echo -en "uit"
   # ======================================================================================================
   DISPLAYNAME=$(basename "$(pwd)"); DISPLAYNAME=$(echo $DISPLAYNAME | awk -F '/' '{print $NF}') 
-  if [ ${#DISPLAYNAME} -gt 70 ]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
+  if [[ ${#DISPLAYNAME} -gt 70 ]]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup  8 4; tput setaf $MAINTEXT; echo -e "1) Edit Configuration File"
   tput cup  9 4; echo "2) Display License"
@@ -330,7 +330,7 @@ elif [[ $1 == "quit" ]]; then
   tput setaf $DRAWLINES; echo -en "\e[7mQuit\e[0m"
   # ======================================================================================================
   DISPLAYNAME=$(basename "$(pwd)"); DISPLAYNAME=$(echo $DISPLAYNAME | awk -F '/' '{print $NF}') 
-  if [ ${#DISPLAYNAME} -gt 70 ]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
+  if [[ ${#DISPLAYNAME} -gt 70 ]]; then DISPLAYNAME="${DISPLAYNAME: -70}"; fi
   tput cup  3 4; tput setaf $LOGO; echo -en "Working folder: "; tput setaf $INFOTEXT; echo -en "…/$DISPLAYNAME"
   tput cup 8 4; tput setaf $MAINTEXT; echo -e "1) Quit with Post-Processing"
   tput cup 9 4; echo "2) Quit with no file processing"

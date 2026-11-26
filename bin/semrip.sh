@@ -121,7 +121,7 @@ unset FOLDERNUMS
 sleep 1
 
 if [[ $OSFAMILY != "MACOS" ]]; then
-  while [ $CD_NOTPRESENT -eq 1 ]; do
+  while [[ $CD_NOTPRESENT -eq 1 ]]; do
     dialog --stdout --backtitle "Semplice Audio CD Ripping" --msgbox "No audio CD has been detected. Insert one, or Ctrl+C to quit." 8 80
     CD_NOTPRESENT=$(cdparanoia -vsQ -d $OPTICAL_DEVICE 2>&1 | $GREPPROG "Unable to open disc" | wc -l)
     sleep 1
@@ -204,7 +204,7 @@ for ((index=0; index < ${#STARTARRAY[@]}; index++)); do
   printf -v TWODIGITCOUNT "%02d" $COUNTER                                 # turn single digit counts into two-digit ones for folder-naming purposes
   NEXTSTART=${STARTARRAY[$index+1]}                                       # Find the start track of the next recording
   TRACKLIMIT=$((NEXTSTART - 1))                                           # Take 1 off that next recording's start track to get the ending for *this* recording
-  if [ $TRACKLIMIT -eq -1 ]; then TRACKLIMIT=$TRACKTOTAL; fi              # Special case: the last recording has a -1 finish, so if we see -1, set it to the total track count to get the actual last track number
+  if [[ $TRACKLIMIT -eq -1 ]]; then TRACKLIMIT=$TRACKTOTAL; fi              # Special case: the last recording has a -1 finish, so if we see -1, set it to the total track count to get the actual last track number
   TRACKRANGE="${STARTARRAY[$index]}-$TRACKLIMIT"                          # The TRACKRANGE is now a string (eg 1-4) that defines a contiguous range of tracks to rip
   THISRECFOLDER="RIP_$TWODIGITCOUNT"
 

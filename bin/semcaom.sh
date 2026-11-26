@@ -204,7 +204,7 @@ fi
 # Clean filename to remove two or three dots from file names: they break ffmpeg.
 # ------------------------------------------------------------------------------------------
 for f in *.flac; do
-  if [ "${f}" != "${f//.../…}" ]; then
+  if [[ "${f}" != "${f//.../…}" ]]; then
     # Fetch existing metadata into variables
     TITLE="$(get_tag Title "$f")"
     TITLE="${TITLE//.../…}"
@@ -216,7 +216,7 @@ for f in *.flac; do
 done
 
 for f in *.flac; do
-  if [ "${f}" != "${f//../…}" ]; then
+  if [[ "${f}" != "${f//../…}" ]]; then
     TITLE="$(get_tag Title "$f")"
     TITLE="${TITLE//.../…}"
     TITLE="${TITLE//../…}"

@@ -25,7 +25,7 @@ rm -f "$CORRUPTLIST" 2>/dev/null
 function clean_tags
 {
 COUNTFLAC=$(ls *.flac 2>/dev/null | wc -l)
-if [ $COUNTFLAC -eq 0 ]; then return; fi
+if [[ $COUNTFLAC -eq 0 ]]; then return; fi
 
 # Extract album art from the first Flac found
 f=$(find "$(pwd)" -maxdepth 1 -name "*.flac" | sort | head -n 1)        # This folder only, never a sub-folder

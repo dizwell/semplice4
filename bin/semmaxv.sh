@@ -93,7 +93,7 @@ if [[ $CANBEBOOSTED -eq 1 ]]; then                                              
     fi
     BOOSTED="+$CANDIDATE_BOOST-dB-$f"                                                           # e.g. "+3.5-dB-01 - Allegro.flac"
 
-    if [ $BITDEPTH -eq 24 ]; then
+    if [[ $BITDEPTH -eq 24 ]]; then
       "$FFMPEG" -nostdin -y -i "$f" -sample_fmt s32 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
     else
       "$FFMPEG" -nostdin -y -i "$f" -sample_fmt s16 -ar $SAMPLERATE -filter:a "volume='$CANDIDATE_BOOST'dB" "$BOOSTED" 2>/dev/null & FFPID=$!; spinner $FFPID
@@ -178,7 +178,7 @@ done
 
 # Executable code starts here!
 # -----------------------------------------------------
-if [ "$METAVOL" = "real" ]; then
+if [[ "$METAVOL" = "real" ]]; then
     DEFAULT="yes"
 	XTRATXT="(i.e., physical alteration of the FLACs)"
 else

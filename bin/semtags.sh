@@ -258,7 +258,7 @@ if [[ $COUNTART -gt 0 ]]; then
   if [[ $GOODIMG -gt 0 ]]; then
     IFS=" "; read width height < <("$CONVPROG" identify -format "%w %h" "$ARTWORK" 2>/dev/null)
     if [[ $width -gt $height ]]; then BIGDIMENSION=$width; else BIGDIMENSION=$height; fi
-    if [ $BIGDIMENSION -ge 1400 ]; then
+    if [[ $BIGDIMENSION -ge 1400 ]]; then
       "$CONVPROG" "$ARTWORK" -quality 100 -resize 1400x1400\! /tmp/albumart.jpg 2>/dev/null                                      # Resize images if larger than 1400x1400, without maintaining aspect ratio
     elif [[ $BIGDIMENSION -ge 900 ]]; then
       "$CONVPROG" "$ARTWORK" -quality 100 -resize 900x900\! /tmp/albumart.jpg 2>/dev/null                                          # Resize images if larger than 900x900, without maintaining aspect ratio
