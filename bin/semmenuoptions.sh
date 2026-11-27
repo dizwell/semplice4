@@ -285,7 +285,7 @@ elif [[ $1 == "misc" ]]; then
         # As Giocoso and Niente: fetched from main (the release), trying up to five times; only a non-empty file counts
         if [[ ! -s "$CONFDIR/tmp/license.txt" ]]; then
           for attempt in {1..5}; do
-            if wget -q --tries=1 "https://raw.githubusercontent.com/dizwell/semplice4/main/gpl-v2.0.txt" -O "$CONFDIR/tmp/license.txt" && [[ -s "$CONFDIR/tmp/license.txt" ]]; then
+            if wget -q --tries=1 "https://raw.githubusercontent.com/dizwell/semplice4/main/LICENSE" -O "$CONFDIR/tmp/license.txt" && [[ -s "$CONFDIR/tmp/license.txt" ]]; then
               break
             fi
             sleep 1
