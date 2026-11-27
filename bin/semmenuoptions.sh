@@ -267,9 +267,9 @@ elif [[ $1 == "misc" ]]; then
   tput cup  9 4; echo "2) Display License"
   tput cup 10 4; echo "3) Change the program colour scheme"
   tput cup 11 4; echo "4) Check for a newer version"
-  tput cup 12 4; echo -e "W) Change Working Folder"
-  tput cup 13 4; echo -e "F) Open File Manager"
-  tput cup 14 4; echo -e "K) Clean FLAC tags in current folder"
+  tput cup 13 4; echo -e "W) Change Working Folder"
+  tput cup 14 4; echo -e "F) Open File Manager"
+  tput cup 15 4; echo -e "K) Clean FLAC tags in current folder"
   tput cup 22 4; tput setaf $ALERT; echo -e "X) Exit the program"
 
   until [[ $option == "q" ]]; do
