@@ -118,7 +118,6 @@ if [[ -f /etc/rpi-issue ]]; then OSFAMILY="RASPBIAN"; fi
 # The installer's early check ('detect'): just say whether this system is supported, and do nothing else
 if [[ $1 == "detect" ]]; then [[ $OSFAMILY != "ELSE" ]]; return; fi
 
-
 function cuetools_install {
 # Needed by RHEL, as cuetools aren't in the standard repositories
 cd
@@ -271,8 +270,6 @@ case $OSFAMILY in
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
 	
-	
-	
     # Confirmation when concluded
     report_failed_pkgs || dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
   fi
@@ -316,8 +313,6 @@ case $OSFAMILY in
     done
     ) | dialog --backtitle "Semplice Software Install" --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
-	
-		
 	
     # Confirmation when concluded
     report_failed_pkgs || dialog --backtitle "Semplice Software Install" --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
