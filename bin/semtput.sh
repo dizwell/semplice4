@@ -52,3 +52,7 @@ tput() {
 		*) command tput "$@"; return $?;;
 	esac
 }
+
+# clear, done the same way: Semplice then needs no ncurses program at all (dialog brings the ncurses libraries it
+# needs itself)
+clear() { tput clear; }

@@ -149,9 +149,9 @@ clear; smenuoptions tag; clear
 # ===========================================================================================================
 # The actual program control code
 # ===========================================================================================================
+source "$CONFDIR/bin/semtput.sh"                      # Bash-internal tput and clear: part of every installation, so loaded first
 clear
 
-source "$CONFDIR/bin/semtput.sh"                      # Bash-internal tput: part of every installation
 source "$CONFDIR/bin/semfunctions.sh"                 # Shared helper functions, used throughout (as Giocoso's giofunctions.sh)
 
 tput civis; printf '\e[8;28;103t'			# Setting terminal virtual size to 103x28, regardless of what it's actually set to

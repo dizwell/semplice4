@@ -237,7 +237,7 @@ case $OSFAMILY in
     sudo xbps-install -Sfy dialog > /dev/null 2>&1
 
     # Define what's required    
-    packages=(bc cdparanoia coreutils dialog flac fd ncurses wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils dialog flac fd wezterm xdg-utils)
     total=${#packages[@]}
     count=0
 
@@ -280,7 +280,7 @@ case $OSFAMILY in
     sudo pacman -S --noconfirm dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils dialog flac fd ncurses wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils dialog flac fd wezterm xdg-utils)
     total=${#packages[@]}
     count=0
 
@@ -328,7 +328,7 @@ case $OSFAMILY in
     sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc cdparanoia coreutils fd-find flac libncurses* wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils fd-find flac wezterm xdg-utils)
     total=${#packages[@]}
     count=0
     
@@ -375,7 +375,7 @@ case $OSFAMILY in
     sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils dialog fd-find flac libncurses* wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils dialog fd-find flac wezterm xdg-utils)
     total=${#packages[@]}
     count=0
 
@@ -422,7 +422,7 @@ case $OSFAMILY in
     sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc cdparanoia coreutils fd-find flac libncurses6 wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils fd-find flac wezterm xdg-utils)
     total=${#packages[@]}
     count=0
     
@@ -466,7 +466,7 @@ case $OSFAMILY in
     dnf_retry -y install dialog
     
      # Define what's required 
-    packages=(bc cdparanoia coreutils fd-find flac ncurses wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils fd-find flac wezterm xdg-utils)
     total=${#packages[@]}
     count=0
     
@@ -516,7 +516,7 @@ case $OSFAMILY in
     fi
 
     # Define what's required 
-    packages=(bc cdparanoia coreutils fd-find flac fontconfig gawk grep ncurses wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils fd-find flac fontconfig gawk grep wezterm xdg-utils)
     total=${#packages[@]}
     count=0
 
@@ -609,7 +609,7 @@ case $OSFAMILY in
     done
 
     # Define what's required
-    packages=(bc cdparanoia coreutils dialog fd flac gawk grep gsed icu4c icu libcdio-paranoia md5sha1sum ncurses wezterm)
+    packages=(bc cdparanoia coreutils dialog fd flac gawk grep gsed icu4c icu libcdio-paranoia md5sha1sum wezterm)
     total=${#packages[@]}
     count=0
 
