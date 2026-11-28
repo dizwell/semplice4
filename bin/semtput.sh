@@ -40,6 +40,7 @@ tput() {
 		smcup) echo -n "$ESC[?1049h";;
 		rmcup) echo -n "$ESC[?1049l";;
 		clear) echo -n "$ESC[H$ESC[2J";;
+		reset) echo -n "${ESC}c";;
 		home) echo -n "$ESC[H";;
 		cuu) echo -n "$ESC[$2A";;
 		cud) echo -n "$ESC[$2B";;
@@ -53,6 +54,7 @@ tput() {
 	esac
 }
 
-# clear, done the same way: Semplice then needs no ncurses program at all (dialog brings the ncurses libraries it
-# needs itself)
+# clear and reset, done the same way, so the program needs no ncurses programs at all (dialog brings the ncurses
+# libraries it needs itself)
 clear() { tput clear; }
+reset() { tput reset; }

@@ -11,6 +11,10 @@
 #  6. Install new fonts
 #
 ####################################################################
+# Built-in clear and reset (escape sequences, like the tput function below), so nothing here needs ncurses programs
+clear() { printf '\033[H\033[2J'; }
+reset() { printf '\033c'; }
+
 PROGVERSION="4.00" COPYRIGHT="2019-2026"
 PRIORVERSION=0; clear; USERNAME=$(whoami); ERRORCOUNT=0  YPOS=6
 
@@ -143,6 +147,7 @@ tput() {
 		smcup) echo -n "$ESC[?1049h";;
 		rmcup) echo -n "$ESC[?1049l";;
 		clear) echo -n "$ESC[H$ESC[2J";;
+		reset) echo -n "${ESC}c";;
 		home) echo -n "$ESC[H";;
 		cuu) echo -n "$ESC[$2A";;
 		cud) echo -n "$ESC[$2B";;
