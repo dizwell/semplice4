@@ -499,7 +499,7 @@ case $OSFAMILY in
     sudo timedatectl set-ntp true >/dev/null 2>&1
     echo ""
     echo "    Getting the Semplice installer ready. Please bear with us for a few moments..."
-    sudo dnf copr enable -y -q wezfurlong/wezterm-nightly rhel-9-x86_64 >/dev/null 2>&1
+    sudo dnf copr enable -y -q wezfurlong/wezterm-nightly "rhel-9-$(uname -m)" >/dev/null 2>&1
     sudo dnf check-update --refresh -q; rc=$?
     if [[ $rc -eq 100 ]]; then
       pending=1
