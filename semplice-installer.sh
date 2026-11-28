@@ -596,6 +596,10 @@ if not schemes[config.color_scheme] then
 end
 return config
 EOF
+  # Under WSL (Linux on Windows), WezTerm needs the WebGpu front end, no Wayland switch and no title bar
+  if grep -qi microsoft /proc/version 2>/dev/null; then
+    sed -i -e '/^config.enable_wayland = false/d' -e 's/^--config.front_end = "WebGpu"/config.front_end = "WebGpu"/' -e 's/^config.window_decorations = "TITLE | RESIZE"/config.window_decorations = "RESIZE"/' "$HOME/.semplice.lua"
+  fi
   fi
     
   # 8. Assess state of installation and advise accordingly

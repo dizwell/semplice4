@@ -318,9 +318,8 @@ case $OSFAMILY in
       wget -q --tries=1 https://apt.fury.io/wez/gpg.key -O /tmp/wezterm-fury.key && [[ -s /tmp/wezterm-fury.key ]] && break
       rm -f /tmp/wezterm-fury.key; sleep 1
     done
-    sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg /tmp/wezterm-fury.key >/dev/null 2>&1; rm -f /tmp/wezterm-fury.key
-    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
-    sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
+    sudo rm -f /usr/share/keyrings/wezterm-fury.gpg; sudo install -m 644 /tmp/wezterm-fury.key /usr/share/keyrings/wezterm-fury.asc 2>/dev/null; rm -f /tmp/wezterm-fury.key   # apt reads the key as downloaded: no gpg needed
+    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.asc] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
     sudo apt-get -o DPkg::Lock::Timeout=300 update -qq
     pending=$(apt-get -s upgrade | awk '/^Inst / {count++} END {print count+0}')
     check_updates
@@ -365,9 +364,8 @@ case $OSFAMILY in
       wget -q --tries=1 https://apt.fury.io/wez/gpg.key -O /tmp/wezterm-fury.key && [[ -s /tmp/wezterm-fury.key ]] && break
       rm -f /tmp/wezterm-fury.key; sleep 1
     done
-    sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg /tmp/wezterm-fury.key >/dev/null 2>&1; rm -f /tmp/wezterm-fury.key
-    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
-    sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
+    sudo rm -f /usr/share/keyrings/wezterm-fury.gpg; sudo install -m 644 /tmp/wezterm-fury.key /usr/share/keyrings/wezterm-fury.asc 2>/dev/null; rm -f /tmp/wezterm-fury.key   # apt reads the key as downloaded: no gpg needed
+    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.asc] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
     sudo apt-get -o DPkg::Lock::Timeout=300 update -qq
     pending=$(apt-get -s upgrade | awk '/^Inst / {count++} END {print count+0}')
     check_updates
@@ -412,9 +410,8 @@ case $OSFAMILY in
       wget -q --tries=1 https://apt.fury.io/wez/gpg.key -O /tmp/wezterm-fury.key && [[ -s /tmp/wezterm-fury.key ]] && break
       rm -f /tmp/wezterm-fury.key; sleep 1
     done
-    sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg /tmp/wezterm-fury.key >/dev/null 2>&1; rm -f /tmp/wezterm-fury.key
-    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list > /dev/null
-    sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg >/dev/null 2>&1
+    sudo rm -f /usr/share/keyrings/wezterm-fury.gpg; sudo install -m 644 /tmp/wezterm-fury.key /usr/share/keyrings/wezterm-fury.asc 2>/dev/null; rm -f /tmp/wezterm-fury.key   # apt reads the key as downloaded: no gpg needed
+    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.asc] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list > /dev/null
     sudo apt-get -o DPkg::Lock::Timeout=300 update -qq
     pending=$(apt-get -s upgrade | awk '/^Inst / {count++} END {print count+0}')
     check_updates
@@ -466,7 +463,7 @@ case $OSFAMILY in
     dnf_retry -y install dialog
     
      # Define what's required 
-    packages=(bc cdparanoia coreutils fd-find flac wezterm xdg-utils)
+    packages=(bc cdparanoia coreutils fd-find flac gawk wezterm xdg-utils)
     total=${#packages[@]}
     count=0
     
