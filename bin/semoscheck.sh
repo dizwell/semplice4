@@ -118,23 +118,6 @@ if [[ -f /etc/rpi-issue ]]; then OSFAMILY="RASPBIAN"; fi
 # The installer's early check ('detect'): just say whether this system is supported, and do nothing else
 if [[ $1 == "detect" ]]; then [[ $OSFAMILY != "ELSE" ]]; return; fi
 
-function cuetools_install {
-# Needed by RHEL, as cuetools aren't in the standard repositories
-cd
-git clone https://github.com/svend/cuetools.git >/dev/null 2>&1
-cd cuetools
-autoreconf -fi >/dev/null 2>&1
-./configure --prefix=/usr >/dev/null 2>&1
-make >/dev/null 2>&1
-sudo make install >/dev/null 2>&1
-cd
-rm -rf cuetools >/dev/null 2>&1
-
-if ! command -v cueprint >/dev/null 2>&1; then
-  dialog --stdout --backtitle "Semplice Software Install" --title " Software installation failure " --msgbox "\nThe automated installation of cuetools has **failed**. \n\nYou may be able to install it yourself later on, but until you do, Semplice will lack the ability to split a SuperFLAC into properly-named component tracks: you'll get generically-named tracks instead. This does NOT affect any other Semplice functionality.\n\nClick OK to proceed." 14 80     
-fi
-}
-
 function wezterm_app_install {
 # MacPorts' WezTerm package needs the full Xcode application, not just the command-line tools, so on MacPorts Macs
 # we install WezTerm's own ready-made app instead: a Universal build for Intel and Apple Silicon alike, and the
@@ -254,7 +237,7 @@ case $OSFAMILY in
     sudo xbps-install -Sfy dialog > /dev/null 2>&1
 
     # Define what's required    
-    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses nerd-fonts-ttf wezterm libpulseaudio alsa-utils xdg-utils)
+    packages=(bc cdparanoia coreutils curl dialog flac fd libcdio ncurses nerd-fonts-ttf wezterm libpulseaudio alsa-utils xdg-utils)
     total=${#packages[@]}
     count=0
 
@@ -297,7 +280,7 @@ case $OSFAMILY in
     sudo pacman -S --noconfirm dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog flac fd libcdio ncurses ttf-nerd-fonts-symbols-mono wezterm libpulse alsa-utils xdg-utils)
+    packages=(bc cdparanoia coreutils curl dialog flac fd libcdio ncurses ttf-nerd-fonts-symbols-mono wezterm libpulse alsa-utils xdg-utils)
     total=${#packages[@]}
     count=0
 
@@ -345,7 +328,7 @@ case $OSFAMILY in
     sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
         
     # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses* wezterm libpulse0 alsa-utils xdg-utils)
+    packages=(bc cdparanoia coreutils curl fd-find flac libncurses* wezterm libpulse0 alsa-utils xdg-utils)
     total=${#packages[@]}
     count=0
     
@@ -392,7 +375,7 @@ case $OSFAMILY in
     sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog fd-find flac libncurses* wezterm libpulse0 alsa-utils xdg-utils)
+    packages=(bc cdparanoia coreutils curl dialog fd-find flac libncurses* wezterm libpulse0 alsa-utils xdg-utils)
     total=${#packages[@]}
     count=0
 
@@ -439,7 +422,7 @@ case $OSFAMILY in
     sudo apt -o DPkg::Lock::Timeout=300 -y install dialog > /dev/null 2>&1
         
      # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find flac libncurses6 wezterm libpulse0 alsa-utils xdg-utils)
+    packages=(bc cdparanoia coreutils curl fd-find flac libncurses6 wezterm libpulse0 alsa-utils xdg-utils)
     total=${#packages[@]}
     count=0
     
@@ -483,7 +466,7 @@ case $OSFAMILY in
     dnf_retry -y install dialog
     
      # Define what's required 
-    packages=(bc cdparanoia coreutils cuetools curl fd-find flac ncurses wezterm pulseaudio-libs alsa-utils xdg-utils)
+    packages=(bc cdparanoia coreutils curl fd-find flac ncurses wezterm pulseaudio-libs alsa-utils xdg-utils)
     total=${#packages[@]}
     count=0
     
@@ -549,7 +532,6 @@ case $OSFAMILY in
     done
     ) | dialog --title " Installing Semplice's Software Dependencies " --gauge "\\n\\nInstallation may take some time. Please be patient..." 12 70
     tput cup 24 4
-    cuetools_install
 
     # Confirmation when concluded
     report_failed_pkgs || dialog --title " Software Dependencies Installation Completed " --msgbox "\\n\\nAll Semplice's software dependencies have been installed.\\n\\nClick OK to proceed." 12 70
@@ -627,7 +609,7 @@ case $OSFAMILY in
     done
 
     # Define what's required
-    packages=(bc cdparanoia coreutils cuetools curl dialog fd flac gawk grep gsed icu4c icu libcdio-paranoia md5sha1sum ncurses wezterm)
+    packages=(bc cdparanoia coreutils curl dialog fd flac gawk grep gsed icu4c icu libcdio-paranoia md5sha1sum ncurses wezterm)
     total=${#packages[@]}
     count=0
 

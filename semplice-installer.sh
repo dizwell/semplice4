@@ -602,7 +602,6 @@ EOF
   if [[ $COUNTEXC -eq 1 ]]; then COUNTXECOK=1; else COUNTXECOK=0; fi
   if [[ $COUNTBINOK -eq 1 && $COUNTXECOK -eq 1 ]]; then BASICINSTALLOK=1; else BASICINSTALLOK=0; fi
   
-  if command -v cueprint >/dev/null 2>&1; then CUEPRINTOK=1; else CUEPRINTOK=0; fi
   case "$(uname -s)" in Darwin) ARVPLAT="macos" ;; Linux) ARVPLAT="linux" ;; *) ARVPLAT="unknown" ;; esac
   case "$(uname -m)" in arm64|aarch64) ARVARCH="arm64" ;; x86_64) ARVARCH="x86_64" ;; *) ARVARCH="unknown" ;; esac
   if [[ -x "$NEWCONF/exec/semarv-$ARVPLAT-$ARVARCH" ]]; then TRKVEROK=1; else TRKVEROK=0; fi   # Semplice's own AccurateRip checker for this computer
@@ -613,12 +612,6 @@ EOF
   
   if [[ $BASICINSTALLOK -eq 1 ]]; then 
     DIALOGTEXT=$DIALOGTEXT"\n\n  ✓ Your basic Semplice installation is fine"
-    if [[ $CUEPRINTOK -eq 1 ]]; then 
-      DIALOGTEXT=$DIALOGTEXT"\n  ✓ Semplice can split SuperFLACs OK"
-    else
-      DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot split SuperFLACs at all"
-    fi
-  
     if [[ $SACDOK -eq 1 ]]; then 
       DIALOGTEXT=$DIALOGTEXT"\n  ✓ Semplice can convert SACD ISOs OK"
     else
@@ -637,7 +630,7 @@ EOF
       DIALOGTEXT=$DIALOGTEXT"\n  ✘ Semplice cannot verify CD rips for accuracy"
     fi
   
-    if [[ $CUEPRINTOK -eq 0 || $SACDOK -eq 0 || $SIXELOK -eq 0 || $TRKVEROK -eq 0 ]]; then
+    if [[ $SACDOK -eq 0 || $SIXELOK -eq 0 || $TRKVEROK -eq 0 ]]; then
       DIALOGTEXT=$DIALOGTEXT"\n\nSee the Semplice documentation for how to potentially resolve these issues manually. You can otherwise close this terminal now."
     else 
       DIALOGTEXT=$DIALOGTEXT"\n\nSemplice has full functionality: click OK to return to the command line."

@@ -9,6 +9,37 @@
 ####################################################################
 source "$CONFDIR/bin/semspin.sh"
 
+function cue_track {
+# cue_track CUEFILE N: prints the Nth track's number and title from any cuesheet, as number and title separated by an ASCII unit separator (either may be
+# empty). Copes with every common writer: Windows line endings and byte-order marks, any indentation, commands in any
+# case, quoted or unquoted titles, quotes inside a title, REM lines, several FILE sections, and tracks with no title.
+# Only a TITLE inside a TRACK belongs to that track: one before the first TRACK is the album's, and is ignored.
+awk -v want="$2" '
+  { sub(/\r$/, "") }
+  NR == 1 { sub(/^\357\273\277/, "") }
+  {
+    line = $0; sub(/^[ \t]+/, "", line)
+    cmd = toupper($1)
+    if (cmd == "TRACK") {
+      t++
+      if (t > want) exit
+      if (t == want) { num = $2; sub(/^0+/, "", num) }
+      next
+    }
+    if (cmd == "TITLE" && t == want && !got) {
+      rest = substr(line, 6); sub(/^[ \t]+/, "", rest); sub(/[ \t]+$/, "", rest)
+      if (substr(rest, 1, 1) == "\"") {
+        rest = substr(rest, 2)
+        q = 0; for (i = length(rest); i > 0; i--) if (substr(rest, i, 1) == "\"") { q = i; break }
+        if (q) rest = substr(rest, 1, q - 1)
+      }
+      title = rest; got = 1
+    }
+  }
+  END { printf "%s\037%s\n", num, title }
+' "$1" 2>/dev/null
+}
+
 function basename {
   # Uses Bash built-in, so no call to external basename utility needed
   local path="${1%/}"
@@ -226,12 +257,10 @@ counter=1
 for g in split/*.flac; do
   if [[ $g != $origfile ]]; then    
     metaflac $UTFCHARS --remove-all "$g"
-    tracknum=$(cueprint -n "$counter" "$CUEFILE" 2>/dev/null | $GREPPROG "track number" | awk -F ":" '{print $2}' | xargs)
+    IFS=$'\037' read -r tracknum tracktitle < <(cue_track "$CUEFILE" "$counter")   # This track's number and title, from the cuesheet
     if [[ -z $tracknum ]]; then tracknum=$counter; fi
     tracknum=$(printf "%02g" $tracknum)     # Track numbers should be zero-padded if less than 10.
-    tracktitle="$(cueprint -n "$counter" "$CUEFILE"  2>/dev/null | $GREPPROG "title")"
     if [[ -z $tracktitle ]]; then tracktitle="track$counter"; fi
-    tracktitle="${tracktitle#*title:}"		# Remove the 'title:' bit from the front of the retrieved text for track title
     tracktitle="$(printf '%s\n' "$tracktitle" | $SEDPROG 's/^[[:space:]]*//; s/[[:space:]]*$//')"  # Trim spaces and tabs at front and end of title (quoted, so a '*' in a title is never expanded)
     tag=TRACKNUMBER;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$tracknum")" "$g"
     tag=TITLE;metaflac $UTFCHARS "--set-tag=$tag=$(clean_tag "$tracktitle")" "$g"
